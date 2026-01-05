@@ -135,16 +135,6 @@ def get_core_hypixel_data(
     if hypixel_api_key is None:
         hypixel_api_key = os.getenv("hypixel_api_key")
 
-    # Temporary Debugging
-    env_key = os.getenv("hypixel_api_key")
-    print("--- HYPIXEL DEBUG ---")
-    print(f"Key exists in env: {env_key is not None}")
-    if env_key:
-        print(f"Key length: {len(env_key)}")
-        print(f"Key starts/ends with spaces: {env_key != env_key.strip()}")
-        print(f"First 4 chars: {env_key[:4]}")
-    print(f"Argument key matches Env key: {hypixel_api_key == env_key}")
-    print("---------------------")
     try:
         player_data_raw = requests.get(
             url="https://api.hypixel.net/v2/player",

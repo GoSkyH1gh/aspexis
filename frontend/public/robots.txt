@@ -4,4 +4,4 @@ Allow: /
 Allow: /assets/
 Allow: /static/
 
-Sitemap: https://aspexis.netlify.com/sitemap.xml
+Sitemap: https://aspexis.netlify.app/sitemap.xml
