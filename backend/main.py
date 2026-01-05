@@ -48,24 +48,21 @@ app = FastAPI()
 
 # limiter
 
+
 def get_client_ip(request: Request) -> str:
     forwarded = request.headers.get("x-forwarded-for")
     if forwarded:
         return forwarded.split(",")[0].strip()
     return get_remote_address(request)
 
+
 limiter = Limiter(
     key_func=get_client_ip,
-    default_limits=["90/minute", "2_000/day"],
+    default_limits=["60/minute", "2_000/day"],
 )
 
 app.state.limiter = limiter
 app.add_middleware(SlowAPIMiddleware)
-@app.exception_handler(RateLimitExceeded)
-async def rate_limit_handler(
-    request: Request, exc: RateLimitExceeded
-):
-    return exceptions.TooManyRequests()
 
 origins = [
     "https://aspexis.netlify.app",
@@ -79,7 +76,6 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["Authorization", "Content-Type"],
 )
-
 
 
 @app.middleware("http")
@@ -138,9 +134,11 @@ def health_check():
 def get_profile(username, session: Session = Depends(get_db)) -> MojangData:
     return get_minecraft_data(username, session)
 
+
 @app.get("/v1/players/capes/{uuid}")
 def get_capes(uuid: str) -> List[UserCapeData]:
     return get_capes_for_user(uuid)
+
 
 @app.get(
     "/v1/players/hypixel/{uuid}",
