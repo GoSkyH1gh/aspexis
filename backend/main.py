@@ -35,7 +35,10 @@ from typing import List, Annotated
 import time
 from telemetry_manager import add_telemetry_event
 from capes import get_capes_for_user, UserCapeData
-
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+from slowapi import Limiter
+from slowapi.middleware import SlowAPIMiddleware
 
 load_dotenv()
 
@@ -43,15 +46,40 @@ hypixel_api_key = os.getenv("hypixel_api_key")
 
 app = FastAPI()
 
-origins = ["*"]
+# limiter
+
+def get_client_ip(request: Request) -> str:
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return get_remote_address(request)
+
+limiter = Limiter(
+    key_func=get_client_ip,
+    default_limits=["90/minute", "2_000/day"],
+)
+
+app.state.limiter = limiter
+app.add_middleware(SlowAPIMiddleware)
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_handler(
+    request: Request, exc: RateLimitExceeded
+):
+    return exceptions.TooManyRequests()
+
+origins = [
+    "https://aspexis.netlify.app",
+    "http://localhost:5173",
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # List of allowed origins
-    allow_credentials=True,  # Allow cookies, authorization headers, etc.
-    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
-    allow_headers=["*"],  # Allow all headers
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["Authorization", "Content-Type"],
 )
+
 
 
 @app.middleware("http")

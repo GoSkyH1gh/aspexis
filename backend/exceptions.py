@@ -60,6 +60,13 @@ class InvalidUserUUID(HTTPException):
             detail="UUID couldn't be proccessed. Make sure you are using the undashed format.",
         )
 
+class TooManyRequests(HTTPException):
+    def __init__(self):
+        super().__init__(
+            status_code=429,
+            detail="Too many requests",
+        )
+
 class InvalidCache(BaseException):
     def __init__(self, *args):
         super().__init__(*args)
