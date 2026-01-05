@@ -58,8 +58,9 @@ def get_client_ip(request: Request) -> str:
 
 limiter = Limiter(
     key_func=get_client_ip,
-    application_limits=["60/minute"],
-    default_limits=["30/minute"],
+    strategy="moving-window",
+    application_limits=["600/10 minutes", "2000/hour", "10000/day"],
+    default_limits=["100/minute"],
 )
 
 app.state.limiter = limiter
