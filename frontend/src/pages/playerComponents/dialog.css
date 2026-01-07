@@ -111,6 +111,7 @@
 
 .ToastTitle {
   text-align: center;
+  font-style: 1.2rem;
 }
 
 .ToastRoot[data-state="open"] {
@@ -185,4 +186,15 @@
   background-color: transparent;
   backdrop-filter: none;
   transition: none;
+}
+
+
+.ToastError {
+  background-color: rgba(255, 0, 0, 0.2);
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  margin-top: 20px;
 }
