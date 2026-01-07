@@ -149,7 +149,7 @@ def get_core_hypixel_data(
 
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 403:
-            logger.error(f"Invalid API key: {e}\nerror message: {player_data_raw.json()}")
+            logger.error(f"Invalid API key: {e}\nerror message: {player_data_raw.text}")
             raise exceptions.ServiceAPIKeyError()
         else:
             logger.error(f"HTTP error occurred: {e}")
