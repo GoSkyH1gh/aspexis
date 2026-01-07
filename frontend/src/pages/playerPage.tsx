@@ -7,18 +7,9 @@ import SearchRow from "./playerComponents/searchRow";
 import LoadingIndicator from "./playerComponents/loadingIndicator";
 import AdvancedInfoTabs from "./playerComponents/advancedInfoTabs";
 import { usePrefetch } from "../utils/usePrefetch";
-import {
-  HypixelFullData,
-  PlayerSummary,
-  GuildInfo,
-  DonutPlayerStats,
-  McciPlayer,
-  HypixelGuildMemberFull,
-  MojangData,
-  UserCapeData,
-} from "../client";
+import { HypixelGuildMemberFull } from "../client";
 import { LuSearchX } from "react-icons/lu";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import {
   fetchMojang,
   fetchCapes,
@@ -39,14 +30,6 @@ export function PlayerPage() {
     () => import("./playerComponents/distributionChart"),
     () => import("./playerComponents/skinViewer"),
   ]);
-
-  useEffect(() => setHypixelGuildPage(0), [username]);
-
-  const [accumulatedGuildMembers, setAccumulatedGuildMembers] = useState<
-    HypixelGuildMemberFull[] | null
-  >(null);
-
-  const [hypixelGuildPage, setHypixelGuildPage] = useState(0);
 
   const mojangQuery = useQuery({
     queryKey: ["mojang", username],
@@ -69,29 +52,15 @@ export function PlayerPage() {
     enabled: !!uuid,
   });
 
-  const hypixelGuildQuery = useQuery({
-    queryKey: ["hypixelGuild", hypixelQuery.data?.guild?.id, hypixelGuildPage],
-    queryFn: () =>
-      fetchHypixelGuild(
-        hypixelQuery.data?.guild?.id,
-        20,
-        hypixelGuildPage * 20
-      ),
+  const hypixelGuildQuery = useInfiniteQuery({
+    queryKey: ["hypixelGuild", hypixelQuery.data?.guild?.id],
+    queryFn: ({ pageParam = 0 }) =>
+      fetchHypixelGuild(hypixelQuery.data?.guild?.id, 20, pageParam * 20),
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.length === 20 ? allPages.length : undefined,
     enabled: !!hypixelQuery.data?.guild?.id,
+    initialPageParam: 0,
   });
-
-  useEffect(() => {
-    if (hypixelGuildQuery.data) {
-      setAccumulatedGuildMembers((prev) => {
-        if (!prev) return hypixelGuildQuery.data;
-        return [...prev, ...hypixelGuildQuery.data];
-      });
-    }
-  }, [hypixelGuildQuery.data]);
-
-  useEffect(() => {
-    setAccumulatedGuildMembers(null);
-  }, [username]);
 
   const wynncraftQuery = useQuery({
     queryKey: ["wynncraft", uuid],
@@ -164,7 +133,7 @@ export function PlayerPage() {
       {hypixelQuery.isPending && mojangQuery.data && <LoadingIndicator />}
 
       {/* Hypixel data loaded */}
-      {hypixelQuery.data && mojangQuery.data && (
+      {loadedTabs.length >= 1 && mojangQuery.data && (
         <div>
           {hypixelQuery.data && (
             <QuickInfo
@@ -174,10 +143,7 @@ export function PlayerPage() {
           )}
           <AdvancedInfoTabs
             hypixelData={hypixelQuery.data}
-            hypixelGuildData={accumulatedGuildMembers}
-            hypixelGuildLoading={hypixelGuildQuery.isLoading}
-            hypixelGuildPage={hypixelGuildPage}
-            setHypixelGuildPage={setHypixelGuildPage}
+            hypixelGuildQuery={hypixelGuildQuery}
             hypixelStatus={hypixelQuery.status}
             wynncraftData={wynncraftQuery.data}
             wynncraftStatus={wynncraftQuery.status}

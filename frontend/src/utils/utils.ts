@@ -119,3 +119,29 @@ export {
   formatISOToDistance,
   toProperCase,
 };
+
+import { useState } from "react";
+
+export function useStaticInfiniteQuery<T>(
+  allItems: T[],
+  pageSize: number
+) {
+  const [pageCount, setPageCount] = useState(1);
+
+  const pages = Array.from({ length: pageCount }, (_, i) =>
+    allItems.slice(i * pageSize, (i + 1) * pageSize)
+  );
+
+  const hasNextPage = pageCount * pageSize < allItems.length;
+
+  return {
+    data: { pages },
+    hasNextPage,
+    isFetchingNextPage: false,
+    fetchNextPage: () => {
+      if (hasNextPage) {
+        setPageCount((prev) => prev + 1);
+      }
+    },
+  };
+}

@@ -1,35 +1,12 @@
 import { useEffect, useState } from "react";
-import {
-  getFavorites,
-  Favorite,
-  deleteFavorite,
-  favoritesKey,
-} from "../utils/favorites";
-import { MojangData } from "../client";
+import { getFavorites, Favorite, deleteFavorite } from "../utils/favorites";
 import { MdDeleteOutline, MdOutlineSearch } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { loadingSkin } from "./sampleData";
 import { formatISOToDistance } from "../utils/utils";
-
-function loadMojangData(uuid: string, setMojangData: Function) {
-  const baseUrl = import.meta.env.VITE_API_URL;
-
-  async function fetchMojangData() {
-    if (uuid) {
-      const mojangResponseRaw = await fetch(
-        `${baseUrl}/v1/players/mojang/${uuid}`
-      );
-      if (!mojangResponseRaw.ok) {
-        setMojangData("error");
-      } else {
-        const mojangResponse = await mojangResponseRaw.json();
-        setMojangData(mojangResponse);
-      }
-    }
-  }
-  fetchMojangData();
-}
+import { useQuery } from "@tanstack/react-query";
+import { fetchMojang } from "../utils/queries";
 
 function FavoriteElement({
   uuid,
@@ -43,13 +20,11 @@ function FavoriteElement({
   setFavorites: React.Dispatch<React.SetStateAction<Favorite[]>>;
 }) {
   const navigator = useNavigate();
-  const [mojangData, setMojangData] = useState<MojangData | null | "error">(
-    null
-  );
-  useEffect(() => {
-    loadMojangData(uuid, setMojangData);
-  }, []);
-  if (mojangData === "error") {
+  const mojangQuery = useQuery({
+    queryKey: ["mojang", uuid],
+    queryFn: () => fetchMojang(uuid),
+  });
+  if (mojangQuery.isError) {
     return <li key={uuid}>Coudn't load {username}</li>;
   }
   return (
@@ -60,17 +35,18 @@ function FavoriteElement({
     >
       <img
         src={
-          mojangData?.skin_showcase_b64
-            ? "data:image/png;base64," + mojangData.skin_showcase_b64
+          mojangQuery.data?.skin_showcase_b64
+            ? "data:image/png;base64," + mojangQuery.data.skin_showcase_b64
             : loadingSkin
         }
         alt={`${username}'s skin`}
       />
       <div className="favorite-content">
-        <h2 className="username">{mojangData?.username || username}</h2>
+        <h2 className="username">{mojangQuery.data?.username || username}</h2>
         <p className="info-card-label">added {formatISOToDistance(addedOn)}</p>
         <div className="favorite-action-container">
-          <motion.button aria-description="Remove from favorites"
+          <motion.button
+            aria-description="Remove from favorites"
             initial={{ scale: 1 }}
             whileHover={{ scale: 1.3 }}
             whileTap={{ scale: 0.9 }}
@@ -82,7 +58,8 @@ function FavoriteElement({
           >
             <MdDeleteOutline display={"flex"} />
           </motion.button>
-          <motion.button aria-description={`Search ${username}`}
+          <motion.button
+            aria-description={`Search ${username}`}
             initial={{ scale: 1, backgroundColor: "#F4F077" }}
             whileHover={{ scale: 1.3, backgroundColor: "#f8d563ff" }}
             whileTap={{ scale: 0.9 }}

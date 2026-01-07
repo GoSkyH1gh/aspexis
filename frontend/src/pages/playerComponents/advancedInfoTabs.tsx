@@ -1,12 +1,12 @@
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import WynncraftTabbedData from "./wynncraftTabbedData";
 import DonutTabbedData from "./donutTabbedData";
 import McciTabbedData from "./mcciTabbedData";
 import HypixelTabbedData from "./hypixelTabbedData";
+import LoadingIndicator from "./loadingIndicator";
 import {
   HypixelFullData,
-  HypixelGuildMemberFull,
   PlayerSummary,
   GuildInfo,
   DonutPlayerStats,
@@ -14,12 +14,9 @@ import {
 } from "../../client";
 
 type AdvancedInfoProps = {
-  hypixelData: HypixelFullData;
-  hypixelGuildData: HypixelGuildMemberFull[] | null;
-  hypixelStatus: "error" | "success";
-  hypixelGuildPage: number;
-  setHypixelGuildPage: React.Dispatch<React.SetStateAction<number>>;
-  hypixelGuildLoading: boolean;
+  hypixelData: HypixelFullData | null | undefined;
+  hypixelStatus: "error" | "success" | "pending";
+  hypixelGuildQuery: any; // UseInfiniteQueryResult with InfiniteData wrapper
   wynncraftData: PlayerSummary | undefined | null;
   wynncraftStatus: "pending" | "error" | "success";
   wynncraftGuildData: GuildInfo | null | undefined;
@@ -33,10 +30,7 @@ type AdvancedInfoProps = {
 
 function AdvancedInfoTabs({
   hypixelData,
-  hypixelGuildData,
-  hypixelGuildPage,
-  setHypixelGuildPage,
-  hypixelGuildLoading,
+  hypixelGuildQuery,
   hypixelStatus,
   wynncraftData,
   wynncraftStatus,
@@ -49,14 +43,29 @@ function AdvancedInfoTabs({
   uuid,
 }: AdvancedInfoProps) {
   const [selectedTab, setSelectedTab] = useState<string | undefined>(undefined);
-  if (selectedTab === undefined && loadedTabs.length > 0) {
-    setSelectedTab(loadedTabs[0]);
-  }
+  const TAB_PRIORITY = ["hypixel", "wynncraft", "donut", "mcci"] as const;
+  const hasAutoSelected = useRef(false);
+
+  useEffect(() => {
+    if (hasAutoSelected.current) return;
+
+    const timeout = setTimeout(() => {
+      const firstAvailable = TAB_PRIORITY.find((tab) =>
+        loadedTabs.includes(tab)
+      );
+
+      if (firstAvailable) {
+        setSelectedTab(firstAvailable);
+        hasAutoSelected.current = true;
+      }
+    }, 250); // sweet spot: 100–150ms
+
+    return () => clearTimeout(timeout);
+  }, [loadedTabs]);
 
   let tabContents;
   if (selectedTab === "hypixel") {
     {
-      /*
       if (hypixelStatus === "pending") {
         tabContents = (
           <>
@@ -65,17 +74,13 @@ function AdvancedInfoTabs({
           </>
         );
       }
-      */
     }
     if (hypixelStatus === "success") {
       if (hypixelData) {
         tabContents = (
           <HypixelTabbedData
             hypixelData={hypixelData}
-            hypixelGuildData={hypixelGuildData}
-            hypixelGuildPage={hypixelGuildPage}
-            setHypixelGuildPage={setHypixelGuildPage}
-            hypixelGuildLoading={hypixelGuildLoading}
+            hypixelGuildQuery={hypixelGuildQuery}
           />
         );
       }

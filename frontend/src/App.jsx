@@ -5,7 +5,6 @@ import WynncraftGuilds from "./pages/wynnGuilds";
 import Layout from "./pages/layout";
 import TrackerPage from "./pages/trackerPage";
 import FavoritesPage from "./pages/favoritesPage";
-import TanstackPractice from "./pages/tanstackPractice";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 function App() {
@@ -14,6 +13,7 @@ function App() {
       queries: {
         retry: false,
         refetchOnWindowFocus: false,
+        staleTime: 3 * 60 * 1000,
       },
     },
   });
@@ -29,7 +29,6 @@ function App() {
           <Route path="/track/player" element={<TrackerPage />} />
           <Route path="/track/player/:username" element={<TrackerPage />} />
           <Route path="/favorites" element={<FavoritesPage />} />
-          <Route path="/tanstack" element={<TanstackPractice />} />
         </Route>
       </Routes>
     </QueryClientProvider>

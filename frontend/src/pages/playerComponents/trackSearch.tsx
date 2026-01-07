@@ -1,84 +1,60 @@
 import { motion } from "motion/react";
 import SearchRow from "./searchRow";
-import { useParams } from "react-router-dom";
-import { useEffect } from "react";
 import LoadingIndicator from "./loadingIndicator";
 import { MojangData } from "../../client";
+import { UseQueryResult } from "@tanstack/react-query";
 
 type TrackSearchProps = {
   handleStartTrack: () => void;
-  mojangData: MojangData | "loading" | "error" | null;
-  setMojangData: React.Dispatch<React.SetStateAction<any>>
-}
+  mojangQuery: UseQueryResult<MojangData | null, Error>;
+};
 
+function TrackSearch({ handleStartTrack, mojangQuery }: TrackSearchProps) {
+  const mojangData = mojangQuery.data;
 
-function TrackSearch({ handleStartTrack, mojangData, setMojangData }: TrackSearchProps) {
-  const { username } = useParams();
-
-  const baseUrl = import.meta.env.VITE_API_URL;
-
-  async function fetchMojangData() {
-    setMojangData("loading");
-    if (username) {
-      const mojangResponseRaw = await fetch(
-        `${baseUrl}/v1/players/mojang/${username}`
-      );
-      if (!mojangResponseRaw.ok) {
-        setMojangData("error");
-      } else {
-        const mojangResponse = await mojangResponseRaw.json();
-        setMojangData(mojangResponse);
-      }
-    }
-  }
-
-  useEffect(() => {
-    if (username) {
-      fetchMojangData();
-    }
-  }, [username]);
   return (
     <div className="player-tracker">
       <h2>Choose a player to track</h2>
       <SearchRow urlToNavigate="/track/player" />
-      {mojangData === "loading" && <LoadingIndicator />}
-      {mojangData === "error" && (
-        <p>
-          Something went wrong
-          <br />
-          Double check spelling or try again later
-        </p>
+      {mojangQuery.isPending && mojangQuery.fetchStatus !== "idle" && (
+        <LoadingIndicator />
       )}
-      {mojangData != "error" &&
-        mojangData != null &&
-        mojangData != "loading" && (
-          <motion.div
-            className="track-player"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-          >
-            <h2 className="username">{mojangData?.username}</h2>
-            <p className="uuid">uuid: {mojangData?.uuid}</p>
-            <div className="track-flex">
-              <motion.img
-                whileHover={{ scale: 0.9 }}
-                src={"data:image/png;base64," + mojangData?.skin_showcase_b64}
-                className="skin-showcase"
-                alt={mojangData?.username + "'s head"}
-              />
-              <motion.button
-                whileHover={{
-                  borderColor: "#f8d563ff",
-                  backgroundColor: "#f4f07777",
-                }}
-                className="motion-button"
-                onClick={handleStartTrack}
-              >
-                Start Tracking
-              </motion.button>
-            </div>
-          </motion.div>
-        )}
+      {mojangQuery.isError ||
+        (mojangQuery.data === null && (
+          <p>
+            Something went wrong
+            <br />
+            Double check spelling or try again later
+          </p>
+        ))}
+      {mojangQuery.isSuccess && mojangQuery.data !== null && (
+        <motion.div
+          className="track-player"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+        >
+          <h2 className="username">{mojangData?.username}</h2>
+          <p className="uuid">uuid: {mojangData?.uuid}</p>
+          <div className="track-flex">
+            <motion.img
+              whileHover={{ scale: 0.9 }}
+              src={"data:image/png;base64," + mojangData?.skin_showcase_b64}
+              className="skin-showcase"
+              alt={mojangData?.username + "'s head"}
+            />
+            <motion.button
+              whileHover={{
+                borderColor: "#f8d563ff",
+                backgroundColor: "#f4f07777",
+              }}
+              className="motion-button"
+              onClick={handleStartTrack}
+            >
+              Start Tracking
+            </motion.button>
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { formatLogTime, formatSinceLastUpdate } from "../../utils/utils";
 import stopIcon from "/src/assets/stop_circle_icon.svg";
 import { Tooltip } from "radix-ui";
@@ -26,9 +26,12 @@ function TrackPlayer({
   mojangData,
   setTrackStatus,
 }: {
-  mojangData: MojangData;
+  mojangData: MojangData | null | undefined;
   setTrackStatus: React.Dispatch<React.SetStateAction<"search" | "track">>;
 }) {
+  if (!mojangData) {
+    return <p>No mojang data here!</p>;
+  }
   const [history, setHistory] = useState<HistoryEvent[]>([]);
   const [status, setStatus] = useState<"error" | null | SSEData>(null);
   const baseUrl = import.meta.env.VITE_API_URL;

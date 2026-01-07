@@ -18,6 +18,9 @@ import {
   sampleWynncraftResponse,
   sampleCapeResponse,
 } from "./sampleData";
+import { useStaticInfiniteQuery } from "../utils/utils";
+
+const PAGE_SIZE = 10;
 
 function HeroSearchbar() {
   const [searchbarValue, setSerchbarValue] = useState("");
@@ -44,6 +47,10 @@ function HeroSearchbar() {
 export function HomePage() {
   const [sampleState, setSampleState] = useState<any>([]);
   const targetScroll = useRef<HTMLHeadingElement>(null);
+  const staticGuildQuery = useStaticInfiniteQuery(
+    sampleHypixelGuildResponse,
+    PAGE_SIZE
+  );
   return (
     <>
       <div className="hero-background" />
@@ -127,7 +134,7 @@ export function HomePage() {
           <h2 className="features-h2">Go in depth, for every server</h2>
           <AdvancedInfoTabs
             hypixelData={sampleHypixelResponse}
-            hypixelGuildData={sampleHypixelGuildResponse}
+            hypixelGuildQuery={staticGuildQuery}
             hypixelStatus={"success"}
             wynncraftData={sampleWynncraftResponse}
             wynncraftStatus={"success"}
@@ -138,9 +145,6 @@ export function HomePage() {
             mcciStatus={"success"}
             loadedTabs={["hypixel", "wynncraft", "mcci"]}
             uuid={"5f8eb73b25be4c5aa50fd27d65e30ca0"}
-            hypixelGuildLoading={false}
-            hypixelGuildPage={0}
-            setHypixelGuildPage={setSampleState}
           />
         </div>
       </div>

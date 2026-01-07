@@ -14,21 +14,16 @@ import {
 } from "../../client";
 import DistributionChartWrapper from "./distributionChartWrapper";
 import { Icon } from "@iconify/react";
+import { UseInfiniteQueryResult } from "@tanstack/react-query";
 
 type HypixelDataProps = {
   hypixelData: HypixelFullData;
-  hypixelGuildData: HypixelGuildMemberFull[] | null;
-  hypixelGuildPage: number;
-  setHypixelGuildPage: React.Dispatch<React.SetStateAction<number>>;
-  hypixelGuildLoading: boolean;
+  hypixelGuildQuery: any; // UseInfiniteQueryResult with InfiniteData wrapper
 };
 
 function HypixelTabbedData({
   hypixelData,
-  hypixelGuildData,
-  hypixelGuildPage,
-  setHypixelGuildPage,
-  hypixelGuildLoading,
+  hypixelGuildQuery,
 }: HypixelDataProps) {
   const [metricData, setMetricData] = useState(null);
   return (
@@ -83,10 +78,7 @@ function HypixelTabbedData({
       {hypixelData?.guild && (
         <HypixelGuild
           hypixelData={hypixelData}
-          hypixelGuildData={hypixelGuildData}
-          hypixelGuildPage={hypixelGuildPage}
-          setHypixelGuildPage={setHypixelGuildPage}
-          hypixelGuildLoading={hypixelGuildLoading}
+          hypixelGuildQuery={hypixelGuildQuery}
         />
       )}
     </>
@@ -238,17 +230,10 @@ function HypixelBedwarsPopup({ bedwarsData }: { bedwarsData: BedwarsProfile }) {
   );
 }
 
-function HypixelGuild({
-  hypixelData,
-  hypixelGuildData,
-  hypixelGuildPage,
-  setHypixelGuildPage,
-  hypixelGuildLoading
-}: HypixelDataProps) {
+function HypixelGuild({ hypixelData, hypixelGuildQuery }: HypixelDataProps) {
   let navigate = useNavigate();
-  const [guildDisabled, setGuildDisabled] = useState(false);
 
-  if (!hypixelGuildData) {
+  if (!hypixelGuildQuery) {
     return <p>No guild members to show</p>;
   }
 
@@ -256,8 +241,14 @@ function HypixelGuild({
     return <p>No guild to show</p>;
   }
 
-  const loadedAllMembers =
-    hypixelData.guild.members.length <= hypixelGuildData.length;
+  // Access the pages from the infinite query data
+  const guildMembers: HypixelGuildMemberFull[] =
+    hypixelGuildQuery.data?.pages?.flat() ?? [];
+
+  const totalGuildMembers = hypixelData.guild.members.length;
+  const loadedMembersCount = guildMembers.length;
+  const hasNextPage = hypixelGuildQuery.hasNextPage;
+  const isFetchingNextPage = hypixelGuildQuery.isFetchingNextPage;
 
   const handleGuildMemberClick = (username: string) => {
     console.log("searching for " + username);
@@ -265,12 +256,12 @@ function HypixelGuild({
   };
 
   const handleLoadMore = () => {
-    setHypixelGuildPage((p) => p + 1);
+    if (hasNextPage && !isFetchingNextPage) {
+      hypixelGuildQuery.fetchNextPage();
+    }
   };
 
-  
-
-  const hypixelMemberElements = hypixelGuildData.map((member) => (
+  const hypixelMemberElements = guildMembers.map((member) => (
     <li key={member.uuid}>
       <motion.button
         initial={{ scale: 0 }}
@@ -303,18 +294,21 @@ function HypixelGuild({
   return (
     <>
       <h3>{hypixelData?.guild?.name}</h3>
+      <p className="secondary-text">
+        Showing {loadedMembersCount} of {totalGuildMembers} members
+      </p>
       <ul className="guild-list">{hypixelMemberElements}</ul>
-      {!loadedAllMembers && (
+      {hasNextPage && (
         <div className="load-more-container">
           <motion.button
             className="load-more-button"
             initial={{ scale: 1, backgroundColor: "#F4F077" }}
             whileHover={{ scale: 1.3, backgroundColor: "#f8d563" }}
-            disabled={hypixelGuildLoading}
+            disabled={isFetchingNextPage}
             onClick={handleLoadMore}
           >
-            {!hypixelGuildLoading && "Load more"}
-            {hypixelGuildLoading && "Loading..."}
+            {!isFetchingNextPage && "Load more"}
+            {isFetchingNextPage && "Loading..."}
           </motion.button>
         </div>
       )}
