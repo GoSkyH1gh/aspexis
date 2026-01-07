@@ -16,8 +16,8 @@ import CapeGallery from "./capeGallery.js";
 
 type MojangProps = {
   mojangResponse: MojangData;
-  capeData: UserCapeData[] | null | "not found" | "error";
-  capeStatus: null | "loading" | "loaded";
+  capeData: UserCapeData[] | null | undefined;
+  capeStatus: "error" | "success" | "pending";
 };
 
 function MojangDataDisplay({
@@ -107,7 +107,7 @@ function MojangDataDisplay({
             username={mojangResponse.username}
             key={"skin-view"}
           />
-          {capeStatus === "loaded" && capeData !== "not found" && (
+          {capeStatus === "success" && capeData !== null && (
             <CapeGallery
               capeData={capeData}
               capeStatus={capeStatus}

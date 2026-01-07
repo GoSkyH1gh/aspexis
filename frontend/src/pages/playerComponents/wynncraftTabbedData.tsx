@@ -13,7 +13,7 @@ import { PlayerSummary, GuildInfo } from "../../client";
 
 type WynncraftProps = {
   wynncraftData: PlayerSummary;
-  wynncraftGuildData: GuildInfo | "no guild" | null;
+  wynncraftGuildData: GuildInfo | null | undefined
 };
 
 function WynncraftTabbedData({
@@ -23,7 +23,7 @@ function WynncraftTabbedData({
   const [metricData, setMetricData] = useState(null);
 
   let wynnGuildElements;
-  if (wynncraftGuildData != "no guild") {
+  if (wynncraftGuildData) {
     wynnGuildElements = (
       <>
         <h3>{wynncraftData.guild_name}</h3>

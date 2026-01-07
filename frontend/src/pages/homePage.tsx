@@ -112,7 +112,7 @@ export function HomePage() {
             <MojangDataDisplay
               mojangResponse={sampleMojangResponse}
               capeData={sampleCapeResponse}
-              capeStatus={"loaded"}
+              capeStatus={"success"}
             />
           </div>
           <div className="info-card-showcase">
@@ -126,20 +126,21 @@ export function HomePage() {
           </div>
           <h2 className="features-h2">Go in depth, for every server</h2>
           <AdvancedInfoTabs
-            hypixelResponse={sampleHypixelResponse}
-            hypixelGuildResponse={sampleHypixelGuildResponse}
-            hypixelStatus={"loaded"}
+            hypixelData={sampleHypixelResponse}
+            hypixelGuildData={sampleHypixelGuildResponse}
+            hypixelStatus={"success"}
             wynncraftData={sampleWynncraftResponse}
-            wynncraftStatus={"loaded"}
+            wynncraftStatus={"success"}
             wynncraftGuildData={sampleWynncraftGuildResponse}
-            donutData={"not found"}
-            donutStatus={"loaded"}
+            donutData={null}
+            donutStatus={"success"}
             mcciData={sampleMCCIResponse}
-            mcciStatus={"loaded"}
+            mcciStatus={"success"}
             loadedTabs={["hypixel", "wynncraft", "mcci"]}
             uuid={"5f8eb73b25be4c5aa50fd27d65e30ca0"}
-            fetchHypixelGuildMembers={() => {}}
-            setHypixelGuildData={setSampleState}
+            hypixelGuildLoading={false}
+            hypixelGuildPage={0}
+            setHypixelGuildPage={setSampleState}
           />
         </div>
       </div>

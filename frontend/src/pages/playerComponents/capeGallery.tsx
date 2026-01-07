@@ -4,23 +4,23 @@ import { Icon } from "@iconify/react";
 import { motion } from "motion/react";
 
 type CapeGalleryProps = {
-  capeData: UserCapeData[] | null | "not found" | "error";
-  capeStatus: null | "loading" | "loaded";
+  capeData: UserCapeData[] | null | undefined;
+  capeStatus: "error" | "success" | "pending";
 };
 
 function CapeGallery({ capeData, capeStatus }: CapeGalleryProps) {
   let capeElements;
-  if (capeData === null) {
+  if (capeData === undefined) {
     capeElements = <p>There's nothing to show here</p>;
-  } else if (capeData === "not found") {
+  } else if (capeData === null) {
     capeElements = <p>No capes were found for this player</p>;
-  } else if (capeData === "error") {
+  } else if (capeStatus === "error") {
     capeElements = <p>Something went wrong while fetching capes</p>;
   } else {
     capeElements = capeData.map((cape) => <CapeElement cape={cape} />);
   }
 
-  if (capeStatus === "loading") {
+  if (capeStatus === "pending") {
     <p>Loading capes...</p>;
   }
   // ^^^ these should never happen because the button is only shown when this is loaded and there is content

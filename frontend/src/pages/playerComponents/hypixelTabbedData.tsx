@@ -17,16 +17,18 @@ import { Icon } from "@iconify/react";
 
 type HypixelDataProps = {
   hypixelData: HypixelFullData;
-  hypixelGuildData: HypixelGuildMemberFull[] | "no guild" | null;
-  fetchHypixelGuildMembers: any;
-  setHypixelGuildData: any;
+  hypixelGuildData: HypixelGuildMemberFull[] | null;
+  hypixelGuildPage: number;
+  setHypixelGuildPage: React.Dispatch<React.SetStateAction<number>>;
+  hypixelGuildLoading: boolean;
 };
 
 function HypixelTabbedData({
   hypixelData,
   hypixelGuildData,
-  fetchHypixelGuildMembers,
-  setHypixelGuildData,
+  hypixelGuildPage,
+  setHypixelGuildPage,
+  hypixelGuildLoading,
 }: HypixelDataProps) {
   const [metricData, setMetricData] = useState(null);
   return (
@@ -82,8 +84,9 @@ function HypixelTabbedData({
         <HypixelGuild
           hypixelData={hypixelData}
           hypixelGuildData={hypixelGuildData}
-          fetchHypixelGuildMembers={fetchHypixelGuildMembers}
-          setHypixelGuildData={setHypixelGuildData}
+          hypixelGuildPage={hypixelGuildPage}
+          setHypixelGuildPage={setHypixelGuildPage}
+          hypixelGuildLoading={hypixelGuildLoading}
         />
       )}
     </>
@@ -158,7 +161,9 @@ function HypixelBedwarsPopup({ bedwarsData }: { bedwarsData: BedwarsProfile }) {
         <Dialog.Overlay className="DialogOverlay" />
         <Dialog.Content className="BedwarsOverlay">
           <div className="skin-viewer-header">
-            <Dialog.Title className="gallery-title-text">Bedwars Stats</Dialog.Title>
+            <Dialog.Title className="gallery-title-text">
+              Bedwars Stats
+            </Dialog.Title>
             <Dialog.Close asChild>
               <button className="dialog-close">
                 <Icon icon={"material-symbols:close-rounded"} />
@@ -236,8 +241,9 @@ function HypixelBedwarsPopup({ bedwarsData }: { bedwarsData: BedwarsProfile }) {
 function HypixelGuild({
   hypixelData,
   hypixelGuildData,
-  fetchHypixelGuildMembers,
-  setHypixelGuildData,
+  hypixelGuildPage,
+  setHypixelGuildPage,
+  hypixelGuildLoading
 }: HypixelDataProps) {
   let navigate = useNavigate();
   const [guildDisabled, setGuildDisabled] = useState(false);
@@ -246,7 +252,7 @@ function HypixelGuild({
     return <p>No guild members to show</p>;
   }
 
-  if (!hypixelData.guild || hypixelGuildData === "no guild") {
+  if (!hypixelData.guild) {
     return <p>No guild to show</p>;
   }
 
@@ -258,22 +264,11 @@ function HypixelGuild({
     navigate(`/player/${username}`);
   };
 
-  const handleLoadMore = async () => {
-    if (!guildDisabled) {
-      setGuildDisabled(true);
-      try {
-        await fetchHypixelGuildMembers(
-          hypixelData,
-          setHypixelGuildData,
-          hypixelGuildData.length
-        );
-      } catch (error) {
-        console.error("Failed to load more members:", error);
-      } finally {
-        setGuildDisabled(false);
-      }
-    }
+  const handleLoadMore = () => {
+    setHypixelGuildPage((p) => p + 1);
   };
+
+  
 
   const hypixelMemberElements = hypixelGuildData.map((member) => (
     <li key={member.uuid}>
@@ -315,11 +310,11 @@ function HypixelGuild({
             className="load-more-button"
             initial={{ scale: 1, backgroundColor: "#F4F077" }}
             whileHover={{ scale: 1.3, backgroundColor: "#f8d563" }}
-            disabled={guildDisabled}
+            disabled={hypixelGuildLoading}
             onClick={handleLoadMore}
           >
-            {!guildDisabled && "Load more"}
-            {guildDisabled && "Loading..."}
+            {!hypixelGuildLoading && "Load more"}
+            {hypixelGuildLoading && "Loading..."}
           </motion.button>
         </div>
       )}

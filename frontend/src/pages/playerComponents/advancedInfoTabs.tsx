@@ -1,7 +1,6 @@
 import { motion } from "motion/react";
 import { useState } from "react";
 import WynncraftTabbedData from "./wynncraftTabbedData";
-import LoadingIndicator from "./loadingIndicator";
 import DonutTabbedData from "./donutTabbedData";
 import McciTabbedData from "./mcciTabbedData";
 import HypixelTabbedData from "./hypixelTabbedData";
@@ -15,41 +14,29 @@ import {
 } from "../../client";
 
 type AdvancedInfoProps = {
-  hypixelResponse:
-    | HypixelFullData
-    | null
-    | "not found"
-    | "not found (server error)";
-  hypixelGuildResponse: HypixelGuildMemberFull[] | "no guild" | null;
-  fetchHypixelGuildMembers: (
-    hypixelResponse: HypixelFullData,
-    setHypixelGuildData: React.Dispatch<React.SetStateAction<HypixelGuildMemberFull[] | "no guild" | null>>,
-    offset: number
-  ) => void;
-  setHypixelGuildData: React.Dispatch<
-    React.SetStateAction<HypixelGuildMemberFull[] | null | "no guild">
-  >;
-  hypixelStatus: null | "loading" | "playerLoaded" | "loaded";
-  wynncraftData:
-    | PlayerSummary
-    | "not found"
-    | "not found (server error)"
-    | null;
-  wynncraftStatus: null | "loading" | "playerLoaded" | "loaded";
-  wynncraftGuildData: GuildInfo | "no guild" | null;
-  donutData: DonutPlayerStats | "not found" | null | "error";
-  donutStatus: null | "loading" | "loaded";
-  mcciData: McciPlayer | null | "not found" | "error";
-  mcciStatus: null | "loading" | "loaded";
+  hypixelData: HypixelFullData;
+  hypixelGuildData: HypixelGuildMemberFull[] | null;
+  hypixelStatus: "error" | "success";
+  hypixelGuildPage: number;
+  setHypixelGuildPage: React.Dispatch<React.SetStateAction<number>>;
+  hypixelGuildLoading: boolean;
+  wynncraftData: PlayerSummary | undefined | null;
+  wynncraftStatus: "pending" | "error" | "success";
+  wynncraftGuildData: GuildInfo | null | undefined;
+  donutData: DonutPlayerStats | null | undefined;
+  donutStatus: "pending" | "success" | "error";
+  mcciData: McciPlayer | null | undefined;
+  mcciStatus: "pending" | "success" | "error";
   loadedTabs: string[];
   uuid: string;
 };
 
 function AdvancedInfoTabs({
-  hypixelResponse,
-  hypixelGuildResponse,
-  fetchHypixelGuildMembers,
-  setHypixelGuildData,
+  hypixelData,
+  hypixelGuildData,
+  hypixelGuildPage,
+  setHypixelGuildPage,
+  hypixelGuildLoading,
   hypixelStatus,
   wynncraftData,
   wynncraftStatus,
@@ -68,38 +55,35 @@ function AdvancedInfoTabs({
 
   let tabContents;
   if (selectedTab === "hypixel") {
-    if (hypixelStatus === "playerLoaded") {
-      tabContents = (
-        <>
-          <br />
-          <LoadingIndicator />
-        </>
-      );
+    {
+      /*
+      if (hypixelStatus === "pending") {
+        tabContents = (
+          <>
+            <br />
+            <LoadingIndicator />
+          </>
+        );
+      }
+      */
     }
-    if (hypixelStatus === "loaded") {
-      if (
-        hypixelResponse &&
-        hypixelResponse !== "not found" &&
-        hypixelResponse !== "not found (server error)"
-      ) {
+    if (hypixelStatus === "success") {
+      if (hypixelData) {
         tabContents = (
           <HypixelTabbedData
-            hypixelData={hypixelResponse}
-            hypixelGuildData={hypixelGuildResponse}
-            setHypixelGuildData={setHypixelGuildData}
-            fetchHypixelGuildMembers={fetchHypixelGuildMembers}
+            hypixelData={hypixelData}
+            hypixelGuildData={hypixelGuildData}
+            hypixelGuildPage={hypixelGuildPage}
+            setHypixelGuildPage={setHypixelGuildPage}
+            hypixelGuildLoading={hypixelGuildLoading}
           />
         );
       }
     }
   } else if (selectedTab === "wynncraft") {
-    if (wynncraftStatus === "loaded") {
-      if (wynncraftData === "not found") {
-        tabContents = <p>Wynncraft data not found for player</p>;
-      } else if (wynncraftData === null) {
+    if (wynncraftStatus === "success") {
+      if (!wynncraftData) {
         tabContents = <p>No data to show</p>;
-      } else if (wynncraftData === "not found (server error)") {
-        tabContents = <p>Wynncraft data unavailable due to server error</p>;
       } else {
         tabContents = (
           <WynncraftTabbedData
@@ -108,19 +92,19 @@ function AdvancedInfoTabs({
           />
         );
       }
-    } else if (wynncraftStatus === "loading") {
+    } else if (wynncraftStatus === "pending") {
       tabContents = <p>Loading Wynncraft data...</p>;
     }
   } else if (selectedTab === "donut") {
-    if (donutStatus === "loading") {
+    if (donutStatus === "pending") {
       tabContents = <p>loading donut data...</p>;
-    } else if (donutStatus === "loaded") {
+    } else if (donutStatus === "success") {
       tabContents = <DonutTabbedData donutData={donutData} uuid={uuid} />;
     }
   } else if (selectedTab === "mcci") {
-    if (mcciStatus === "loading") {
+    if (mcciStatus === "pending") {
       tabContents = <p>loading MCC Island data...</p>;
-    } else if (mcciStatus === "loaded") {
+    } else if (mcciStatus === "success") {
       tabContents = <McciTabbedData mcciData={mcciData} />;
     }
   }

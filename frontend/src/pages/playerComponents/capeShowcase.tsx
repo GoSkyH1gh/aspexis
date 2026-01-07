@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type CapeShowcaseProps = {
   cape_showcase_b64: string | null;
@@ -17,6 +17,11 @@ function CapeShowcase({
   const defaultCapePath = "data:image/png;base64," + cape_showcase_b64;
   const hoveredCapePath = "data:image/png;base64," + cape_back_b64;
   const [currentImage, setCurrentImage] = useState(defaultCapePath);
+
+  useEffect(() => {
+    setCurrentImage(defaultCapePath);
+  }, [cape_showcase_b64, cape_back_b64]);
+
   const handleMouseEnter = () => {
     setCurrentImage(hoveredCapePath);
   };
