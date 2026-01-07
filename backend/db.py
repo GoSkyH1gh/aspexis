@@ -13,6 +13,15 @@ engine = create_engine(
     connect_args={"sslmode": "require"},
     echo=False,
     pool_pre_ping=True,
+    pool_size=15,        # persistent connections
+    max_overflow=15,     # temporary burst connections
+    pool_timeout=30,     # seconds to wait before error
+)
+
+SessionLocal = sessionmaker(
+    bind=engine,
+    autoflush=False,
+    autocommit=False,
 )
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)

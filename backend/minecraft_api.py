@@ -1,5 +1,6 @@
 from utils import pillow_to_b64, check_valid_uuid
 import requests
+import re
 import json
 import base64
 import io
@@ -113,6 +114,9 @@ class GetMojangAPIData:
         """
         receives uuid based on username
         """
+        if self.username is None or not re.match(r"^[a-zA-Z0-9_]{1,16}$", self.username):
+            raise exceptions.NotFound()
+
         try:
             uuid_response_raw = self.session.get(
                 f"https://api.minecraftservices.com/minecraft/profile/lookup/name/{self.username}",
@@ -123,7 +127,7 @@ class GetMojangAPIData:
             uuid_response: dict = uuid_response_raw.json()
 
         except requests.exceptions.HTTPError as e:
-            if uuid_response_raw.status_code == 404:
+            if uuid_response_raw.status_code in [400, 404]:
                 raise exceptions.NotFound()
             logger.error(f"HTTP error occurred: {e}")
             raise exceptions.UpstreamError()

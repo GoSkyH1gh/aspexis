@@ -69,7 +69,7 @@ function SearchRow({ disabled, urlToNavigate }: SearchRow) {
 
   const handleSearchClick = () => {
     if (!disabled) {
-      navigate(`${urlToNavigate}/${inputValue.trim()}`);
+      navigate(`${urlToNavigate}/${encodeURIComponent(inputValue.trim())}`);
     }
   };
 

@@ -33,7 +33,7 @@ function HeroSearchbar() {
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            navigate(`/player/${searchbarValue.trim()}`);
+            navigate(`/player/${encodeURIComponent(searchbarValue.trim())}`);
           }
         }}
       ></input>

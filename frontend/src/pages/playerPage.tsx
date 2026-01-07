@@ -125,7 +125,7 @@ export function PlayerPage() {
     const capesUrl = `${baseUrl}/v1/players/capes/`;
 
     try {
-      let mojangResponseRaw = await fetch(mojangUrl + search_term);
+      let mojangResponseRaw = await fetch(mojangUrl + encodeURIComponent(search_term));
       if (mojangResponseRaw.status == 404) {
         setStatus("notFound");
         throw new Error("Player not found");
