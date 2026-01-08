@@ -113,6 +113,7 @@ def root():
 
 
 @app.get("/healthz")
+@limiter.exempt
 def health_check():
     return {"status": "ok"}
 
