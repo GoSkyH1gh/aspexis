@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import "./playerPage.css";
 import { useParams } from "react-router-dom";
 import MojangDataDisplay from "./playerComponents/mojangDataDisplay";
@@ -7,7 +6,6 @@ import SearchRow from "./playerComponents/searchRow";
 import LoadingIndicator from "./playerComponents/loadingIndicator";
 import AdvancedInfoTabs from "./playerComponents/advancedInfoTabs";
 import { usePrefetch } from "../utils/usePrefetch";
-import { HypixelGuildMemberFull } from "../client";
 import { LuSearchX } from "react-icons/lu";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import {

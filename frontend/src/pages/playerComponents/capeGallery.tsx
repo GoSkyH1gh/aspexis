@@ -39,6 +39,7 @@ function CapeGallery({ capeData, capeStatus }: CapeGalleryProps) {
           }}
           className="skin-button fill-button tooltip"
           data-tooltip="View Cape Gallery"
+          aria-label="View Cape Gallery"
         >
           <Icon icon={"material-symbols:grid-view-outline-rounded"} />
         </motion.button>
