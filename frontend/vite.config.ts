@@ -10,9 +10,10 @@ export default defineConfig({
       registerType: "autoUpdate",
       manifest: {
         name: "Aspexis",
+        short_name: "Aspexis",
         description: "A minecraft player lookup tool",
-        theme_color: "#F4F077",
-        background_color: "#F4EAE3",
+        theme_color: "#3D356F",
+        background_color: "#41284e",
         display: "standalone",
         scope: "/",
         start_url: "/",
