@@ -18,10 +18,10 @@
 
 /* 1. Rubik (Primary - Body, Links, Hero) */
 @font-face {
-  font-family: 'Rubik';
+  font-family: "Rubik";
   /* Ensure the file names match exactly what's in your /public/fonts/ folder */
-  src: url('/fonts/rubik-variable.woff2') format('woff2-variations'),
-       url('/fonts/rubik-variable.woff2') format('woff2'); 
+  src: url("/fonts/rubik-variable.woff2") format("woff2-variations"),
+    url("/fonts/rubik-variable.woff2") format("woff2");
   font-weight: 300 900; /* Covers your 300, 400, 500, 550, 600, 650, and 900 */
   font-style: normal;
   font-display: swap; /* Fixes the 'Red' performance warning */
@@ -29,9 +29,9 @@
 
 /* 2. Epunda Slab (Display - Hero Headers) */
 @font-face {
-  font-family: 'Epunda Slab';
-  src: url('/fonts/epunda-slab-variable.woff2') format('woff2-variations'),
-       url('/fonts/epunda-slab-variable.woff2') format('woff2');
+  font-family: "Epunda Slab";
+  src: url("/fonts/epunda-slab-variable.woff2") format("woff2-variations"),
+    url("/fonts/epunda-slab-variable.woff2") format("woff2");
   font-weight: 300 900; /* Covers your 300, 500, 600, and 900 */
   font-style: normal;
   font-display: swap;
@@ -39,9 +39,9 @@
 
 /* 3. Google Sans Code (Technical - UUID, Stats, Tech Data) */
 @font-face {
-  font-family: 'Google Sans Code';
-  src: url('/fonts/google-sans-code-variable.woff2') format('woff2-variations'),
-       url('/fonts/google-sans-code-variable.woff2') format('woff2');
+  font-family: "Google Sans Code";
+  src: url("/fonts/google-sans-code-variable.woff2") format("woff2-variations"),
+    url("/fonts/google-sans-code-variable.woff2") format("woff2");
   font-weight: 300 800; /* Covers your 300, 400, and 800 */
   font-style: normal;
   font-display: swap;
@@ -145,7 +145,6 @@ button:focus-visible {
   }
 }
 
-
 @media screen and (width < 750px) {
   .sidebar {
     width: auto;
@@ -172,7 +171,6 @@ button:focus-visible {
     justify-content: center;
   }
 
-
   .app-container {
     flex-direction: column;
     align-items: center;
@@ -186,6 +184,7 @@ button:focus-visible {
 @media screen and (width < 500px) {
   .app-container {
     margin: 0 10px;
+    width: 100%;
   }
 }
 
@@ -271,11 +270,53 @@ h1 {
   animation-name: slideUpAndFade;
 }
 
-
 h2 {
   font-weight: 600;
 }
 
 h3 {
   font-weight: 550;
+}
+
+.passthrough-div {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 100vh;
+}
+
+footer {
+  font-size: 0.7rem;
+  margin-top: 20px;
+  padding: 25px;
+}
+
+.hero-footer {
+  background-color: var(--color-surface-layer-1);
+  border: 1px solid var(--color-surfact-layer-2);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  padding: 25px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  margin: 0 auto 1rem auto;
+}
+
+.footer-links {
+  font-size: 1rem;
+  display: flex;
+  justify-content: space-around;
+}
+
+.social-link {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.social-link > img,
+.social-link > svg {
+  height: 2.4rem;
+  width: 2.4rem;
 }

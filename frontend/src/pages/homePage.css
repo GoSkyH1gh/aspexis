@@ -93,11 +93,7 @@
   align-items: center;
 }
 
-footer {
-  font-size: small;
-  margin-top: 20px;
-  box-sizing: border-box;
-}
+
 
 .hero-background {
   display: flex;
@@ -224,12 +220,6 @@ footer {
   text-align: justify;
 }
 
-.hero-footer {
-  background: linear-gradient(to left, #be77f4, #a130f6);
-  padding: 15px;
-  border-radius: 10px;
-}
-
 @keyframes gradient-left {
   0% {
     opacity: 0.5;
@@ -321,4 +311,22 @@ a:hover {
 
 .wordmark:hover {
   font-weight: 400;
+}
+
+.purple-orange-gradient,
+.yellow-gradient {
+  animation: floaty 9s ease-in-out infinite;
+}
+
+@keyframes floaty {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(24px, -20px) scale(1.04); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .purple-orange-gradient,
+  .yellow-gradient {
+    animation: none;
+  }
 }

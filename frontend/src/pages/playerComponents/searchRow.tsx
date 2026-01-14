@@ -49,6 +49,7 @@ function SearchButtonProps({ onClick, disabled }: SearchButtonProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeInOut", delay: 0.2 }}
+      aria-label="Search"
     >
       <Icon icon="material-symbols:search-rounded"/>
     </motion.button>

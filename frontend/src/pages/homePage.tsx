@@ -148,24 +148,6 @@ export function HomePage() {
           />
         </div>
       </div>
-      <footer className="hero-footer">
-        Not associated with Mojang, Hypixel, Wynncraft, Donut SMP, nor MCC
-        Island. <br />
-        &lt;3 to{" "}
-        <a href="https://vzge.me" target="_blank">
-          VGZE
-        </a>
-        , which renders some player heads <br />
-        Check it out on{" "}
-        <a href="https://github.com/GoSkyH1gh/aspexis" target="_blank">
-          GitHub
-        </a>{" "}
-        <br />
-        See availability at{" "}
-        <a href="https://stats.uptimerobot.com/4SlpKHo4uS" target="_blank">
-          Aspexis Status
-        </a>
-      </footer>
     </>
   );
 }
