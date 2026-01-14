@@ -58,7 +58,7 @@ function AdvancedInfoTabs({
         setSelectedTab(firstAvailable);
         hasAutoSelected.current = true;
       }
-    }, 250); // sweet spot: 100–150ms
+    }, 100); // sweet spot: 100–150ms
 
     return () => clearTimeout(timeout);
   }, [loadedTabs]);
