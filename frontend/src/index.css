@@ -177,9 +177,9 @@ button:focus-visible {
     align-items: center;
     margin: 0;
   }
-  body {
+  /* body {
     overflow: scroll;
-  }
+  } */
 }
 
 @media screen and (width < 500px) {
