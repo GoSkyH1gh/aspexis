@@ -47,12 +47,12 @@ function MojangDataDisplay({
           </h2>
 
           <Tooltip.Provider>
-            <Tooltip.Root delayDuration={100}>
+            <Tooltip.Root delayDuration={50}>
               <Tooltip.Trigger asChild>
                 <motion.button
                   className="icon-button flex"
-                  whileHover={{ scale: 1.3 }}
-                  whileTap={{ scale: 0.9 }}
+                  whileHover={{ scale: 1 }}
+                  whileTap={{ scale: 0.8 }}
                   aria-label={
                     !isFavorite
                       ? `Add ${mojangResponse.username} to Favorites`

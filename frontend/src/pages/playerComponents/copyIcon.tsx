@@ -8,7 +8,7 @@ function CopyIcon({ textToCopy }: { textToCopy: string }) {
   return (
     <Toast.Provider swipeDirection="right">
       <Tooltip.Provider>
-        <Tooltip.Root delayDuration={100}>
+        <Tooltip.Root delayDuration={50}>
           <Tooltip.Trigger asChild>
             <motion.button
               className="icon-button"
@@ -16,8 +16,8 @@ function CopyIcon({ textToCopy }: { textToCopy: string }) {
                 navigator.clipboard.writeText(textToCopy);
                 setOpen(true);
               }}
-              whileHover={{ scale: 1.3 }}
-              whileTap={{ scale: 0.9 }}
+              whileHover={{ scale: 1 }}
+              whileTap={{ scale: 0.7 }}
             >
               <motion.img
                 src={copyIcon}

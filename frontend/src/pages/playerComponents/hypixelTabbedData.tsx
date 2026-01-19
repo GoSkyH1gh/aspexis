@@ -2,7 +2,7 @@ import InfoCard from "./infoCard";
 import { formatValue, handleStatClick } from "../../utils/utils";
 import { Dialog } from "radix-ui";
 import "./dialog.css";
-import { toProperCase } from "../../utils/utils";
+import { toProperCase, formatISOTimestamp } from "../../utils/utils";
 import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { useState } from "react";
@@ -14,7 +14,6 @@ import {
 } from "../../client";
 import DistributionChartWrapper from "./distributionChartWrapper";
 import { Icon } from "@iconify/react";
-import { UseInfiniteQueryResult } from "@tanstack/react-query";
 
 type HypixelDataProps = {
   hypixelData: HypixelFullData;
@@ -37,7 +36,7 @@ function HypixelTabbedData({
             handleStatClick(
               "hypixel_level",
               hypixelData.player.uuid,
-              setMetricData
+              setMetricData,
             )
           }
           value={formatValue(hypixelData.player.network_level)}
@@ -51,7 +50,7 @@ function HypixelTabbedData({
             handleStatClick(
               "hypixel_karma",
               hypixelData.player.uuid,
-              setMetricData
+              setMetricData,
             )
           }
           value={formatValue(hypixelData.player.karma)}
@@ -65,7 +64,7 @@ function HypixelTabbedData({
             handleStatClick(
               "hypixel_achievement_points",
               hypixelData.player.uuid,
-              setMetricData
+              setMetricData,
             )
           }
           value={formatValue(hypixelData.player.achievement_points)}
@@ -144,7 +143,7 @@ function HypixelBedwarsPopup({ bedwarsData }: { bedwarsData: BedwarsProfile }) {
           </div>
           <br />
           {formatValue(bedwarsData.overall_stats.games_played)} games played •{" "}
-          {winrate} winrate
+          Level {bedwarsData.level}
           <br />
           <span className="secondary-text">→ See more</span>
         </motion.button>
@@ -189,35 +188,35 @@ function HypixelBedwarsPopup({ bedwarsData }: { bedwarsData: BedwarsProfile }) {
                     {formatValue(
                       bedwarsData.overall_stats[
                         stat as keyof typeof bedwarsData.overall_stats
-                      ]
+                      ],
                     )}
                   </td>
                   <td className="bedwars-stat-value">
                     {formatValue(
                       bedwarsData.solo_stats[
                         stat as keyof typeof bedwarsData.overall_stats
-                      ]
+                      ],
                     )}
                   </td>
                   <td className="bedwars-stat-value">
                     {formatValue(
                       bedwarsData.duo_stats[
                         stat as keyof typeof bedwarsData.overall_stats
-                      ]
+                      ],
                     )}
                   </td>
                   <td className="bedwars-stat-value">
                     {formatValue(
                       bedwarsData.trio_stats[
                         stat as keyof typeof bedwarsData.overall_stats
-                      ]
+                      ],
                     )}
                   </td>
                   <td className="bedwars-stat-value">
                     {formatValue(
                       bedwarsData.quad_stats[
                         stat as keyof typeof bedwarsData.overall_stats
-                      ]
+                      ],
                     )}
                   </td>
                 </tr>
@@ -284,7 +283,10 @@ function HypixelGuild({ hypixelData, hypixelGuildQuery }: HypixelDataProps) {
           />
           <div>
             <p className="list-username">{member.username}</p>
-            <p className="list-uuid">Click for more info</p>
+            <p className="list-uuid">
+              {member.rank} <br />
+              Joined {formatISOTimestamp(member.joined)}
+            </p>
           </div>
         </div>
       </motion.button>
