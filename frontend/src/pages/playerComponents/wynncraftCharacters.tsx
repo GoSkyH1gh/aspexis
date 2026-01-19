@@ -57,11 +57,23 @@ function CharacterDetails({ character }: { character: CharacterInfo }) {
     <>
       <h3>Stats</h3>
       <ul className="info-card-list">
-        <InfoCard label="Logged In" value={`${formatValue(character.logins)} times`} />
+        <InfoCard
+          label="Logged In"
+          value={`${formatValue(character.logins)} times`}
+        />
         <InfoCard label="Deaths" value={formatValue(character.deaths)} />
-        <InfoCard label="Mobs Killed" value={formatValue(character.mobs_killed)} />
-        <InfoCard label="Chests Opened" value={formatValue(character.chests_opened)} />
-        <InfoCard label="Quests Completed" value={formatValue(character.quests_completed)} />
+        <InfoCard
+          label="Mobs Killed"
+          value={formatValue(character.mobs_killed)}
+        />
+        <InfoCard
+          label="Chests Opened"
+          value={formatValue(character.chests_opened)}
+        />
+        <InfoCard
+          label="Quests Completed"
+          value={formatValue(character.quests_completed)}
+        />
       </ul>
       <h3>Professions</h3>
       <ul className="profession-list">{professionElements}</ul>
@@ -128,7 +140,7 @@ function WynncraftCharacters({
                 {character.gamemodes.map((gamemode) => {
                   if (!(gamemode in modesMap)) {
                     console.log(
-                      "invalid gamemode detected for wynncraft character"
+                      "invalid gamemode detected for wynncraft character",
                     );
                     return <></>;
                   }
@@ -167,8 +179,13 @@ function WynncraftCharacters({
       </motion.button>
     );
   });
+;
 
-  return <ul className="wynncraft-character-list">{mappedCharacters}</ul>;
+  return (
+    <>
+      <ul className="wynncraft-character-list">{mappedCharacters}</ul>
+    </>
+  );
 }
 
 export default WynncraftCharacters;

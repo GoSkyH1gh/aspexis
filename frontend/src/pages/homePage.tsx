@@ -49,17 +49,19 @@ export function HomePage() {
   const targetScroll = useRef<HTMLHeadingElement>(null);
   const staticGuildQuery = useStaticInfiniteQuery(
     sampleHypixelGuildResponse,
-    PAGE_SIZE
+    PAGE_SIZE,
   );
   return (
     <>
       <div className="hero-background" />
-      <img
-        src={PurpleOrangeGradient}
-        className="purple-orange-gradient"
-        alt=""
-      />
-      <img src={YellowGradient} className="yellow-gradient" alt="" />
+      <div className="decorative-layer">
+        <img
+          src={PurpleOrangeGradient}
+          className="purple-orange-gradient"
+          alt=""
+        />
+        <img src={YellowGradient} className="yellow-gradient" alt="" />
+      </div>
       <div className="hero-section">
         <div className="hero-headings">
           <h1 className="wordmark hero-h1">Aspexis</h1>
