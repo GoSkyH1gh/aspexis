@@ -46,7 +46,6 @@ function MojangDataDisplay({
             {mojangResponse.username}
           </h2>
 
-          <Tooltip.Provider>
             <Tooltip.Root delayDuration={50}>
               <Tooltip.Trigger asChild>
                 <motion.button
@@ -85,7 +84,6 @@ function MojangDataDisplay({
                 </Tooltip.Content>
               </Tooltip.Portal>
             </Tooltip.Root>
-          </Tooltip.Provider>
         </div>
         <div className="text-icon uuid-container">
           <p className="uuid">uuid: {mojangResponse.uuid}</p>

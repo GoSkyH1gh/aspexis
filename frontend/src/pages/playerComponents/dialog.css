@@ -200,29 +200,35 @@
 }
 
 .SelectTrigger {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: 4px;
-	padding: 0 15px;
-	font-size: 13px;
-	line-height: 1;
-	height: 35px;
-	gap: 5px;
+  padding: 8px 12px;
+  border: 1px solid #aaa3;
+  border-radius: 6px;
+  background: #aaa1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 150px;
 }
 
-.SelectTrigger:focus {
-	box-shadow: 0 0 0 2px black;
+.SelectContent {
+  background: #aaa1;
+  backdrop-filter: blur(10px);
+  border: 1px solid #aaa1;
+  border-radius: 6px;
+  z-index: 10000;
+}
+
+.SelectViewport {
+  padding: 4px;
 }
 
 .SelectItem {
-	font-size: 13px;
-	line-height: 1;
-	border-radius: 3px;
-	display: flex;
-	align-items: center;
-	height: 25px;
-	padding: 0 35px 0 25px;
-	position: relative;
-	user-select: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.SelectItem:hover {
+  background-color: #aaa2;
 }

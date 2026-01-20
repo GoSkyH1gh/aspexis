@@ -1,5 +1,4 @@
 from metrics_manager import get_engine, text
-from sqlalchemy.orm import Session
 from db import SessionLocal
 
 

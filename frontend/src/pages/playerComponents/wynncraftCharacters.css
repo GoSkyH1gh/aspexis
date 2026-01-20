@@ -1,5 +1,5 @@
 :root {
-  --wynn-green: #55FF55;
+  --wynn-green: #55ff55;
 }
 
 .wynncraft-character-list {
@@ -7,7 +7,6 @@
   gap: 30px;
   padding: 0px;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  
 }
 
 .wynncraft-character-item {
@@ -24,7 +23,7 @@
 }
 
 .wynncraft-character-item:hover {
-  background: rgba(255,255,255,0.10);
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(2px);
 }
 
@@ -44,9 +43,9 @@
 .profession-list {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  overflow-x: scroll;
+  overflow-x: auto;
   padding: 0;
-  gap: 15px
+  gap: 15px;
 }
 
 .wynn-guild-member-list {
@@ -58,7 +57,7 @@
 }
 
 .wynn-guild-member-item:hover {
-  background: rgba(255,255,255,0.10);
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(2px);
 }
 
@@ -78,7 +77,11 @@
 
 .wynn-modes {
   display: flex;
-  gap: 6px
+  gap: 6px;
+  background-color: #aaa5;
+  padding: 5px;
+  border-radius: 5px;
+  width: fit-content;
 }
 
 .wynn-rank {
@@ -113,4 +116,21 @@
   line-height: 1.5;
   padding: 0;
   margin: 0;
+}
+
+
+.wynn-sort-trigger {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  gap: 10px;
+}
+
+.wynn-char-modal {
+  width: 90vw;  
+}
+
+.wynn-char-preview {
+  text-align: center;
+  margin-top: 10px;
 }

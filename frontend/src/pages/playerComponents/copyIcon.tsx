@@ -7,7 +7,6 @@ function CopyIcon({ textToCopy }: { textToCopy: string }) {
   const [open, setOpen] = useState(false);
   return (
     <Toast.Provider swipeDirection="right">
-      <Tooltip.Provider>
         <Tooltip.Root delayDuration={50}>
           <Tooltip.Trigger asChild>
             <motion.button
@@ -32,7 +31,6 @@ function CopyIcon({ textToCopy }: { textToCopy: string }) {
             </Tooltip.Content>
           </Tooltip.Portal>
         </Tooltip.Root>
-      </Tooltip.Provider>
       <Toast.Root
         open={open}
         onOpenChange={setOpen}
