@@ -134,3 +134,7 @@
   text-align: center;
   margin-top: 10px;
 }
+
+.wynn-custom-name {
+  font-style: italic;
+}

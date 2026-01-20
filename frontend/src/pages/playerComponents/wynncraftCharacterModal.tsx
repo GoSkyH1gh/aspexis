@@ -30,13 +30,27 @@ const classImageUrl =
 function CharacterHeader({ character }: { character: CharacterInfo }) {
   return (
     <div className="wynn-character-row">
-      <motion.img
+      <img
         src={classImageUrl + character.character_class.toLowerCase() + ".webp"}
         alt={character.character_class}
         className="wynn-character-icon"
       />
       <div className="wynn-classname-c">
-        <p className="em-text">{character.character_class}</p>
+        <p className="em-text">
+          {(character.nickname && (
+            <Tooltip.Root delayDuration={150}>
+              <Tooltip.Trigger asChild>
+                <span className="wynn-custom-name">{character.nickname}</span>
+              </Tooltip.Trigger>
+              <Tooltip.Portal>
+                <Tooltip.Content className="TooltipContent">
+                  {character.character_class}
+                </Tooltip.Content>
+              </Tooltip.Portal>
+            </Tooltip.Root>
+          )) ||
+            character.character_class}
+        </p>
         {character.gamemodes.length >= 1 && (
           <div className="wynn-modes">
             {character.gamemodes.sort().map((gamemode) => {
@@ -101,7 +115,10 @@ function CharacterDetails({ character }: { character: CharacterInfo }) {
       <h3>Stats</h3>
       <ul className="info-card-list">
         <InfoCard label="Level" value={formatValue(character.level)} />
-        <InfoCard label="Playtime" value={`${formatValue(character.playtime)} hours`} />
+        <InfoCard
+          label="Playtime"
+          value={`${formatValue(character.playtime)} hours`}
+        />
         <InfoCard
           label="Logged In"
           value={`${formatValue(character.logins)} times`}
@@ -160,13 +177,14 @@ export default function WynncraftCharacterModal({
         <Dialog.Overlay className="DialogOverlay" />
         <Dialog.Content className="DialogContent wynn-char-modal">
           <div className="skin-viewer-header">
-          <CharacterHeader character={character} /><Dialog.Close asChild>
-            <button className="dialog-close">
-              <Icon icon={"material-symbols:close-rounded"} />
-            </button>
-          </Dialog.Close></div>
+            <CharacterHeader character={character} />
+            <Dialog.Close asChild>
+              <button className="dialog-close">
+                <Icon icon={"material-symbols:close-rounded"} />
+              </button>
+            </Dialog.Close>
+          </div>
           <CharacterDetails character={character} />
-          
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
