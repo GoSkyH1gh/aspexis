@@ -101,7 +101,7 @@ RANK_MAP = {
     "CONTESTANT": "Contestant"
 }
 
-def get_rank(ranks: list) -> str:
+def get_rank(ranks: list) -> str | None:
     if ranks == []:
         return None
     else:

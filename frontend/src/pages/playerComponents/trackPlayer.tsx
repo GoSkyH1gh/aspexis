@@ -39,7 +39,7 @@ function TrackPlayer({
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [tick, setTick] = useState(0);
   const [historyMode, setHistoryMode] = useState<"log" | "timeline">(
-    "timeline"
+    "timeline",
   );
 
   useEffect(() => {
@@ -114,23 +114,21 @@ function TrackPlayer({
     <div className="player-tracker">
       <div className="track-header">
         <h2 className="compact-paragraph">Tracking {mojangData.username}</h2>
-        <Tooltip.Provider>
-          <Tooltip.Root delayDuration={100}>
-            <Tooltip.Trigger asChild>
-              <button
-                onClick={() => setTrackStatus("search")}
-                className="track-stop-button"
-              >
-                <img src={stopIcon} alt="Stop Tracking" />
-              </button>
-            </Tooltip.Trigger>
-            <Tooltip.Portal>
-              <Tooltip.Content className="TooltipContent">
-                Stop Tracking {mojangData.username}
-              </Tooltip.Content>
-            </Tooltip.Portal>
-          </Tooltip.Root>
-        </Tooltip.Provider>
+        <Tooltip.Root delayDuration={100}>
+          <Tooltip.Trigger asChild>
+            <button
+              onClick={() => setTrackStatus("search")}
+              className="track-stop-button"
+            >
+              <img src={stopIcon} alt="Stop Tracking" />
+            </button>
+          </Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content className="TooltipContent">
+              Stop Tracking {mojangData.username}
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
       </div>
       <p className="compact-paragraph track-subheader">
         {formatSinceLastUpdate(lastUpdate)}
@@ -142,38 +140,36 @@ function TrackPlayer({
       <div className="track-history-header">
         <h3>History</h3>
         <div className="select-container">
-          <Tooltip.Provider>
-            <Tooltip.Root delayDuration={100}>
-              <Tooltip.Trigger asChild>
-                <button
-                  className="select-button-left select-button"
-                  onClick={() => setHistoryMode("timeline")}
-                >
-                  <img src={TimelineIcon} alt="View history as a Timeline" />
-                </button>
-              </Tooltip.Trigger>
-              <Tooltip.Portal>
-                <Tooltip.Content className="TooltipContent">
-                  View history as a Timeline
-                </Tooltip.Content>
-              </Tooltip.Portal>
-            </Tooltip.Root>
-            <Tooltip.Root delayDuration={100}>
-              <Tooltip.Trigger asChild>
-                <button
-                  className="select-button-right select-button"
-                  onClick={() => setHistoryMode("log")}
-                >
-                  <img src={CodeIcon} alt="View history as a Log" />
-                </button>
-              </Tooltip.Trigger>
-              <Tooltip.Portal>
-                <Tooltip.Content className="TooltipContent">
-                  View history as a Log
-                </Tooltip.Content>
-              </Tooltip.Portal>
-            </Tooltip.Root>
-          </Tooltip.Provider>
+          <Tooltip.Root delayDuration={100}>
+            <Tooltip.Trigger asChild>
+              <button
+                className="select-button-left select-button"
+                onClick={() => setHistoryMode("timeline")}
+              >
+                <img src={TimelineIcon} alt="View history as a Timeline" />
+              </button>
+            </Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content className="TooltipContent">
+                View history as a Timeline
+              </Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+          <Tooltip.Root delayDuration={100}>
+            <Tooltip.Trigger asChild>
+              <button
+                className="select-button-right select-button"
+                onClick={() => setHistoryMode("log")}
+              >
+                <img src={CodeIcon} alt="View history as a Log" />
+              </button>
+            </Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content className="TooltipContent">
+                View history as a Log
+              </Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
         </div>
       </div>
       {historyMode === "timeline" && <TrackTimeline history={history} />}

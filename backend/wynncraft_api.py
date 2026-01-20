@@ -44,6 +44,7 @@ class ProfessionInfo(BaseModel):
 class CharacterInfo(BaseModel):
     character_uuid: str
     character_class: str
+    nickname: Optional[str]
     reskin: Optional[str]
     level: int
     playtime: float
@@ -117,7 +118,6 @@ class GetWynncraftData:
         if raw_wynn_response.status_code == 404:
             raise NotFound()
         try:
-
             raw_wynn_response.raise_for_status()
             wynn_response: dict = raw_wynn_response.json()
 
@@ -189,6 +189,7 @@ class GetWynncraftData:
                 modeled_character = CharacterInfo(
                     character_uuid=character,
                     character_class=characters[character]["type"].title(),
+                    nickname=characters[character]["nickname"],
                     reskin=characters[character]["reskin"],
                     level=characters[character]["level"],
                     playtime=characters[character]["playtime"],
@@ -207,9 +208,7 @@ class GetWynncraftData:
                 first_login = None
                 last_login = None
             else:
-                if (
-                    restrictions.main_access
-                ):  # if main access restrictions are on, firstJoin is innaccessible but lastJoin is fine
+                if restrictions.main_access:  # if main access restrictions are on, firstJoin is innaccessible but lastJoin is fine
                     first_login = None
                 else:
                     first_login = wynn_response["firstJoin"]

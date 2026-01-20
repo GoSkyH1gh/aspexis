@@ -6,6 +6,7 @@ import Layout from "./pages/layout";
 import TrackerPage from "./pages/trackerPage";
 import FavoritesPage from "./pages/favoritesPage";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { Tooltip } from "radix-ui";
 
 function App() {
   const queryClient = new QueryClient({
@@ -19,19 +20,21 @@ function App() {
   });
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/player/" element={<PlayerPage />} />
-          <Route path="/player/:username" element={<PlayerPage />} />
-          <Route path="/wynncraft/guilds" element={<WynncraftGuilds />} />
-          <Route path="/track/player" element={<TrackerPage />} />
-          <Route path="/track/player/:username" element={<TrackerPage />} />
-          <Route path="/favorites" element={<FavoritesPage />} />
-        </Route>
-      </Routes>
-    </QueryClientProvider>
+    <Tooltip.Provider>
+      <QueryClientProvider client={queryClient}>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/player/" element={<PlayerPage />} />
+            <Route path="/player/:username" element={<PlayerPage />} />
+            <Route path="/wynncraft/guilds" element={<WynncraftGuilds />} />
+            <Route path="/track/player" element={<TrackerPage />} />
+            <Route path="/track/player/:username" element={<TrackerPage />} />
+            <Route path="/favorites" element={<FavoritesPage />} />
+          </Route>
+        </Routes>
+      </QueryClientProvider>
+    </Tooltip.Provider>
   );
 }
 

@@ -116,6 +116,7 @@ def get_donut_status(username) -> bool:
     except Exception as e:
         print(f"could not retrieve status: {e}")
         return False
+    return False
 
 
 def add_donut_stats_to_db(data: DonutPlayerStats, username, session) -> None:

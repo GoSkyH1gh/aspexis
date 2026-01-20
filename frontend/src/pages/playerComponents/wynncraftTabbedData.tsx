@@ -13,7 +13,7 @@ import { PlayerSummary, GuildInfo } from "../../client";
 
 type WynncraftProps = {
   wynncraftData: PlayerSummary;
-  wynncraftGuildData: GuildInfo | null | undefined
+  wynncraftGuildData: GuildInfo | null | undefined;
 };
 
 function WynncraftTabbedData({
@@ -76,7 +76,7 @@ function WynncraftTabbedData({
             handleStatClick(
               "wynncraft_hours_played",
               wynncraftData.uuid,
-              setMetricData
+              setMetricData,
             )
           }
           hasStats={true}
@@ -131,7 +131,7 @@ function WynncraftTabbedData({
             handleStatClick(
               "wynncraft_mobs_killed",
               wynncraftData.uuid,
-              setMetricData
+              setMetricData,
             )
           }
           hasStats={true}
@@ -145,7 +145,7 @@ function WynncraftTabbedData({
             handleStatClick(
               "wynncraft_chests_opened",
               wynncraftData.uuid,
-              setMetricData
+              setMetricData,
             )
           }
           hasStats={true}
@@ -159,7 +159,7 @@ function WynncraftTabbedData({
             handleStatClick(
               "wynncraft_dungeons_completed",
               wynncraftData.uuid,
-              setMetricData
+              setMetricData,
             )
           }
           hasStats={true}
@@ -173,7 +173,7 @@ function WynncraftTabbedData({
             handleStatClick(
               "wynncraft_raids_completed",
               wynncraftData.uuid,
-              setMetricData
+              setMetricData,
             )
           }
           hasStats={true}
@@ -185,15 +185,7 @@ function WynncraftTabbedData({
       </ul>
       <h3>Characters</h3>
       {!wynncraftData.restrictions.character_data_access && (
-        <>
-          <p>
-            {wynncraftData.username} has {wynncraftData.characters.length}{" "}
-            characters.
-            <br />
-            Click on a character to expand
-          </p>
-          <WynncraftCharacters characterList={wynncraftData.characters} />
-        </>
+        <WynncraftCharacters characterList={wynncraftData.characters} />
       )}
       {wynncraftData?.characters?.length === 0 &&
         wynncraftData.restrictions.character_data_access && (

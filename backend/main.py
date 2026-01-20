@@ -42,8 +42,6 @@ from slowapi.middleware import SlowAPIMiddleware
 
 load_dotenv()
 
-hypixel_api_key = os.getenv("hypixel_api_key")
-
 app = FastAPI()
 
 # limiter
@@ -178,7 +176,7 @@ def get_guild(
 
 @app.get("/v1/players/status/{uuid}")
 async def get_status(uuid):
-    return await get_online_status(uuid, hypixel_api_key)
+    return await get_online_status(uuid)
 
 
 # wynncraft endpoints
