@@ -13,10 +13,6 @@ function WynncraftCharacters({
     return <p>This player has no characters.</p>;
   }
 
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-  const handleToggle = (characterUuid: string) => {
-    setExpandedId(expandedId === characterUuid ? null : characterUuid);
-  };
 
   const getTotalProfessionLevel = (professions: ProfessionInfo) => {
     return Object.values(professions).reduce(
