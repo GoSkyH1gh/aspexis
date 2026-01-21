@@ -4,8 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from wynncraft_api import (
     GetWynncraftData,
-    PlayerSummary,
-    GuildInfo,
+    WynncraftPlayerSummary,
+    WynncraftGuildInfo,
     add_wynncraft_stats_to_db,
 )
 from online_status import get_online_status
@@ -186,7 +186,9 @@ async def get_status(uuid):
     "/v1/players/wynncraft/{uuid}",
     responses={404: {"model": exceptions.ErrorResponse, "description": "Not found"}},
 )
-def get_wynncraft(uuid: str, background_tasks: BackgroundTasks) -> PlayerSummary:
+def get_wynncraft(
+    uuid: str, background_tasks: BackgroundTasks
+) -> WynncraftPlayerSummary:
     data_instance = GetWynncraftData()
     player_data = data_instance.get_player_data(uuid)
     background_tasks.add_task(add_wynncraft_stats_to_db, player_data)
@@ -194,7 +196,7 @@ def get_wynncraft(uuid: str, background_tasks: BackgroundTasks) -> PlayerSummary
 
 
 @app.get("/v1/wynncraft/guilds/{prefix}")
-def get_wynncraft_guild(prefix) -> GuildInfo:
+def get_wynncraft_guild(prefix) -> WynncraftGuildInfo:
     data_instance = GetWynncraftData()
     return data_instance.get_guild_data(prefix)
 
