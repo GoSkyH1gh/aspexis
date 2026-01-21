@@ -1,7 +1,7 @@
 .main-content {
   max-width: 1280px;
   margin: 0 auto;
-  width: 65%; 
+  width: 65%;
   padding: 2rem;
   flex: 1;
 }
@@ -75,7 +75,11 @@ body {
   /*background: linear-gradient(135deg, #2B1E33 0%, #271B37 100%);*/
 
   /*font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;*/
-  font-family: "Rubik", system-ui, -apple-system, sans-serif;
+  font-family:
+    "Rubik",
+    system-ui,
+    -apple-system,
+    sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   color: var(--text-primary);
@@ -925,7 +929,7 @@ button {
 }
 
 .cape-gallery::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 ::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0);

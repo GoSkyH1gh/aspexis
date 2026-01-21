@@ -48,6 +48,25 @@
   gap: 15px;
 }
 
+.profession-list::-webkit-scrollbar {
+  height: 6px;
+}
+
+.profession-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0);
+}
+.profession-list::-webkit-scrollbar-thumb {
+  background: hsl(
+    from var(--color-surfact-layer-2) h calc(s + 10) calc(l + 30)
+  );
+  border-radius: 4px;
+}
+.profession-list::-webkit-scrollbar-thumb:hover {
+  background: hsl(
+    from var(--color-surfact-layer-2) h calc(s + 10) calc(l + 120)
+  );
+}
+
 .wynn-guild-member-list {
   display: flex;
   flex-wrap: wrap;
@@ -118,7 +137,6 @@
   margin: 0;
 }
 
-
 .wynn-sort-trigger {
   display: flex;
   justify-content: right;
@@ -127,7 +145,7 @@
 }
 
 .wynn-char-modal {
-  width: 90vw;  
+  width: 90vw;
 }
 
 .wynn-char-preview {

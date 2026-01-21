@@ -74,6 +74,25 @@
   backdrop-filter: blur(40px);
 }
 
+.BedwarsOverlay::-webkit-scrollbar {
+  width: 6px;
+}
+
+.BedwarsOverlay::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0);
+}
+.BedwarsOverlay::-webkit-scrollbar-thumb {
+  background: hsl(
+    from var(--color-surfact-layer-2) h calc(s + 10) calc(l + 30)
+  );
+  border-radius: 4px;
+}
+.BedwarsOverlay::-webkit-scrollbar-thumb:hover {
+  background: hsl(
+    from var(--color-surfact-layer-2) h calc(s + 10) calc(l + 120)
+  );
+}
+
 .HelpOverlay {
   backdrop-filter: blur(15px);
 }

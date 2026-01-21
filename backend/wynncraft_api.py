@@ -26,6 +26,11 @@ class PlayerRestrictions(BaseModel):
     online_status: bool
 
 
+class ContentProgress(BaseModel):
+    total: int
+    list: dict[str, int]
+
+
 class ProfessionInfo(BaseModel):
     fishing: int
     woodcutting: int
@@ -41,23 +46,49 @@ class ProfessionInfo(BaseModel):
     armouring: int
 
 
-class CharacterInfo(BaseModel):
+class WynncraftCharacterSkillPoints(BaseModel):
+    strength: int
+    dexterity: int
+    inteligence: int
+    defense: int
+    agility: int
+
+
+class WynncraftCharacterStats(BaseModel):
+    mobs_killed: Optional[int]
+    chests_opened: Optional[int]
+    blocks_walked: Optional[int]
+    logins: int
+    deaths: int
+
+
+class WynncraftCharacterContent(BaseModel):
+    content_completed: int
+    quests_completed: int
+    discoveries: int
+    caves: int
+    lootruns: int
+    world_events: int
+    wars: int
+    dungeons: ContentProgress
+    raids: ContentProgress
+
+
+class WynncraftCharacterInfo(BaseModel):
     character_uuid: str
     character_class: str
     nickname: Optional[str]
     reskin: Optional[str]
     level: int
     playtime: float
-    mobs_killed: Optional[int]
-    chests_opened: Optional[int]
-    logins: int
-    deaths: int
     gamemodes: list[str]
     professions: ProfessionInfo
-    quests_completed: int
+    skill_points: Optional[WynncraftCharacterSkillPoints]
+    content: WynncraftCharacterContent
+    stats: WynncraftCharacterStats
 
 
-class PlayerStats(BaseModel):
+class WynncraftPlayerStats(BaseModel):
     wars: int
     mobs_killed: int
     chests_opened: int
@@ -66,7 +97,7 @@ class PlayerStats(BaseModel):
     playtime_hours: float
 
 
-class PlayerSummary(BaseModel):
+class WynncraftPlayerSummary(BaseModel):
     username: str
     uuid: str
     online: bool
@@ -76,15 +107,15 @@ class PlayerSummary(BaseModel):
     last_login: Optional[str]
     guild_name: Optional[str]
     guild_prefix: Optional[str]
-    player_stats: Optional[PlayerStats]
-    characters: list[CharacterInfo]
+    player_stats: Optional[WynncraftPlayerStats]
+    characters: list[WynncraftCharacterInfo]
     restrictions: PlayerRestrictions
 
 
 # guild info
 
 
-class GuildMember(BaseModel):
+class WynncraftGuildMember(BaseModel):
     username: str
     uuid: str
     online: bool
@@ -92,7 +123,7 @@ class GuildMember(BaseModel):
     rank: str
 
 
-class GuildInfo(BaseModel):
+class WynncraftGuildInfo(BaseModel):
     name: str
     prefix: str
     guild_uuid: str
@@ -101,14 +132,108 @@ class GuildInfo(BaseModel):
     territories: int
     created: str
     member_count: int
-    members: list[GuildMember]
+    members: list[WynncraftGuildMember]
 
 
 class GetWynncraftData:
     def __init__(self):
         pass
 
-    def get_player_data(self, uuid) -> PlayerSummary:
+    def _process_characters(
+        self, characters: dict[str, dict], restrictions: PlayerRestrictions
+    ) -> list[WynncraftCharacterInfo]:
+        pydantic_characters = []
+        for character in characters:
+            selected_character: dict = characters.get(character, {})
+            # creating a ProfessionInfo pydantic instance
+            profession_names = [
+                "fishing",
+                "woodcutting",
+                "mining",
+                "farming",
+                "scribing",
+                "jeweling",
+                "alchemism",
+                "cooking",
+                "weaponsmithing",
+                "tailoring",
+                "woodworking",
+                "armouring",
+            ]
+
+            profession_args = {}
+            # accessing the level for each profession and creating a dict that looks like
+            # {'fishing': '100', 'mining': 33, ...}
+            for profession in profession_names:
+                try:
+                    profession_args[profession] = selected_character["professions"][
+                        profession
+                    ]["level"]
+                except Exception:
+                    profession_args[profession] = 0
+
+            character_professions = ProfessionInfo(**profession_args)
+
+            if restrictions.character_build_access:
+                skill_points = None
+            else:
+                wynn_skill_points = selected_character.get("skillPoints", {})
+                skill_points = WynncraftCharacterSkillPoints(
+                    strength=wynn_skill_points.get("strength") or 0,
+                    dexterity=wynn_skill_points.get("dexterity") or 0,
+                    inteligence=wynn_skill_points.get("intelligence") or 0,
+                    defense=wynn_skill_points.get("defense") or 0,
+                    agility=wynn_skill_points.get("agility") or 0,
+                )
+
+            character_stats = WynncraftCharacterStats(
+                mobs_killed=selected_character.get("mobsKilled"),
+                chests_opened=selected_character.get("chestsFound"),
+                blocks_walked=selected_character.get("blocksWalked"),
+                deaths=selected_character.get("deaths") or 0,
+                logins=selected_character.get("logins") or 0,
+            )
+
+            raids = ContentProgress(
+                list=selected_character.get("raids", {}).get("list", []),
+                total=selected_character.get("raids", {}).get("total") or 0,
+            )
+
+            dungeons = ContentProgress(
+                list=selected_character.get("dungeons", {}).get("list", []),
+                total=selected_character.get("dungeons", {}).get("total") or 0,
+            )
+
+            character_content = WynncraftCharacterContent(
+                content_completed=selected_character.get("contentCompletion") or 0,
+                quests_completed=len(selected_character.get("quests", [])),
+                discoveries=selected_character.get("discoveries") or 0,
+                caves=selected_character.get("caves") or 0,
+                wars=selected_character.get("wars") or 0,
+                world_events=selected_character.get("worldEvents") or 0,
+                lootruns=selected_character.get("lootruns") or 0,
+                raids=raids,
+                dungeons=dungeons,
+            )
+
+            modeled_character = WynncraftCharacterInfo(
+                character_uuid=character,
+                character_class=selected_character.get("type", "").title(),
+                nickname=selected_character.get("nickname"),
+                reskin=selected_character.get("reskin"),
+                level=selected_character.get("level") or 0,
+                playtime=selected_character.get("playtime") or 0,
+                gamemodes=selected_character.get("gamemode") or [],
+                professions=character_professions,
+                skill_points=skill_points,
+                content=character_content,
+                stats=character_stats,
+            )
+
+            pydantic_characters.append(modeled_character)
+        return pydantic_characters
+
+    def get_player_data(self, uuid) -> WynncraftPlayerSummary:
         """Gets basic data about the player"""
         dashed_uuid = dashify_uuid(uuid)
         raw_wynn_response = requests.get(
@@ -123,12 +248,14 @@ class GetWynncraftData:
 
             restrictions_response: dict = wynn_response.get("restrictions", {})
             restrictions = PlayerRestrictions(
-                main_access=restrictions_response.get("mainAccess"),
-                character_data_access=restrictions_response.get("characterDataAccess"),
+                main_access=restrictions_response.get("mainAccess", True),
+                character_data_access=restrictions_response.get(
+                    "characterDataAccess", True
+                ),
                 character_build_access=restrictions_response.get(
                     "characterBuildAccess", True
                 ),
-                online_status=restrictions_response.get("onlineStatus"),
+                online_status=restrictions_response.get("onlineStatus", True),
             )
 
             if wynn_response["guild"] is not None:
@@ -146,63 +273,11 @@ class GetWynncraftData:
                 else:
                     player_rank = "Player"
 
-            characters = wynn_response.get("characters", [])
+            characters: dict = wynn_response.get("characters", [])
             if characters is None:  # if access is restricted, this is none
-                characters = []
+                characters = {}
 
-            pydantic_characters = []
-            for character in characters:
-                # creating a ProfessionInfo pydantic instance
-                profession_names = [
-                    "fishing",
-                    "woodcutting",
-                    "mining",
-                    "farming",
-                    "scribing",
-                    "jeweling",
-                    "alchemism",
-                    "cooking",
-                    "weaponsmithing",
-                    "tailoring",
-                    "woodworking",
-                    "armouring",
-                ]
-
-                profession_args = {}
-                # accessing the level for each profession and creating a dict that looks like
-                # {'fishing': '100', 'mining': 33, ...}
-                for profession in profession_names:
-                    try:
-                        profession_args[profession] = characters[character][
-                            "professions"
-                        ][profession]["level"]
-                    except Exception:
-                        profession_args[profession] = 0
-
-                character_professions = ProfessionInfo(**profession_args)
-
-                if characters[character]["deaths"] is None:
-                    deaths = 0
-                else:
-                    deaths = characters[character]["deaths"]
-
-                modeled_character = CharacterInfo(
-                    character_uuid=character,
-                    character_class=characters[character]["type"].title(),
-                    nickname=characters[character]["nickname"],
-                    reskin=characters[character]["reskin"],
-                    level=characters[character]["level"],
-                    playtime=characters[character]["playtime"],
-                    mobs_killed=characters[character]["mobsKilled"],
-                    chests_opened=characters[character]["chestsFound"],
-                    logins=characters[character]["logins"],
-                    deaths=deaths,
-                    gamemodes=characters[character]["gamemode"],
-                    professions=character_professions,
-                    quests_completed=len(characters[character]["quests"]),
-                )
-
-                pydantic_characters.append(modeled_character)
+            pydantic_characters = self._process_characters(characters, restrictions)
 
             if restrictions.online_status:
                 first_login = None
@@ -217,7 +292,7 @@ class GetWynncraftData:
             if restrictions.main_access:
                 player_stats = None
             else:
-                player_stats = PlayerStats(
+                player_stats = WynncraftPlayerStats(
                     wars=wynn_response["globalData"]["wars"],
                     mobs_killed=wynn_response["globalData"]["mobsKilled"],
                     chests_opened=wynn_response["globalData"]["chestsFound"],
@@ -226,7 +301,7 @@ class GetWynncraftData:
                     playtime_hours=wynn_response["playtime"],
                 )
 
-            player_summary = PlayerSummary(
+            player_summary = WynncraftPlayerSummary(
                 username=wynn_response["username"],
                 uuid=wynn_response["uuid"],
                 online=wynn_response["online"],
@@ -251,7 +326,7 @@ class GetWynncraftData:
                 detail=f"Wynncraft Player with UUID {dashed_uuid} could not be proccessed",
             )
 
-    def get_guild_data(self, guild_prefix: str) -> GuildInfo:
+    def get_guild_data(self, guild_prefix: str) -> WynncraftGuildInfo:
         """Gets the guild response, player_guild is req"""
         raw_guild_response = requests.get(
             f"https://api.wynncraft.com/v3/guild/prefix/{guild_prefix}?identifier=username",
@@ -266,7 +341,7 @@ class GetWynncraftData:
 
             for member in guild_response["members"][rank]:
                 guild_members.append(
-                    GuildMember(
+                    WynncraftGuildMember(
                         username=member,
                         uuid=guild_response["members"][rank][member]["uuid"],
                         online=guild_response["members"][rank][member]["online"],
@@ -280,7 +355,7 @@ class GetWynncraftData:
         else:
             wars = 0
 
-        guild_info = GuildInfo(
+        guild_info = WynncraftGuildInfo(
             name=guild_response["name"],
             prefix=guild_response["prefix"],
             guild_uuid=guild_response["uuid"],
@@ -297,7 +372,7 @@ class GetWynncraftData:
     def _get_total_quests(self):
         """This is the total number of quests, which changes very rarely"""
         quests_response = requests.get(
-            f"https://api.wynncraft.com/v3/map/quests",
+            "https://api.wynncraft.com/v3/map/quests",
             headers={"Authorization": f"Bearer {wynn_token}"},
         )
         quests_response = quests_response.json()
@@ -317,7 +392,7 @@ class GetWynncraftData:
             return []
 
 
-def add_wynncraft_stats_to_db(data: PlayerSummary) -> None:
+def add_wynncraft_stats_to_db(data: WynncraftPlayerSummary) -> None:
     if data.restrictions.main_access:
         return
     # this is a dictionary with the corresponding id in the database for the metric

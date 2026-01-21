@@ -13,7 +13,6 @@ function WynncraftCharacters({
     return <p>This player has no characters.</p>;
   }
 
-
   const getTotalProfessionLevel = (professions: ProfessionInfo) => {
     return Object.values(professions).reduce(
       (sum: number, level: number) => sum + level,
