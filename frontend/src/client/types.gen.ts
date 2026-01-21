@@ -124,58 +124,19 @@ export type CapeImageData = {
 };
 
 /**
- * CharacterInfo
+ * ContentProgress
  */
-export type CharacterInfo = {
+export type ContentProgress = {
     /**
-     * Character Uuid
+     * Total
      */
-    character_uuid: string;
+    total: number;
     /**
-     * Character Class
+     * List
      */
-    character_class: string;
-    /**
-     * Nickname
-     */
-    nickname: string | null;
-    /**
-     * Reskin
-     */
-    reskin: string | null;
-    /**
-     * Level
-     */
-    level: number;
-    /**
-     * Playtime
-     */
-    playtime: number;
-    /**
-     * Mobs Killed
-     */
-    mobs_killed: number | null;
-    /**
-     * Chests Opened
-     */
-    chests_opened: number | null;
-    /**
-     * Logins
-     */
-    logins: number;
-    /**
-     * Deaths
-     */
-    deaths: number;
-    /**
-     * Gamemodes
-     */
-    gamemodes: Array<string>;
-    professions: ProfessionInfo;
-    /**
-     * Quests Completed
-     */
-    quests_completed: number;
+    list: {
+        [key: string]: number;
+    };
 };
 
 /**
@@ -236,74 +197,6 @@ export type ErrorResponse = {
      * Detail
      */
     detail: string;
-};
-
-/**
- * GuildInfo
- */
-export type GuildInfo = {
-    /**
-     * Name
-     */
-    name: string;
-    /**
-     * Prefix
-     */
-    prefix: string;
-    /**
-     * Guild Uuid
-     */
-    guild_uuid: string;
-    /**
-     * Level
-     */
-    level: number;
-    /**
-     * Wars
-     */
-    wars: number;
-    /**
-     * Territories
-     */
-    territories: number;
-    /**
-     * Created
-     */
-    created: string;
-    /**
-     * Member Count
-     */
-    member_count: number;
-    /**
-     * Members
-     */
-    members: Array<GuildMember>;
-};
-
-/**
- * GuildMember
- */
-export type GuildMember = {
-    /**
-     * Username
-     */
-    username: string;
-    /**
-     * Uuid
-     */
-    uuid: string;
-    /**
-     * Online
-     */
-    online: boolean;
-    /**
-     * Joined
-     */
-    joined: string;
-    /**
-     * Rank
-     */
-    rank: string;
 };
 
 /**
@@ -659,84 +552,6 @@ export type PlayerRestrictions = {
 };
 
 /**
- * PlayerStats
- */
-export type PlayerStats = {
-    /**
-     * Wars
-     */
-    wars: number;
-    /**
-     * Mobs Killed
-     */
-    mobs_killed: number;
-    /**
-     * Chests Opened
-     */
-    chests_opened: number;
-    /**
-     * Dungeons Completed
-     */
-    dungeons_completed: number;
-    /**
-     * Raids Completed
-     */
-    raids_completed: number;
-    /**
-     * Playtime Hours
-     */
-    playtime_hours: number;
-};
-
-/**
- * PlayerSummary
- */
-export type PlayerSummary = {
-    /**
-     * Username
-     */
-    username: string;
-    /**
-     * Uuid
-     */
-    uuid: string;
-    /**
-     * Online
-     */
-    online: boolean;
-    /**
-     * Rank
-     */
-    rank: string;
-    /**
-     * Rank Badge
-     */
-    rank_badge: string | null;
-    /**
-     * First Login
-     */
-    first_login: string | null;
-    /**
-     * Last Login
-     */
-    last_login: string | null;
-    /**
-     * Guild Name
-     */
-    guild_name: string | null;
-    /**
-     * Guild Prefix
-     */
-    guild_prefix: string | null;
-    player_stats: PlayerStats | null;
-    /**
-     * Characters
-     */
-    characters: Array<CharacterInfo>;
-    restrictions: PlayerRestrictions;
-};
-
-/**
  * ProfessionInfo
  */
 export type ProfessionInfo = {
@@ -825,6 +640,278 @@ export type ValidationError = {
      * Error Type
      */
     type: string;
+};
+
+/**
+ * WynncraftCharacterContent
+ */
+export type WynncraftCharacterContent = {
+    /**
+     * Content Completed
+     */
+    content_completed: number;
+    /**
+     * Quests Completed
+     */
+    quests_completed: number;
+    /**
+     * Discoveries
+     */
+    discoveries: number;
+    /**
+     * Caves
+     */
+    caves: number;
+    /**
+     * Lootruns
+     */
+    lootruns: number;
+    /**
+     * World Events
+     */
+    world_events: number;
+    /**
+     * Wars
+     */
+    wars: number;
+    dungeons: ContentProgress;
+    raids: ContentProgress;
+};
+
+/**
+ * WynncraftCharacterInfo
+ */
+export type WynncraftCharacterInfo = {
+    /**
+     * Character Uuid
+     */
+    character_uuid: string;
+    /**
+     * Character Class
+     */
+    character_class: string;
+    /**
+     * Nickname
+     */
+    nickname: string | null;
+    /**
+     * Reskin
+     */
+    reskin: string | null;
+    /**
+     * Level
+     */
+    level: number;
+    /**
+     * Playtime
+     */
+    playtime: number;
+    /**
+     * Gamemodes
+     */
+    gamemodes: Array<string>;
+    professions: ProfessionInfo;
+    skill_points: WynncraftCharacterSkillPoints | null;
+    content: WynncraftCharacterContent;
+    stats: WynncraftCharacterStats;
+};
+
+/**
+ * WynncraftCharacterSkillPoints
+ */
+export type WynncraftCharacterSkillPoints = {
+    /**
+     * Strength
+     */
+    strength: number;
+    /**
+     * Dexterity
+     */
+    dexterity: number;
+    /**
+     * Intelligence
+     */
+    intelligence: number;
+    /**
+     * Defense
+     */
+    defense: number;
+    /**
+     * Agility
+     */
+    agility: number;
+};
+
+/**
+ * WynncraftCharacterStats
+ */
+export type WynncraftCharacterStats = {
+    /**
+     * Mobs Killed
+     */
+    mobs_killed: number | null;
+    /**
+     * Chests Opened
+     */
+    chests_opened: number | null;
+    /**
+     * Blocks Walked
+     */
+    blocks_walked: number | null;
+    /**
+     * Logins
+     */
+    logins: number;
+    /**
+     * Deaths
+     */
+    deaths: number;
+};
+
+/**
+ * WynncraftGuildInfo
+ */
+export type WynncraftGuildInfo = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Prefix
+     */
+    prefix: string;
+    /**
+     * Guild Uuid
+     */
+    guild_uuid: string;
+    /**
+     * Level
+     */
+    level: number;
+    /**
+     * Wars
+     */
+    wars: number;
+    /**
+     * Territories
+     */
+    territories: number;
+    /**
+     * Created
+     */
+    created: string;
+    /**
+     * Member Count
+     */
+    member_count: number;
+    /**
+     * Members
+     */
+    members: Array<WynncraftGuildMember>;
+};
+
+/**
+ * WynncraftGuildMember
+ */
+export type WynncraftGuildMember = {
+    /**
+     * Username
+     */
+    username: string;
+    /**
+     * Uuid
+     */
+    uuid: string;
+    /**
+     * Online
+     */
+    online: boolean;
+    /**
+     * Joined
+     */
+    joined: string;
+    /**
+     * Rank
+     */
+    rank: string;
+};
+
+/**
+ * WynncraftPlayerStats
+ */
+export type WynncraftPlayerStats = {
+    /**
+     * Wars
+     */
+    wars: number;
+    /**
+     * Mobs Killed
+     */
+    mobs_killed: number;
+    /**
+     * Chests Opened
+     */
+    chests_opened: number;
+    /**
+     * Dungeons Completed
+     */
+    dungeons_completed: number;
+    /**
+     * Raids Completed
+     */
+    raids_completed: number;
+    /**
+     * Playtime Hours
+     */
+    playtime_hours: number;
+};
+
+/**
+ * WynncraftPlayerSummary
+ */
+export type WynncraftPlayerSummary = {
+    /**
+     * Username
+     */
+    username: string;
+    /**
+     * Uuid
+     */
+    uuid: string;
+    /**
+     * Online
+     */
+    online: boolean;
+    /**
+     * Rank
+     */
+    rank: string;
+    /**
+     * Rank Badge
+     */
+    rank_badge: string | null;
+    /**
+     * First Login
+     */
+    first_login: string | null;
+    /**
+     * Last Login
+     */
+    last_login: string | null;
+    /**
+     * Guild Name
+     */
+    guild_name: string | null;
+    /**
+     * Guild Prefix
+     */
+    guild_prefix: string | null;
+    player_stats: WynncraftPlayerStats | null;
+    /**
+     * Characters
+     */
+    characters: Array<WynncraftCharacterInfo>;
+    restrictions: PlayerRestrictions;
 };
 
 export type RootGetData = {
@@ -1083,7 +1170,7 @@ export type GetWynncraftV1PlayersWynncraftUuidGetResponses = {
     /**
      * Successful Response
      */
-    200: PlayerSummary;
+    200: WynncraftPlayerSummary;
 };
 
 export type GetWynncraftV1PlayersWynncraftUuidGetResponse = GetWynncraftV1PlayersWynncraftUuidGetResponses[keyof GetWynncraftV1PlayersWynncraftUuidGetResponses];
@@ -1113,7 +1200,7 @@ export type GetWynncraftGuildV1WynncraftGuildsPrefixGetResponses = {
     /**
      * Successful Response
      */
-    200: GuildInfo;
+    200: WynncraftGuildInfo;
 };
 
 export type GetWynncraftGuildV1WynncraftGuildsPrefixGetResponse = GetWynncraftGuildV1WynncraftGuildsPrefixGetResponses[keyof GetWynncraftGuildV1WynncraftGuildsPrefixGetResponses];

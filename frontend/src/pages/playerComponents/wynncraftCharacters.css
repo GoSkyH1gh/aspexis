@@ -45,7 +45,7 @@
   grid-template-columns: 1fr 1fr 1fr 1fr;
   overflow-x: auto;
   padding: 0;
-  gap: 15px;
+  gap: 0.8rem;
 }
 
 .profession-list::-webkit-scrollbar {
@@ -145,7 +145,8 @@
 }
 
 .wynn-char-modal {
-  width: 90vw;
+  max-width: min(60rem, 90vw);
+  overflow-y: auto;
 }
 
 .wynn-char-preview {
@@ -155,4 +156,17 @@
 
 .wynn-custom-name {
   font-style: italic;
+}
+
+.wynn-content-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem
+}
+
+@media screen and (width < 1000px) {
+  .wynn-content-container {
+    grid-template-columns: 1fr;
+    gap: 0rem;
+  }
 }

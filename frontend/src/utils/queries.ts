@@ -1,12 +1,13 @@
 import {
   HypixelFullData,
-  PlayerSummary,
-  GuildInfo,
+  WynncraftCharacterInfo,
+  WynncraftGuildInfo,
   DonutPlayerStats,
   McciPlayer,
   HypixelGuildMemberFull,
   MojangData,
   UserCapeData,
+  WynncraftPlayerSummary,
 } from "../client";
 import { InvalidArgumentsError } from "./errors";
 
@@ -23,10 +24,10 @@ const mcciUrl = `${baseUrl}/v1/players/mccisland/`;
 const capesUrl = `${baseUrl}/v1/players/capes/`;
 
 export async function fetchMojang(
-  search_term: string | undefined
+  search_term: string | undefined,
 ): Promise<MojangData | null> {
   if (!search_term) {
-    throw new InvalidArgumentsError()
+    throw new InvalidArgumentsError();
   }
   const response = await fetch(mojangUrl + encodeURIComponent(search_term));
 
@@ -42,7 +43,7 @@ export async function fetchMojang(
 
 export async function fetchStatus(uuid: string | undefined): Promise<any> {
   if (!uuid) {
-    throw new InvalidArgumentsError()
+    throw new InvalidArgumentsError();
   }
   const response = await fetch(statusUrl + encodeURIComponent(uuid));
 
@@ -54,10 +55,10 @@ export async function fetchStatus(uuid: string | undefined): Promise<any> {
 }
 
 export async function fetchHypixelData(
-  uuid: string | undefined
+  uuid: string | undefined,
 ): Promise<HypixelFullData | null> {
   if (!uuid) {
-    throw new InvalidArgumentsError()
+    throw new InvalidArgumentsError();
   }
   const response = await fetch(hypixelUrl + encodeURIComponent(uuid));
 
@@ -75,7 +76,7 @@ export async function fetchHypixelData(
 export async function fetchHypixelGuild(
   guildId: string | undefined,
   limit: number,
-  offset: number
+  offset: number,
 ): Promise<HypixelGuildMemberFull[]> {
   if (!guildId) {
     throw new Error("Guild ID is required");
@@ -92,10 +93,10 @@ export async function fetchHypixelGuild(
 }
 
 export async function fetchWynncraftData(
-  uuid: string | undefined
-): Promise<PlayerSummary | null> {
+  uuid: string | undefined,
+): Promise<WynncraftPlayerSummary | null> {
   if (!uuid) {
-    throw new InvalidArgumentsError()
+    throw new InvalidArgumentsError();
   }
   const response = await fetch(wynncraftUrl + encodeURIComponent(uuid));
 
@@ -111,13 +112,13 @@ export async function fetchWynncraftData(
 }
 
 export async function fetchWynncraftGuildData(
-  guildPrefix: string | null | undefined
-): Promise<GuildInfo> {
+  guildPrefix: string | null | undefined,
+): Promise<WynncraftGuildInfo> {
   if (!guildPrefix) {
-    throw new InvalidArgumentsError()
+    throw new InvalidArgumentsError();
   }
   const response = await fetch(
-    wynncraftGuildUrl + encodeURIComponent(guildPrefix)
+    wynncraftGuildUrl + encodeURIComponent(guildPrefix),
   );
 
   if (!response.ok) {
@@ -128,10 +129,10 @@ export async function fetchWynncraftGuildData(
 }
 
 export async function fetchDonutSMP(
-  username: string | undefined
+  username: string | undefined,
 ): Promise<DonutPlayerStats | null> {
   if (!username) {
-    throw new InvalidArgumentsError()
+    throw new InvalidArgumentsError();
   }
   const response = await fetch(donutUrl + encodeURIComponent(username));
 
@@ -146,9 +147,11 @@ export async function fetchDonutSMP(
   return response.json();
 }
 
-export async function fetchMCCI(uuid: string | undefined): Promise<McciPlayer | null> {
+export async function fetchMCCI(
+  uuid: string | undefined,
+): Promise<McciPlayer | null> {
   if (!uuid) {
-    throw new InvalidArgumentsError()
+    throw new InvalidArgumentsError();
   }
   const response = await fetch(mcciUrl + encodeURIComponent(uuid));
 
@@ -163,9 +166,11 @@ export async function fetchMCCI(uuid: string | undefined): Promise<McciPlayer | 
   return response.json();
 }
 
-export async function fetchCapes(uuid: string | undefined): Promise<UserCapeData[] | null> {
+export async function fetchCapes(
+  uuid: string | undefined,
+): Promise<UserCapeData[] | null> {
   if (!uuid) {
-    throw new InvalidArgumentsError()
+    throw new InvalidArgumentsError();
   }
   const response = await fetch(capesUrl + encodeURIComponent(uuid));
 

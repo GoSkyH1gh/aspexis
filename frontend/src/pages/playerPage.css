@@ -966,3 +966,39 @@ button {
 .compact-heading {
   margin: 0;
 }
+
+.horizontal-info-card-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.horizontal-info-card-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  backdrop-filter: blur(10px);
+  border-radius: 6px;
+  border: 1px solid var(--color-surfact-layer-2);
+  padding: 10px;
+}
+
+.horizontal-info-card-number {
+  /* font-family: "Google Sans Code", monospace; */
+  font-size: 1.2rem;
+}
+
+.horizontal-info-card-image {
+  height: 2rem;
+  width: 2rem;
+}
+
+.horizontal-card-list {
+  display: flex;
+  gap: 0.8rem;
+  padding-left: 0;
+  list-style: none;
+  flex-wrap: wrap;
+}
