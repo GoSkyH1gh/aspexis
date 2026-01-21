@@ -49,7 +49,7 @@ class ProfessionInfo(BaseModel):
 class WynncraftCharacterSkillPoints(BaseModel):
     strength: int
     dexterity: int
-    inteligence: int
+    intelligence: int
     defense: int
     agility: int
 
@@ -181,7 +181,7 @@ class GetWynncraftData:
                 skill_points = WynncraftCharacterSkillPoints(
                     strength=wynn_skill_points.get("strength") or 0,
                     dexterity=wynn_skill_points.get("dexterity") or 0,
-                    inteligence=wynn_skill_points.get("intelligence") or 0,
+                    intelligence=wynn_skill_points.get("intelligence") or 0,
                     defense=wynn_skill_points.get("defense") or 0,
                     agility=wynn_skill_points.get("agility") or 0,
                 )
@@ -393,7 +393,7 @@ class GetWynncraftData:
 
 
 def add_wynncraft_stats_to_db(data: WynncraftPlayerSummary) -> None:
-    if data.restrictions.main_access:
+    if data.restrictions.main_access or not data.player_stats:
         return
     # this is a dictionary with the corresponding id in the database for the metric
     stats_to_add = {

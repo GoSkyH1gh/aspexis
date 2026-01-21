@@ -7,8 +7,8 @@ import HypixelTabbedData from "./hypixelTabbedData";
 import LoadingIndicator from "./loadingIndicator";
 import {
   HypixelFullData,
-  PlayerSummary,
-  GuildInfo,
+  WynncraftPlayerSummary,
+  WynncraftGuildInfo,
   DonutPlayerStats,
   McciPlayer,
 } from "../../client";
@@ -17,9 +17,9 @@ type AdvancedInfoProps = {
   hypixelData: HypixelFullData | null | undefined;
   hypixelStatus: "error" | "success" | "pending";
   hypixelGuildQuery: any; // UseInfiniteQueryResult with InfiniteData wrapper
-  wynncraftData: PlayerSummary | undefined | null;
+  wynncraftData: WynncraftPlayerSummary | undefined | null;
   wynncraftStatus: "pending" | "error" | "success";
-  wynncraftGuildData: GuildInfo | null | undefined;
+  wynncraftGuildData: WynncraftGuildInfo | null | undefined;
   donutData: DonutPlayerStats | null | undefined;
   donutStatus: "pending" | "success" | "error";
   mcciData: McciPlayer | null | undefined;
@@ -51,7 +51,7 @@ function AdvancedInfoTabs({
 
     const timeout = setTimeout(() => {
       const firstAvailable = TAB_PRIORITY.find((tab) =>
-        loadedTabs.includes(tab)
+        loadedTabs.includes(tab),
       );
 
       if (firstAvailable) {

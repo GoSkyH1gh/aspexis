@@ -1,13 +1,13 @@
 import { useState } from "react";
 import "./wynncraftCharacters.css";
-import { CharacterInfo, ProfessionInfo } from "../../client";
+import { WynncraftCharacterInfo, ProfessionInfo } from "../../client";
 import { Select } from "radix-ui";
 import WynncraftCharacterModal from "./wynncraftCharacterModal";
 
 function WynncraftCharacters({
   characterList,
 }: {
-  characterList: CharacterInfo[];
+  characterList: WynncraftCharacterInfo[];
 }) {
   if (characterList.length === 0) {
     return <p>This player has no characters.</p>;
@@ -39,7 +39,7 @@ function WynncraftCharacters({
       break;
     case "logins":
       characters = [...characterList]
-        .sort((charOne, charTwo) => charOne.logins - charTwo.logins)
+        .sort((charOne, charTwo) => charOne.stats.logins - charTwo.stats.logins)
         .reverse();
       break;
     case "professions":
@@ -78,7 +78,7 @@ function WynncraftCharacters({
                 <Select.ItemText>Level</Select.ItemText>
               </Select.Item>
               <Select.Item value="age" className="SelectItem">
-                <Select.ItemText>Character Age</Select.ItemText>
+                <Select.ItemText>Oldest</Select.ItemText>
               </Select.Item>
               <Select.Item value="logins" className="SelectItem">
                 <Select.ItemText>Logins</Select.ItemText>

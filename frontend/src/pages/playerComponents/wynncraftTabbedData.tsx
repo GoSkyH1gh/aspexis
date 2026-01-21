@@ -9,11 +9,11 @@ import {
 import WynncraftGuild from "./wynncraftGuild";
 import { useState } from "react";
 import DistributionChartWrapper from "./distributionChartWrapper";
-import { PlayerSummary, GuildInfo } from "../../client";
+import { WynncraftPlayerSummary, WynncraftGuildInfo } from "../../client";
 
 type WynncraftProps = {
-  wynncraftData: PlayerSummary;
-  wynncraftGuildData: GuildInfo | null | undefined;
+  wynncraftData: WynncraftPlayerSummary;
+  wynncraftGuildData: WynncraftGuildInfo | null | undefined;
 };
 
 function WynncraftTabbedData({

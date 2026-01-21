@@ -251,3 +251,22 @@
 .SelectItem:hover {
   background-color: #aaa2;
 }
+
+.DialogContent::-webkit-scrollbar {
+  width: 6px;
+}
+
+.DialogContent::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0);
+}
+.DialogContent::-webkit-scrollbar-thumb {
+  background: hsl(
+    from var(--color-surfact-layer-2) h calc(s + 10) calc(l + 30)
+  );
+  border-radius: 4px;
+}
+.DialogContent::-webkit-scrollbar-thumb:hover {
+  background: hsl(
+    from var(--color-surfact-layer-2) h calc(s + 10) calc(l + 120)
+  );
+}
