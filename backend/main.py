@@ -3,18 +3,17 @@ from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from wynncraft_api import (
-    GetWynncraftData,
+    get_wynncraft_player_data,
+    get_wynncraft_guild_data,
     WynncraftPlayerSummary,
     WynncraftGuildInfo,
     add_wynncraft_stats_to_db,
 )
 from online_status import get_online_status
 from dotenv import load_dotenv
-from wynn_data_manager import WynnDataManager
 from minecraft_api import MojangData
 from donut_api import get_donut_stats, DonutPlayerStats, add_donut_stats_to_db
 from mcci_api import MCCIPlayer, get_mcci_data
-import os
 from metrics_manager import get_stats, HistogramData
 from db import get_db
 
@@ -36,7 +35,6 @@ import time
 from telemetry_manager import add_telemetry_event
 from capes import get_capes_for_user, UserCapeData
 from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
 from slowapi import Limiter
 from slowapi.middleware import SlowAPIMiddleware
 
@@ -189,23 +187,14 @@ async def get_status(uuid):
 def get_wynncraft(
     uuid: str, background_tasks: BackgroundTasks
 ) -> WynncraftPlayerSummary:
-    data_instance = GetWynncraftData()
-    player_data = data_instance.get_player_data(uuid)
+    player_data = get_wynncraft_player_data(uuid)
     background_tasks.add_task(add_wynncraft_stats_to_db, player_data)
     return player_data
 
 
 @app.get("/v1/wynncraft/guilds/{prefix}")
 def get_wynncraft_guild(prefix) -> WynncraftGuildInfo:
-    data_instance = GetWynncraftData()
-    return data_instance.get_guild_data(prefix)
-
-
-@app.get("/v1/wynncraft/guild-list")
-def get_wynncraft_guild_list():
-    wynn_data_manager = WynnDataManager()
-    guild_list = wynn_data_manager.get_guild_list()
-    return guild_list
+    return get_wynncraft_guild_data(prefix)
 
 
 # donutsmp endpoint

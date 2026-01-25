@@ -121,17 +121,20 @@ function CharacterDetails({
     "woodworking",
     "armouring",
   ];
-  const professionElements = professionList.map((profession) => {
-    const validProfession = profession as keyof typeof character.professions;
-    return (
-      <HorizontalInfoCard
-        label={toProperCase(profession)}
-        value={character.professions![validProfession]}
-        imageSrc={getProfessionUrl(profession)}
-        imageAlt={profession}
-      />
-    );
-  });
+  let professionElements = null;
+  if (character.professions) {
+    professionElements = professionList.map((profession) => {
+      const validProfession = profession as keyof typeof character.professions;
+      return (
+        <HorizontalInfoCard
+          label={toProperCase(profession)}
+          value={character.professions![validProfession]}
+          imageSrc={getProfessionUrl(profession)}
+          imageAlt={profession}
+        />
+      );
+    });
+  }
 
   return (
     <>
@@ -139,31 +142,39 @@ function CharacterDetails({
       <ul className="horizontal-card-list">
         <HorizontalInfoCard
           label="Level"
-          value={formatValue(character.level)}
+          value={formatValue(character.level, undefined, "Private")}
         />
         <HorizontalInfoCard
           label="Playtime"
-          value={`${formatValue(character.playtime)} hours`}
+          value={`${formatValue(character.playtime, undefined, "Private")} hours`}
         />
         <HorizontalInfoCard
           label="Logged In"
-          value={`${formatValue(character.stats.logins)} times`}
+          value={`${formatValue(character.stats.logins, undefined, "Private")} times`}
         />
         <HorizontalInfoCard
           label="Deaths"
-          value={formatValue(character.stats.deaths)}
+          value={formatValue(character.stats.deaths, undefined, "Private")}
         />
         <HorizontalInfoCard
           label="Mobs Killed"
-          value={formatValue(character.stats.mobs_killed)}
+          value={formatValue(character.stats.mobs_killed, undefined, "Private")}
         />
         <HorizontalInfoCard
           label="Chests Opened"
-          value={formatValue(character.stats.chests_opened)}
+          value={formatValue(
+            character.stats.chests_opened,
+            undefined,
+            "Private",
+          )}
         />
         <HorizontalInfoCard
           label="Blocks Walked"
-          value={formatValue(character.stats.blocks_walked)}
+          value={formatValue(
+            character.stats.blocks_walked,
+            undefined,
+            "Private",
+          )}
         />
       </ul>
       <h3>Content</h3>
@@ -171,42 +182,70 @@ function CharacterDetails({
         <ul className="horizontal-card-list">
           <HorizontalInfoCard
             label="Content Completed"
-            value={formatValue(character.content.content_completed, false)}
+            value={formatValue(
+              character.content.content_completed,
+              false,
+              "Private",
+            )}
           />
           <HorizontalInfoCard
             label="Quests Completed"
-            value={formatValue(character.content.quests_completed)}
+            value={formatValue(
+              character.content.quests_completed,
+              undefined,
+              "Private",
+            )}
           />
           <HorizontalInfoCard
             label="Discoveries"
-            value={formatValue(character.content.discoveries)}
+            value={formatValue(
+              character.content.discoveries,
+              undefined,
+              "Private",
+            )}
           />
           <HorizontalInfoCard
             label="Caves"
-            value={formatValue(character.content.caves)}
+            value={formatValue(character.content.caves, undefined, "Private")}
           />
           <HorizontalInfoCard
             label="World Events"
-            value={formatValue(character.content.world_events)}
+            value={formatValue(
+              character.content.world_events,
+              undefined,
+              "Private",
+            )}
           />
         </ul>
-        
+
         <ul className="horizontal-card-list">
           <HorizontalInfoCard
             label="Lootruns"
-            value={formatValue(character.content.lootruns)}
+            value={formatValue(
+              character.content.lootruns,
+              undefined,
+              "Private",
+            )}
           />
           <HorizontalInfoCard
             label="Wars"
-            value={formatValue(character.content.wars)}
+            value={formatValue(character.content.wars, undefined, "Private")}
           />
           <HorizontalInfoCard
             label="Dungeons"
-            value={formatValue(character.content.dungeons.total)}
+            value={formatValue(
+              character.content.dungeons.total,
+              undefined,
+              "Private",
+            )}
           />
           <HorizontalInfoCard
             label="Raids"
-            value={formatValue(character.content.raids.total)}
+            value={formatValue(
+              character.content.raids.total,
+              undefined,
+              "Private",
+            )}
           />
         </ul>
       </div>
@@ -229,8 +268,12 @@ function CharacterDetails({
           </div>
         </>
       )}
-      <h3>Professions</h3>
-      <ul className="profession-list">{professionElements}</ul>
+      {character.professions && (
+        <>
+          <h3>Professions</h3>
+          <ul className="profession-list">{professionElements}</ul>
+        </>
+      )}
     </>
   );
 }
@@ -259,7 +302,9 @@ export default function WynncraftCharacterModal({
             <CharacterHeader character={character} />
             {
               <p className="secondary-text wynn-char-preview">
-                Level {character.level} • Played for {character.playtime} hours
+                Level {character.level}
+                {character.playtime &&
+                  ` • Played for ${character.playtime} hours`}
               </p>
             }
           </div>
