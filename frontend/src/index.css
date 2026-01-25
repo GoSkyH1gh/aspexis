@@ -1,20 +1,102 @@
-/*
-
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --hue: 245;
+
+  /* BACKGROUND (60%) - Very dark, low saturation */
+  --color-background: hsl(var(--hue), 10%, 15%);
+
+  /* SURFACE (30%) - The main content cards */
+  --color-surface: hsl(var(--hue), 12%, 22%);
+
+  /* ELEMENT (10%) - The smaller info cards */
+  --color-card: hsl(var(--hue), 15%, 30%);
+  --color-card-hover: hsl(var(--hue), 15%, 35%);
+
+  /* TEXT */
+  --text-primary: hsl(var(--hue), 20%, 96%);
+  --text-secondary: hsl(var(--hue), 15%, 87%);
+
+  /* ACCENT (+): A contrasting color for primary actions */
+  --color-accent: hsl(180, 65%, 55%);
+  --color-accent-hover: hsl(180, 65%, 65%);
+
+  /* Layers for transparency */
+  --color-surface-layer-1: rgba(204, 204, 204, 0.06); /* #ccc1 approx */
+  --color-surface-layer-2: rgba(238, 238, 238, 0.06); /* #eee1 approx */
+  --color-surface-layer-3: rgba(204, 204, 204, 0.13); /* #ccc2 approx */
+
+  /* Gradients */
+  --color-accent-gradient-start: #be77f4;
+  --color-accent-gradient-end: #a130f6;
+
+  /* UI States */
+  --color-selected: #f4f077;
+  --color-selected-hover: #f8d563;
+  --color-text-on-accent: #101e10;
+
+  /* Misc */
+  --color-shadow: rgba(0, 0, 0, 0.1);
+  --color-overlay-background: rgba(0, 0, 0, 0.5);
+  --color-border-subtle: rgba(170, 170, 170, 0.06); /* #aaa1 approx */
+
+  font-family:
+    "Rubik",
+    system-ui,
+    Avenir,
+    Helvetica,
+    Arial,
+    sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: var(--text-primary);
+  background-color: var(--color-background);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-*/
+
+[data-theme="light"] {
+  /* BACKGROUND (60%) - Very light, subtle purple tint */
+  --color-background: hsl(var(--hue), 20%, 96%);
+
+  /* SURFACE (30%) - Pure white to make content pop */
+  --color-surface: hsl(var(--hue), 0%, 100%);
+
+  /* ELEMENT (10%) - Slightly darker/tinted for contrast */
+  --color-card: hsl(var(--hue), 25%, 92%);
+  --color-card-hover: hsl(var(--hue), 25%, 88%);
+
+  /* TEXT - High contrast dark purple-grey */
+  --text-primary: hsl(var(--hue), 30%, 15%);
+  --text-secondary: hsl(var(--hue), 15%, 40%);
+
+  /* ACCENT - Slightly deeper cyan for readability on white */
+  --color-accent: hsl(180, 70%, 40%);
+  --color-accent-hover: hsl(180, 70%, 35%);
+
+  /* Layers - Using darker transparencies for light mode */
+  --color-surface-layer-1: rgba(0, 0, 0, 0.03);
+  --color-surface-layer-2: rgba(0, 0, 0, 0.05);
+  --color-surface-layer-3: rgba(0, 0, 0, 0.08);
+
+  /* Gradients - A bit more saturated for light mode */
+  --color-accent-gradient-start: #a353e4;
+  --color-accent-gradient-end: #7b1fa2;
+
+  /* UI States */
+  --color-selected: #d8bb3b;
+  --color-selected-hover: #dbd032;
+  --color-text-on-accent: #ffffff;
+
+  /* Misc */
+  /* Shadows are MUCH more important in light mode! */
+  --color-shadow: rgba(var(--hue), 20%, 10%, 0.08);
+  --color-overlay-background: rgba(0, 0, 0, 0.3);
+  --color-border-subtle: rgba(0, 0, 0, 0.08);
+}
 
 /* 1. Rubik (Primary - Body, Links, Hero) */
 @font-face {
@@ -77,9 +159,9 @@ button:focus-visible {
   width: 4rem;
   min-width: 50px;
   backdrop-filter: blur(20px);
-  background-color: #ccc2;
-  border: 1px solid #ccc2;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-surface-layer-3);
+  border: 1px solid var(--color-surface-layer-3);
+  box-shadow: 0 4px 30px var(--color-shadow);
   position: fixed;
   border-radius: 15px;
   margin: 20px;
@@ -87,6 +169,8 @@ button:focus-visible {
   display: flex;
   flex-direction: column;
   z-index: 1001;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .sidebar-icon {
@@ -112,23 +196,28 @@ button:focus-visible {
 .sidebar-row {
   display: grid;
   grid-template-columns: 2rem;
-  padding: 1rem;
-  min-height: 1.4rem;
+  padding: 0 1rem; /* Removed vertical padding, using height instead */
+  height: 3.2rem;
+  align-items: center;
   box-shadow: none;
   border-radius: 10px;
   gap: 0.5rem;
+  box-sizing: border-box;
 }
 
 .sidebar-label {
   animation: sidebar-label-slide-in 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sidebar-label-homepage {
-  color: #101e10;
+  color: var(--color-text-on-accent);
 }
 
 .sidebar-row:hover {
-  background-color: #ccc2;
+  background-color: var(--color-surface-layer-3);
 }
 
 .sidebar-hover > .sidebar-row {
@@ -150,8 +239,8 @@ button:focus-visible {
   .sidebar {
     width: auto;
     backdrop-filter: blur(100px);
-    background-color: #ccc1;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    background-color: var(--color-surface-layer-1);
+    box-shadow: 0 4px 30px var(--color-shadow);
     border-radius: 15px;
     position: static;
     flex-direction: row;
@@ -248,9 +337,9 @@ h1 {
   border-radius: 5px;
   padding: 6px 10px;
   backdrop-filter: blur(15px);
-  background-color: #ccc2;
-  border: 1px solid #ccc2;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-surface-layer-3);
+  border: 1px solid var(--color-surface-layer-3);
+  box-shadow: 0 4px 30px var(--color-shadow);
   animation-duration: 400ms;
   animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform, opacity;
@@ -295,8 +384,8 @@ footer {
 
 .hero-footer {
   background-color: var(--color-surface-layer-1);
-  border: 1px solid var(--color-surfact-layer-2);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--color-surface-layer-2);
+  box-shadow: 0 4px 30px var(--color-shadow);
   padding: 25px;
   border-radius: 15px;
   margin-bottom: 20px;

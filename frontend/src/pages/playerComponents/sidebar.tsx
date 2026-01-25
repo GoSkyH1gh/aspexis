@@ -42,7 +42,7 @@ function Sidebar() {
           ) : (
             <Icon
               icon="material-symbols:home-outline-rounded"
-              color={isHomePage ? "#101e10" : ""}
+              color={isHomePage ? "var(--color-text-on-accent)" : ""}
             />
           )}
         </div>
@@ -70,7 +70,7 @@ function Sidebar() {
           ) : (
             <Icon
               icon="material-symbols:search-rounded"
-              color={isHomePage ? "#101e10" : ""}
+              color={isHomePage ? "var(--color-text-on-accent)" : ""}
             />
           )}
         </div>
@@ -98,7 +98,7 @@ function Sidebar() {
           ) : (
             <Icon
               icon="material-symbols:footprint-outline"
-              color={isHomePage ? "#101e10" : ""}
+              color={isHomePage ? "var(--color-text-on-accent)" : ""}
             />
           )}
         </div>
@@ -126,7 +126,7 @@ function Sidebar() {
           ) : (
             <Icon
               icon="material-symbols:favorite-outline-rounded"
-              color={isHomePage ? "#101e10" : ""}
+              color={isHomePage ? "var(--color-text-on-accent)" : ""}
             />
           )}
         </div>

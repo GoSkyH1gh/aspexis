@@ -1,3 +1,8 @@
+.homepage-wrapper {
+  isolation: isolate;
+  width: 100%;
+}
+
 .card-showcase {
   border-radius: 15px;
   background-color: var(--color-surface);
@@ -15,7 +20,7 @@
 }
 
 .mojang-data-text {
-  background: linear-gradient(to left, #be77f4, #a130f6);
+  background: linear-gradient(to left, var(--color-accent-gradient-start), var(--color-accent-gradient-end));
   padding: 15px;
   border-radius: 10px;
   width: 3%;
@@ -31,14 +36,14 @@
   padding: 15px;
   border-radius: 15px;
   background-color: var(--color-accent);
-  color: #000000;
+  color: var(--color-text-on-accent);
   margin: 30px 0;
 }
 
 .main-explore-button:hover {
   background-color: var(--color-accent-hover);
   transition: 0.5s;
-  color: #000000;
+  color: var(--color-text-on-accent);
 }
 
 .align-center {
@@ -55,8 +60,8 @@
 .info-card-container {
   backdrop-filter: blur(100px);
   background-color: var(--color-surface-layer-1);
-  border: 1px solid var(--color-surfact-layer-2);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--color-surface-layer-2);
+  box-shadow: 0 4px 30px var(--color-shadow);
   border-radius: 15px;
   padding: 15px;
 }
@@ -64,8 +69,8 @@
 .guild-members-container {
   backdrop-filter: blur(100px);
   background-color: var(--color-surface-layer-1);
-  border: 1px solid var(--color-surfact-layer-2);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--color-surface-layer-2);
+  box-shadow: 0 4px 30px var(--color-shadow);
   border-radius: 15px;
   padding: 15px;
 }
@@ -96,7 +101,7 @@
   display: flex;
   flex-direction: column;
   background: linear-gradient(to left, #f4e2f7, #f5f3cf);
-  color: #101e10;
+  color: var(--color-text-on-accent);
   border-radius: 10px;
   z-index: -2;
   position: absolute;
@@ -116,7 +121,7 @@
 .hero-section {
   display: flex;
   flex-direction: column;
-  color: #101e10;
+  color: var(--color-text-on-accent);
   z-index: -2;
   width: 100%;
 }
@@ -215,7 +220,7 @@
 }
 
 .hero-card {
-  background: linear-gradient(#be77f4, #a130f6);
+  background: linear-gradient(var(--color-accent-gradient-start), var(--color-accent-gradient-end));
   padding: 15px;
   color: #fff;
   border-radius: 10px;
@@ -253,7 +258,7 @@
 }
 
 .arrow-button {
-  background-color: #f4f077;
+  background-color: var(--color-selected);
   width: 80px;
   align-self: center;
   transition: none;
@@ -265,7 +270,7 @@
 }
 
 a {
-  color: #f4f077;
+  color: var(--color-selected);
 }
 
 a:hover {
@@ -295,7 +300,7 @@ a:hover {
 }
 
 .hypixel-data-text {
-  background: linear-gradient(to right, #be77f4, #a130f6);
+  background: linear-gradient(to right, var(--color-accent-gradient-start), var(--color-accent-gradient-end));
   padding: 15px;
   border-radius: 10px;
   width: 3%;

@@ -1,5 +1,6 @@
 .DialogOverlay {
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--color-overlay-background);
+  box-shadow: 0 4px 30px var(--color-shadow);
   backdrop-filter: blur(4px);
   position: fixed;
   inset: 0;
@@ -8,11 +9,11 @@
 }
 
 .DialogContent {
-  background-color: #eee1;
-  border: 1px solid #eee1;
+  background-color: var(--color-surface-layer-2);
+  border: 1px solid var(--color-surface-layer-2);
   border-radius: 15px;
   padding: 10px;
-  box-shadow: #ccc;
+  box-shadow: var(--color-shadow);
   position: fixed;
   top: 50%;
   left: 50%;
@@ -54,11 +55,11 @@
 }
 
 .BedwarsOverlay {
-  background-color: #eee1;
-  border: 1px solid #eee1;
+  background-color: var(--color-surface-layer-2);
+  border: 1px solid var(--color-surface-layer-2);
   border-radius: 15px;
   padding: 10px;
-  box-shadow: #ccc;
+  box-shadow: var(--color-shadow);
   position: fixed;
   top: 50%;
   left: 50%;
@@ -83,13 +84,13 @@
 }
 .BedwarsOverlay::-webkit-scrollbar-thumb {
   background: hsl(
-    from var(--color-surfact-layer-2) h calc(s + 10) calc(l + 30)
+    from var(--color-surface-layer-2) h calc(s + 10) calc(l + 30)
   );
   border-radius: 4px;
 }
 .BedwarsOverlay::-webkit-scrollbar-thumb:hover {
   background: hsl(
-    from var(--color-surfact-layer-2) h calc(s + 10) calc(l + 120)
+    from var(--color-surface-layer-2) h calc(s + 10) calc(l + 120)
   );
 }
 
@@ -115,7 +116,8 @@
 }
 
 .ToastRoot {
-  background-color: #eee3;
+  background-color: var(--color-surface-layer-2);
+  border: 1px solid var(--color-surface-layer-2);
   backdrop-filter: blur(10px);
   border-radius: 6px;
   box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px,
@@ -178,7 +180,7 @@
 }
 
 .SeparatorRoot {
-  background-color: #101e10;
+  background-color: var(--color-text-on-accent);
 }
 
 .dialog-close {
@@ -220,9 +222,9 @@
 
 .SelectTrigger {
   padding: 8px 12px;
-  border: 1px solid #aaa3;
+  border: 1px solid var(--color-surface-layer-3);
   border-radius: 6px;
-  background: #aaa1;
+  background: var(--color-border-subtle);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -231,9 +233,9 @@
 }
 
 .SelectContent {
-  background: #aaa1;
+  background: var(--color-surface-layer-1);
   backdrop-filter: blur(10px);
-  border: 1px solid #aaa1;
+  border: 1px solid var(--color-border-subtle);
   border-radius: 6px;
   z-index: 10000;
 }
@@ -249,7 +251,7 @@
 }
 
 .SelectItem:hover {
-  background-color: #aaa2;
+  background-color: var(--color-surface-layer-3);
 }
 
 .DialogContent::-webkit-scrollbar {
@@ -261,12 +263,12 @@
 }
 .DialogContent::-webkit-scrollbar-thumb {
   background: hsl(
-    from var(--color-surfact-layer-2) h calc(s + 10) calc(l + 30)
+    from var(--color-surface-layer-2) h calc(s + 10) calc(l + 30)
   );
   border-radius: 4px;
 }
 .DialogContent::-webkit-scrollbar-thumb:hover {
   background: hsl(
-    from var(--color-surfact-layer-2) h calc(s + 10) calc(l + 120)
+    from var(--color-surface-layer-2) h calc(s + 10) calc(l + 120)
   );
 }
