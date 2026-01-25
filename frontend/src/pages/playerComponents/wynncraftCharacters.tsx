@@ -13,20 +13,33 @@ function WynncraftCharacters({
     return <p>This player has no characters.</p>;
   }
 
-  const getTotalProfessionLevel = (professions: ProfessionInfo) => {
+  let removedStats = characterList[0].removed_stats;
+
+  const getTotalProfessionLevel = (professions: ProfessionInfo | null) => {
+    if (professions === null) {
+      return 0;
+    }
     return Object.values(professions).reduce(
       (sum: number, level: number) => sum + level,
       0,
     );
   };
 
-  const [sort, setSort] = useState<string>("playtime");
+  let defaultSort;
+  if (removedStats.includes("playtime")) {
+    defaultSort = "level";
+  } else {
+    defaultSort = "playtime";
+  }
+
+  const [sort, setSort] = useState<string>(defaultSort);
   let characters;
 
   switch (sort) {
     case "playtime":
       characters = [...characterList]
-        .sort((charOne, charTwo) => charOne.playtime - charTwo.playtime)
+        // this sort is removed if playtime isn't available
+        .sort((charOne, charTwo) => charOne.playtime! - charTwo.playtime!)
         .reverse();
       break;
     case "level":
@@ -39,7 +52,10 @@ function WynncraftCharacters({
       break;
     case "logins":
       characters = [...characterList]
-        .sort((charOne, charTwo) => charOne.stats.logins - charTwo.stats.logins)
+        // this sort is removed if logins aren't available
+        .sort(
+          (charOne, charTwo) => charOne.stats.logins! - charTwo.stats.logins!,
+        )
         .reverse();
       break;
     case "professions":
@@ -71,21 +87,27 @@ function WynncraftCharacters({
         <Select.Portal>
           <Select.Content className="SelectContent" position="popper">
             <Select.Viewport className="SelectViewport">
-              <Select.Item value="playtime" className="SelectItem">
-                <Select.ItemText>Playtime</Select.ItemText>
-              </Select.Item>
+              {!removedStats.includes("playtime") && (
+                <Select.Item value="playtime" className="SelectItem">
+                  <Select.ItemText>Playtime</Select.ItemText>
+                </Select.Item>
+              )}
               <Select.Item value="level" className="SelectItem">
                 <Select.ItemText>Level</Select.ItemText>
               </Select.Item>
               <Select.Item value="age" className="SelectItem">
                 <Select.ItemText>Oldest</Select.ItemText>
               </Select.Item>
-              <Select.Item value="logins" className="SelectItem">
-                <Select.ItemText>Logins</Select.ItemText>
-              </Select.Item>
-              <Select.Item value="professions" className="SelectItem">
-                <Select.ItemText>Professions</Select.ItemText>
-              </Select.Item>
+              {!removedStats.includes("logins") && (
+                <Select.Item value="logins" className="SelectItem">
+                  <Select.ItemText>Logins</Select.ItemText>
+                </Select.Item>
+              )}
+              {!removedStats.includes("professions") && (
+                <Select.Item value="professions" className="SelectItem">
+                  <Select.ItemText>Professions</Select.ItemText>
+                </Select.Item>
+              )}
             </Select.Viewport>
           </Select.Content>
         </Select.Portal>

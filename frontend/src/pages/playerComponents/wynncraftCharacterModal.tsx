@@ -71,8 +71,10 @@ function CharacterHeader({ character }: { character: WynncraftCharacterInfo }) {
         {character.gamemodes.length >= 1 && (
           <div className="wynn-modes">
             {character.gamemodes.sort().map((gamemode) => {
-              if (character.stats.deaths >= 1 && gamemode == "hardcore") {
-                gamemode = "defeated_hardcore";
+              if (character.stats?.deaths) {
+                if (character.stats.deaths >= 1 && gamemode == "hardcore") {
+                  gamemode = "defeated_hardcore";
+                }
               }
               if (
                 gamemode == "ironman" &&

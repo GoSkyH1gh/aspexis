@@ -322,8 +322,14 @@ const sampleWynncraftResponse = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 0, list: {} },
-        raids: { total: 0, list: {} },
+        dungeons: {
+          total: 0,
+          list: {},
+        },
+        raids: {
+          total: 0,
+          list: {},
+        },
       },
       stats: {
         mobs_killed: 120,
@@ -332,6 +338,7 @@ const sampleWynncraftResponse = {
         logins: 42,
         deaths: 0,
       },
+      removed_stats: [],
     },
     {
       character_uuid: "28c05974-501f-4891-a27b-9f9d7f29201f",
@@ -370,8 +377,16 @@ const sampleWynncraftResponse = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 1, list: { Spider: 1 } },
-        raids: { total: 0, list: {} },
+        dungeons: {
+          total: 1,
+          list: {
+            Spider: 1,
+          },
+        },
+        raids: {
+          total: 0,
+          list: {},
+        },
       },
       stats: {
         mobs_killed: 114,
@@ -380,6 +395,7 @@ const sampleWynncraftResponse = {
         logins: 135,
         deaths: 4,
       },
+      removed_stats: [],
     },
     {
       character_uuid: "66cdecad-66c9-41c3-bed2-85a3770f2c1f",
@@ -418,8 +434,14 @@ const sampleWynncraftResponse = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 0, list: {} },
-        raids: { total: 0, list: {} },
+        dungeons: {
+          total: 0,
+          list: {},
+        },
+        raids: {
+          total: 0,
+          list: {},
+        },
       },
       stats: {
         mobs_killed: 232,
@@ -428,6 +450,7 @@ const sampleWynncraftResponse = {
         logins: 78,
         deaths: 4,
       },
+      removed_stats: [],
     },
     {
       character_uuid: "f1da4166-0a71-40f4-8c87-47e855654064",
@@ -466,8 +489,16 @@ const sampleWynncraftResponse = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 1, list: { Spider: 1 } },
-        raids: { total: 0, list: {} },
+        dungeons: {
+          total: 1,
+          list: {
+            Spider: 1,
+          },
+        },
+        raids: {
+          total: 0,
+          list: {},
+        },
       },
       stats: {
         mobs_killed: 32,
@@ -476,6 +507,7 @@ const sampleWynncraftResponse = {
         logins: 33,
         deaths: 2,
       },
+      removed_stats: [],
     },
     {
       character_uuid: "81410d02-052a-44de-aded-5bf20b564a55",
@@ -514,8 +546,17 @@ const sampleWynncraftResponse = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 3, list: { Skeleton: 1, Spider: 2 } },
-        raids: { total: 0, list: {} },
+        dungeons: {
+          total: 3,
+          list: {
+            Skeleton: 1,
+            Spider: 2,
+          },
+        },
+        raids: {
+          total: 0,
+          list: {},
+        },
       },
       stats: {
         mobs_killed: 219,
@@ -524,6 +565,7 @@ const sampleWynncraftResponse = {
         logins: 39,
         deaths: 4,
       },
+      removed_stats: [],
     },
     {
       character_uuid: "62308174-1a4c-4eb5-9e9f-d986203f8a4f",
@@ -562,8 +604,14 @@ const sampleWynncraftResponse = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 0, list: {} },
-        raids: { total: 0, list: {} },
+        dungeons: {
+          total: 0,
+          list: {},
+        },
+        raids: {
+          total: 0,
+          list: {},
+        },
       },
       stats: {
         mobs_killed: 0,
@@ -572,6 +620,7 @@ const sampleWynncraftResponse = {
         logins: 10,
         deaths: 3,
       },
+      removed_stats: [],
     },
     {
       character_uuid: "5ced68b3-24eb-4f9c-b9c9-9a9e02c86d1b",
@@ -610,8 +659,14 @@ const sampleWynncraftResponse = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 0, list: {} },
-        raids: { total: 0, list: {} },
+        dungeons: {
+          total: 0,
+          list: {},
+        },
+        raids: {
+          total: 0,
+          list: {},
+        },
       },
       stats: {
         mobs_killed: 165,
@@ -620,6 +675,7 @@ const sampleWynncraftResponse = {
         logins: 30,
         deaths: 2,
       },
+      removed_stats: [],
     },
     {
       character_uuid: "6ee38c5a-8cef-4bd2-829f-df18b9a99364",
@@ -627,7 +683,7 @@ const sampleWynncraftResponse = {
       nickname: null,
       reskin: "DARKWIZARD",
       level: 85,
-      playtime: 2.0,
+      playtime: 2,
       gamemodes: [],
       professions: {
         fishing: 0,
@@ -658,8 +714,14 @@ const sampleWynncraftResponse = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 0, list: {} },
-        raids: { total: 0, list: {} },
+        dungeons: {
+          total: 0,
+          list: {},
+        },
+        raids: {
+          total: 0,
+          list: {},
+        },
       },
       stats: {
         mobs_killed: 50,
@@ -668,6 +730,7 @@ const sampleWynncraftResponse = {
         logins: 13,
         deaths: 4,
       },
+      removed_stats: [],
     },
     {
       character_uuid: "e59a4329-8cc2-4f2d-a0b1-056735137a11",
@@ -706,8 +769,16 @@ const sampleWynncraftResponse = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 1, list: { Skeleton: 1 } },
-        raids: { total: 0, list: {} },
+        dungeons: {
+          total: 1,
+          list: {
+            Skeleton: 1,
+          },
+        },
+        raids: {
+          total: 0,
+          list: {},
+        },
       },
       stats: {
         mobs_killed: 536,
@@ -716,6 +787,7 @@ const sampleWynncraftResponse = {
         logins: 53,
         deaths: 15,
       },
+      removed_stats: [],
     },
     {
       character_uuid: "42ad18e0-679f-49d1-828c-e749b65936ee",
@@ -723,7 +795,7 @@ const sampleWynncraftResponse = {
       nickname: null,
       reskin: "DARKWIZARD",
       level: 80,
-      playtime: 1.0,
+      playtime: 1,
       gamemodes: [],
       professions: {
         fishing: 0,
@@ -754,8 +826,14 @@ const sampleWynncraftResponse = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 0, list: {} },
-        raids: { total: 0, list: {} },
+        dungeons: {
+          total: 0,
+          list: {},
+        },
+        raids: {
+          total: 0,
+          list: {},
+        },
       },
       stats: {
         mobs_killed: 8,
@@ -764,6 +842,7 @@ const sampleWynncraftResponse = {
         logins: 8,
         deaths: 0,
       },
+      removed_stats: [],
     },
   ],
   restrictions: {
