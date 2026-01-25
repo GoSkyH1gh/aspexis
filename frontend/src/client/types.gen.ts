@@ -714,6 +714,10 @@ export type WynncraftCharacterInfo = {
     skill_points: WynncraftCharacterSkillPoints | null;
     content: WynncraftCharacterContent;
     stats: WynncraftCharacterStats;
+    /**
+     * Removed Stats
+     */
+    removed_stats: Array<string>;
 };
 
 /**

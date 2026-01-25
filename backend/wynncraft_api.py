@@ -100,6 +100,7 @@ class WynncraftCharacterInfo(BaseModel):
     skill_points: WynncraftCharacterSkillPoints | None
     content: WynncraftCharacterContent
     stats: WynncraftCharacterStats
+    removed_stats: list[str]
 
 
 class WynncraftPlayerStats(BaseModel):
@@ -154,7 +155,6 @@ def get_character_stat(
 ) -> int | None:
     if stat in removed_stats:
         return None
-    print(f"debug: returning {stat} because its not in {removed_stats}")
     return selected_character.get(stat) or 0
 
 
@@ -273,6 +273,7 @@ def process_characters(
             skill_points=skill_points,
             content=character_content,
             stats=character_stats,
+            removed_stats=removed_stats,
         )
 
         pydantic_characters.append(modeled_character)

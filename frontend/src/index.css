@@ -52,7 +52,6 @@
   color: var(--text-primary);
   background-color: var(--color-background);
 
-  font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -340,7 +339,7 @@ h1 {
   background-color: var(--color-surface-layer-3);
   border: 1px solid var(--color-surface-layer-3);
   box-shadow: 0 4px 30px var(--color-shadow);
-  animation-duration: 400ms;
+  animation-duration: 250ms;
   animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform, opacity;
   z-index: 100000;
@@ -349,7 +348,7 @@ h1 {
 @keyframes slideUpAndFade {
   from {
     opacity: 0;
-    transform: translateY(3px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
