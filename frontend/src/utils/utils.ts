@@ -25,9 +25,13 @@ function formatISOTimestamp(timestamp: string | null) {
   return readableDate;
 }
 
-const formatValue = (value: number | null | undefined, compact = true) => {
+const formatValue = (
+  value: number | null | undefined,
+  compact = true,
+  fallbackValue = "Unknown",
+) => {
   if (value === null || value === undefined) {
-    return "Unknown";
+    return fallbackValue;
   } else {
     if (compact) {
       return value.toLocaleString("en-US", {
@@ -70,13 +74,13 @@ const formatLogTime = (date: Date) => {
 const fetchMetric = async (
   metric_key: string,
   player_uuid: string,
-  setMetricData: React.Dispatch<React.SetStateAction<any>>
+  setMetricData: React.Dispatch<React.SetStateAction<any>>,
 ) => {
   setMetricData("loading");
   const baseUrl =
     import.meta.env.VITE_API_URL ?? "https://fastapi-fakemc.onrender.com";
   let metricResponseRaw = await fetch(
-    `${baseUrl}/v1/metrics/${metric_key}/distribution/${player_uuid}`
+    `${baseUrl}/v1/metrics/${metric_key}/distribution/${player_uuid}`,
   );
   if (metricResponseRaw.status === 404) {
     setMetricData("notFound");
@@ -94,7 +98,7 @@ const fetchMetric = async (
 const handleStatClick = (
   metric_key: string,
   uuid: string,
-  setMetricData: React.Dispatch<React.SetStateAction<any>>
+  setMetricData: React.Dispatch<React.SetStateAction<any>>,
 ) => {
   setMetricData(null);
   fetchMetric(metric_key, uuid, setMetricData);
@@ -122,14 +126,11 @@ export {
 
 import { useState } from "react";
 
-export function useStaticInfiniteQuery<T>(
-  allItems: T[],
-  pageSize: number
-) {
+export function useStaticInfiniteQuery<T>(allItems: T[], pageSize: number) {
   const [pageCount, setPageCount] = useState(1);
 
   const pages = Array.from({ length: pageCount }, (_, i) =>
-    allItems.slice(i * pageSize, (i + 1) * pageSize)
+    allItems.slice(i * pageSize, (i + 1) * pageSize),
   );
 
   const hasNextPage = pageCount * pageSize < allItems.length;

@@ -130,7 +130,7 @@ export type ContentProgress = {
     /**
      * Total
      */
-    total: number;
+    total: number | null;
     /**
      * List
      */
@@ -649,31 +649,31 @@ export type WynncraftCharacterContent = {
     /**
      * Content Completed
      */
-    content_completed: number;
+    content_completed: number | null;
     /**
      * Quests Completed
      */
-    quests_completed: number;
+    quests_completed: number | null;
     /**
      * Discoveries
      */
-    discoveries: number;
+    discoveries: number | null;
     /**
      * Caves
      */
-    caves: number;
+    caves: number | null;
     /**
      * Lootruns
      */
-    lootruns: number;
+    lootruns: number | null;
     /**
      * World Events
      */
-    world_events: number;
+    world_events: number | null;
     /**
      * Wars
      */
-    wars: number;
+    wars: number | null;
     dungeons: ContentProgress;
     raids: ContentProgress;
 };
@@ -705,12 +705,12 @@ export type WynncraftCharacterInfo = {
     /**
      * Playtime
      */
-    playtime: number;
+    playtime: number | null;
     /**
      * Gamemodes
      */
     gamemodes: Array<string>;
-    professions: ProfessionInfo;
+    professions: ProfessionInfo | null;
     skill_points: WynncraftCharacterSkillPoints | null;
     content: WynncraftCharacterContent;
     stats: WynncraftCharacterStats;
@@ -761,11 +761,11 @@ export type WynncraftCharacterStats = {
     /**
      * Logins
      */
-    logins: number;
+    logins: number | null;
     /**
      * Deaths
      */
-    deaths: number;
+    deaths: number | null;
 };
 
 /**
@@ -1204,20 +1204,6 @@ export type GetWynncraftGuildV1WynncraftGuildsPrefixGetResponses = {
 };
 
 export type GetWynncraftGuildV1WynncraftGuildsPrefixGetResponse = GetWynncraftGuildV1WynncraftGuildsPrefixGetResponses[keyof GetWynncraftGuildV1WynncraftGuildsPrefixGetResponses];
-
-export type GetWynncraftGuildListV1WynncraftGuildListGetData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/v1/wynncraft/guild-list';
-};
-
-export type GetWynncraftGuildListV1WynncraftGuildListGetResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
-};
 
 export type GetDonutV1PlayersDonutsmpUsernameGetData = {
     body?: never;
