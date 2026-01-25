@@ -304,8 +304,8 @@ function HypixelGuild({ hypixelData, hypixelGuildQuery }: HypixelDataProps) {
         <div className="load-more-container">
           <motion.button
             className="load-more-button"
-            initial={{ scale: 1, backgroundColor: "#F4F077" }}
-            whileHover={{ scale: 1.3, backgroundColor: "#f8d563" }}
+            initial={{ scale: 1, backgroundColor: "var(--color-selected)" }}
+            whileHover={{ scale: 1.3, backgroundColor: "var(--color-selected-hover)" }}
             disabled={isFetchingNextPage}
             onClick={handleLoadMore}
           >

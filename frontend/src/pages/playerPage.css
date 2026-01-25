@@ -31,48 +31,13 @@
   }
 }
 
-:root {
-  --hue: 245;
-
-  /* BACKGROUND (60%) - Very dark, low saturation */
-  --color-background: hsl(var(--hue), 10%, 15%);
-
-  /* SURFACE (30%) - The main content cards */
-  --color-surface: hsl(var(--hue), 12%, 22%);
-
-  /* ELEMENT (10%) - The smaller info cards */
-  --color-card: hsl(var(--hue), 15%, 30%);
-  --color-card-hover: hsl(
-    var(--hue),
-    15%,
-    35%
-  ); /* A slightly lighter hover state */
-
-  /* TEXT */
-  --text-primary: hsl(
-    var(--hue),
-    20%,
-    96%
-  ); /* A very light, slightly purplish white */
-  --text-secondary: hsl(
-    var(--hue),
-    15%,
-    87%
-  ); /* A dimmer, grayer purple for labels */
-
-  /* ACCENT (+): A contrasting color for primary actions */
-  --color-accent: hsl(180, 65%, 55%); /* A bright cyan */
-  --color-accent-hover: hsl(180, 65%, 65%);
-
-  /* Layers for transparency*/
-  --color-surface-layer-1: #ccc1;
-  --color-surfact-layer-2: #eee1;
-}
+/* Using global variables from index.css */
 
 body {
   background: linear-gradient(135deg, #394488 0%, #41284e 100%);
   background: linear-gradient(135deg, #5c406d 0%, #5c3f83 100%);
-  /*background: linear-gradient(135deg, #2B1E33 0%, #271B37 100%);*/
+  background: linear-gradient(135deg, #4C355A 0%, #4E356E 100%);
+  background: linear-gradient(135deg, #2B1E33 0%, #271B37 100%);
 
   /*font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;*/
   font-family:
@@ -83,6 +48,10 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   color: var(--text-primary);
+}
+
+[data-theme="light"] body {
+  background: linear-gradient(135deg, #c69ae2 0%, #d2c8df 100%);
 }
 
 .visually-hidden {
@@ -101,9 +70,9 @@ body {
   padding: 15px 30px 15px 15px;
   margin: 0;
   border-radius: 15px;
-  border: 1px solid var(--color-surfact-layer-2);
-  background-color: var(--color-surfact-layer-2);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--color-surface-layer-2);
+  background-color: var(--color-surface-layer-2);
+  box-shadow: 0 4px 30px var(--color-shadow);
   color: var(--text-primary);
 }
 
@@ -127,7 +96,7 @@ button:hover {
   padding: 10px;
   transition: none;
   border-radius: 15px;
-  border: 1px solid var(--color-surfact-layer-2);
+  border: 1px solid var(--color-surface-layer-2);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -157,10 +126,10 @@ button:hover {
 
 .cape-section {
   display: flex;
-  background-color: var(--color-surfact-layer-2);
-  border: 1px solid var(--color-surfact-layer-2);
+  background-color: var(--color-surface-layer-2);
+  border: 1px solid var(--color-surface-layer-2);
   backdrop-filter: blur(10px);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 30px var(--color-shadow);
   border-radius: 5px;
   height: 150px;
 }
@@ -207,8 +176,8 @@ button:hover {
 .player-tracker {
   width: 100%;
   background-color: var(--color-surface-layer-1);
-  border: 1px solid var(--color-surfact-layer-2);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--color-surface-layer-2);
+  box-shadow: 0 4px 30px var(--color-shadow);
   padding: 25px;
   border-radius: 15px;
   margin-bottom: 20px;
@@ -220,12 +189,12 @@ button:hover {
 
 .guild-list-item {
   display: block;
-  background-color: var(--color-surfact-layer-2);
+  background-color: var(--color-surface-layer-2);
   backdrop-filter: blur(10px);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 30px var(--color-shadow);
   border-radius: 5px;
   padding: 10px;
-  border: 1px solid var(--color-surfact-layer-2);
+  border: 1px solid var(--color-surface-layer-2);
   transition: none;
 }
 
@@ -258,9 +227,9 @@ button:hover {
 .info-card {
   display: block;
   backdrop-filter: blur(10px);
-  background-color: var(--color-surfact-layer-2);
-  border: 1px solid var(--color-surfact-layer-2);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-surface-layer-2);
+  border: 1px solid var(--color-surface-layer-2);
+  box-shadow: 0 4px 30px var(--color-shadow);
   padding: 10px;
   border-radius: 5px;
 }
@@ -291,9 +260,9 @@ button:hover {
 
 button {
   color: var(--text-primary);
-  background-color: var(--color-surfact-layer-2);
+  background-color: var(--color-surface-layer-2);
   backdrop-filter: blur(10px);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 30px var(--color-shadow);
   transition: 0.35s;
 }
 
@@ -334,8 +303,8 @@ button {
 .loading-container {
   backdrop-filter: blur(100px);
   background-color: var(--color-surface-layer-1);
-  border: 1px solid var(--color-surfact-layer-2);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--color-surface-layer-2);
+  box-shadow: 0 4px 30px var(--color-shadow);
   padding: 25px;
   height: 120px;
   width: 120px;
@@ -351,10 +320,10 @@ button {
   z-index: 10;
   backdrop-filter: blur(10px) brightness(110%) contrast(80%);
   background-color: var(--color-surface-layer-1);
-  border: 1px solid var(--color-surfact-layer-2);
+  border: 1px solid var(--color-surface-layer-2);
   border-radius: 15px;
   padding: 10px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 30px var(--color-shadow);
 }
 
 .em-text {
@@ -384,8 +353,8 @@ button {
 }
 
 .distribution-graph {
-  background-color: var(--color-surfact-layer-2);
-  border: 1px solid var(--color-surfact-layer-2);
+  background-color: var(--color-surface-layer-2);
+  border: 1px solid var(--color-surface-layer-2);
   border-radius: 15px;
   padding: 10px;
   color: var(--text-primary);
@@ -442,9 +411,9 @@ button {
   min-width: 400px;
   width: 35%;
   backdrop-filter: blur(10px);
-  background-color: var(--color-surfact-layer-2);
-  border: 1px solid var(--color-surfact-layer-2);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-surface-layer-2);
+  border: 1px solid var(--color-surface-layer-2);
+  box-shadow: 0 4px 30px var(--color-shadow);
   padding: 15px;
   border-radius: 10px;
   margin-top: 20px;
@@ -461,9 +430,9 @@ button {
 
 .tracker-live-data {
   backdrop-filter: blur(10px);
-  background-color: var(--color-surfact-layer-2);
-  border: 1px solid var(--color-surfact-layer-2);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-surface-layer-2);
+  border: 1px solid var(--color-surface-layer-2);
+  box-shadow: 0 4px 30px var(--color-shadow);
   padding: 15px;
   border-radius: 10px;
 }
@@ -477,8 +446,8 @@ button {
 .tracker-history {
   font-family: "Google Sans Code", monospace;
   backdrop-filter: blur(10px);
-  background-color: var(--color-surfact-layer-2);
-  border: 1px solid var(--color-surfact-layer-2);
+  background-color: var(--color-surface-layer-2);
+  border: 1px solid var(--color-surface-layer-2);
   border-radius: 10px;
   padding: 15px;
   margin-top: 0px;
@@ -523,8 +492,8 @@ button {
 
 .timeline-item > div {
   backdrop-filter: blur(10px);
-  background-color: var(--color-surfact-layer-2);
-  border: 1px solid var(--color-surfact-layer-2);
+  background-color: var(--color-surface-layer-2);
+  border: 1px solid var(--color-surface-layer-2);
   border-radius: 10px;
   padding: 15px;
   height: 90%;
@@ -542,8 +511,8 @@ button {
 .tracker-timeline {
   font-family: "Google Sans Code", monospace;
   backdrop-filter: blur(10px);
-  background-color: var(--color-surfact-layer-2);
-  border: 1px solid var(--color-surfact-layer-2);
+  background-color: var(--color-surface-layer-2);
+  border: 1px solid var(--color-surface-layer-2);
   border-radius: 10px;
   padding: 15px 35px;
   margin-top: 0px;
@@ -593,12 +562,12 @@ button {
 }
 
 .selected-tab {
-  background-color: #f4f077;
-  color: #101e10;
+  background-color: var(--color-selected);
+  color: var(--color-text-on-accent);
 }
 
 .selected-tab:hover {
-  background-color: #f8d563;
+  background-color: var(--color-selected-hover);
 }
 
 .left-align {
@@ -615,7 +584,7 @@ button {
 .bedwars-table {
   background: var(--color-surface-layer-1);
   border-radius: 5px;
-  border: 1px solid var(--color-surfact-layer-2);
+  border: 1px solid var(--color-surface-layer-2);
   padding: 10px;
   table-layout: fixed;
   border-collapse: collapse;
@@ -625,7 +594,7 @@ button {
 .bedwars-table > tbody > tr > td,
 .bedwars-table > thead > tr > th {
   padding: 10px 10px;
-  border-bottom: 1px solid var(--color-surfact-layer-2);
+  border-bottom: 1px solid var(--color-surface-layer-2);
   text-align: right;
   min-width: 5rem;
 }
@@ -637,7 +606,7 @@ button {
 
 .bedwars-table > tbody > tr:hover {
   transition: 0.1s;
-  background-color: #aaa3;
+  background-color: var(--color-surface-layer-3);
 }
 
 .bedwars-stat-value {
@@ -650,12 +619,12 @@ button {
 
 .bedwars-showcase {
   padding: 20px;
-  border: 1px solid var(--color-surfact-layer-2);
+  border: 1px solid var(--color-surface-layer-2);
 }
 
 .load-more-button {
   transition: none;
-  color: #101e10;
+  color: var(--color-text-on-accent);
 }
 
 .load-more-container {
@@ -684,8 +653,8 @@ button {
 
 .not-found-container {
   background-color: var(--color-surface-layer-1);
-  border: 1px solid var(--color-surfact-layer-2);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--color-surface-layer-2);
+  box-shadow: 0 4px 30px var(--color-shadow);
   padding: 35px;
   padding-left: 25px;
   border-radius: 15px;
@@ -726,9 +695,9 @@ button {
 .favorites-list > li {
   display: flex;
   backdrop-filter: blur(10px);
-  background-color: var(--color-surfact-layer-2);
-  border: 1px solid var(--color-surfact-layer-2);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-surface-layer-2);
+  border: 1px solid var(--color-surface-layer-2);
+  box-shadow: 0 4px 30px var(--color-shadow);
   padding: 10px;
   border-radius: 5px;
   height: 6em;
@@ -848,7 +817,7 @@ button {
   display: grid;
   grid-template-rows: 8rem 1fr;
   justify-content: center;
-  border: 1px solid var(--color-surfact-layer-2);
+  border: 1px solid var(--color-surface-layer-2);
   padding: 10px;
   border-radius: 8px;
   background-color: var(--color-surface-layer-1);
@@ -879,7 +848,7 @@ button {
 }
 
 .skin-button {
-  border: 1px solid var(--color-surfact-layer-2);
+  border: 1px solid var(--color-surface-layer-2);
 }
 
 .cape-label {
@@ -922,7 +891,7 @@ button {
   margin-top: 0.6rem;
   border-radius: 30px;
   margin-left: 1rem;
-  background: linear-gradient(to right, #be77f4, #a130f6);
+  background: linear-gradient(to right, var(--color-accent-gradient-start), var(--color-accent-gradient-end));
   padding: 0.4rem;
   font-size: 0.8rem;
   font-family: "Google Sans Code", monospace;
@@ -936,13 +905,13 @@ button {
 }
 ::-webkit-scrollbar-thumb {
   background: hsl(
-    from var(--color-surfact-layer-2) h calc(s + 10) calc(l + 30)
+    from var(--color-surface-layer-2) h calc(s + 10) calc(l + 30)
   );
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(
-    from var(--color-surfact-layer-2) h calc(s + 10) calc(l + 120)
+    from var(--color-surface-layer-2) h calc(s + 10) calc(l + 120)
   );
 }
 
@@ -981,7 +950,7 @@ button {
   gap: 0.4rem;
   backdrop-filter: blur(10px);
   border-radius: 6px;
-  border: 1px solid var(--color-surfact-layer-2);
+  border: 1px solid var(--color-surface-layer-2);
   padding: 10px;
 }
 

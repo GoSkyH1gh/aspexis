@@ -52,7 +52,7 @@ export function HomePage() {
     PAGE_SIZE,
   );
   return (
-    <>
+    <div className="homepage-wrapper">
       <div className="hero-background" />
       <div className="decorative-layer">
         <img
@@ -150,6 +150,6 @@ export function HomePage() {
           />
         </div>
       </div>
-    </>
+    </div>
   );
 }
