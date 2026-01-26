@@ -20,7 +20,11 @@
 }
 
 .mojang-data-text {
-  background: linear-gradient(to left, var(--color-accent-gradient-start), var(--color-accent-gradient-end));
+  background: linear-gradient(
+    to left,
+    var(--color-accent-gradient-start),
+    var(--color-accent-gradient-end)
+  );
   padding: 15px;
   border-radius: 10px;
   width: 3%;
@@ -184,6 +188,10 @@
   align-self: center;
 }
 
+.hero-searchbar > input::placeholder {
+  color: #4b4b4b
+}
+
 .hero-searchbar > svg {
   width: 40px;
   height: 25px;
@@ -201,6 +209,7 @@
   margin-left: -50px;
   box-sizing: content-box;
   transition: 0.15s;
+  color: var(--color-text-on-accent);
 }
 
 .hero-searchbar > input:focus {
@@ -220,7 +229,10 @@
 }
 
 .hero-card {
-  background: linear-gradient(var(--color-accent-gradient-start), var(--color-accent-gradient-end));
+  background: linear-gradient(
+    var(--color-accent-gradient-start),
+    var(--color-accent-gradient-end)
+  );
   padding: 15px;
   color: #fff;
   border-radius: 10px;
@@ -300,7 +312,11 @@ a:hover {
 }
 
 .hypixel-data-text {
-  background: linear-gradient(to right, var(--color-accent-gradient-start), var(--color-accent-gradient-end));
+  background: linear-gradient(
+    to right,
+    var(--color-accent-gradient-start),
+    var(--color-accent-gradient-end)
+  );
   padding: 15px;
   border-radius: 10px;
   width: 3%;

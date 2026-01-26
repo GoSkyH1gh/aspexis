@@ -36,8 +36,8 @@
 body {
   background: linear-gradient(135deg, #394488 0%, #41284e 100%);
   background: linear-gradient(135deg, #5c406d 0%, #5c3f83 100%);
-  background: linear-gradient(135deg, #4C355A 0%, #4E356E 100%);
-  background: linear-gradient(135deg, #2B1E33 0%, #271B37 100%);
+  background: linear-gradient(135deg, #4c355a 0%, #4e356e 100%);
+  background: linear-gradient(135deg, #2b1e33 0%, #271b37 100%);
 
   /*font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;*/
   font-family:
@@ -890,7 +890,11 @@ button {
   margin-top: 0.6rem;
   border-radius: 30px;
   margin-left: 1rem;
-  background: linear-gradient(to right, var(--color-accent-gradient-start), var(--color-accent-gradient-end));
+  background: linear-gradient(
+    to right,
+    var(--color-accent-gradient-start),
+    var(--color-accent-gradient-end)
+  );
   padding: 0.4rem;
   font-size: 0.8rem;
   font-family: "Google Sans Code", monospace;
