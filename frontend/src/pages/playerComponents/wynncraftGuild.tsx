@@ -2,12 +2,12 @@ import { motion } from "motion/react";
 import InfoCard from "./infoCard";
 import { formatISOTimestamp, formatValue } from "../../utils/utils";
 import { useNavigate } from "react-router-dom";
-import { GuildInfo } from "../../client";
+import { WynncraftGuildInfo } from "../../client";
 
 function WynncraftGuild({
   wynncraftGuildData,
 }: {
-  wynncraftGuildData: GuildInfo | null;
+  wynncraftGuildData: WynncraftGuildInfo | null;
 }) {
   if (wynncraftGuildData === null) {
     return <>No Guild Data to show</>;
@@ -20,7 +20,7 @@ function WynncraftGuild({
           className="wynn-guild-member-item"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => navigator(`/player/${member.username}`)}
+          onClick={() => navigator(`/player/${member.uuid}`)}
           key={member.uuid}
         >
           <div className="guild-member-flex-container">

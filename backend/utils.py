@@ -2,15 +2,15 @@ from io import BytesIO
 import base64
 from PIL import Image
 
-def pillow_to_b64(pil_image, img_format = "PNG"):
-    buffered = BytesIO() # create a virtual buffer
-    pil_image.save(buffered, format = img_format) # save the image to that virtual buffer
 
-    img_bytes_array = buffered.getvalue() # get the data from that buffer
+def pillow_to_b64(pil_image, img_format="PNG"):
+    buffered = BytesIO()  # create a virtual buffer
+    pil_image.save(buffered, format=img_format)  # save the image to that virtual buffer
+
+    img_bytes_array = buffered.getvalue()  # get the data from that buffer
     base64_encoded_bytes = base64.b64encode(img_bytes_array)
     base64_encoded_string = base64_encoded_bytes.decode("utf-8")
     return base64_encoded_string
-
 
 
 def load_base64_to_pillow(base64_string):
@@ -28,9 +28,9 @@ def load_base64_to_pillow(base64_string):
     # 1. Handle potential data URI prefix
     # Many base64 image strings come with a prefix like "data:image/png;base64,"
     # We need to remove this prefix before decoding the actual base64 data.
-    if ',' in base64_string:
+    if "," in base64_string:
         # Split at the first comma and take the second part (the actual base64 data)
-        base64_data = base64_string.split(',')[1]
+        base64_data = base64_string.split(",")[1]
     else:
         base64_data = base64_string
 
@@ -51,20 +51,30 @@ def load_base64_to_pillow(base64_string):
         print(f"Error loading base64 image to Pillow: {e}")
         return None
 
+
 def dashify_uuid(uuid: str) -> str:
     try:
         dashed_uuid = (
-        uuid[0:8] + '-' +
-        uuid[8:12] + '-' +
-        uuid[12:16] + '-' +
-        uuid[16:20] + '-' +
-        uuid[20:32]
-    )
+            uuid[0:8]
+            + "-"
+            + uuid[8:12]
+            + "-"
+            + uuid[12:16]
+            + "-"
+            + uuid[16:20]
+            + "-"
+            + uuid[20:32]
+        )
         return dashed_uuid
     except:
         print(f"coudn't dashify uuid: {uuid}")
         return ""
-    
+
+
+def undashify_uuid(uuid: str) -> str:
+    return uuid.replace("-", "")
+
+
 def check_valid_uuid(uuid: str) -> bool:
     """Checks if a uuid is valid"""
     if not len(uuid) == 32:

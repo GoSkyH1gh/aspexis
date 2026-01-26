@@ -2,7 +2,6 @@ import { useState } from "react";
 import "./playerPage.css";
 import TrackSearch from "./playerComponents/trackSearch";
 import TrackPlayer from "./playerComponents/trackPlayer";
-import { MojangData } from "../client";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchMojang } from "../utils/queries";

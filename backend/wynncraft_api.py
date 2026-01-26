@@ -1,5 +1,5 @@
 import requests
-from utils import dashify_uuid
+from utils import dashify_uuid, undashify_uuid
 from pydantic import BaseModel
 from fastapi import HTTPException
 from metrics_manager import add_value, get_engine
@@ -391,7 +391,7 @@ def get_wynncraft_guild_data(guild_prefix: str) -> WynncraftGuildInfo:
             guild_members.append(
                 WynncraftGuildMember(
                     username=member,
-                    uuid=guild_response["members"][rank][member]["uuid"],
+                    uuid=undashify_uuid(guild_response["members"][rank][member]["uuid"]),
                     online=guild_response["members"][rank][member]["online"],
                     joined=guild_response["members"][rank][member]["joined"],
                     rank=rank,
