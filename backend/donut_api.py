@@ -1,4 +1,5 @@
-import requests
+import httpx
+import asyncio
 from dotenv import load_dotenv
 import os
 from pydantic import BaseModel
@@ -29,17 +30,20 @@ class DonutPlayerStats(BaseModel):
     online: bool
 
 
-def get_donut_stats(username) -> DonutPlayerStats:
+async def get_donut_stats(
+    username: str, http_client: httpx.AsyncClient
+) -> DonutPlayerStats:
     """Returns a DonutPlayerStats object on success, 404 on fail"""
+    assert donut_api_key is not None, "Donut API key not found"
     try:
-        donut_response_raw = requests.get(
+        donut_response_raw = await http_client.get(
             f"https://api.donutsmp.net/v1/stats/{username}",
             headers={"Authorization": donut_api_key},
         )
         donut_response_raw.raise_for_status()
         donut_response = donut_response_raw.json()
 
-        online_status = get_donut_status(username)
+        online_status = await get_donut_status(username, http_client)
 
     except Exception as e:
         print(f"could not retrieve stats: {e}")
@@ -95,11 +99,12 @@ def get_donut_stats(username) -> DonutPlayerStats:
     return player_stats
 
 
-def get_donut_status(username) -> bool:
+async def get_donut_status(username: str, http_client: httpx.AsyncClient) -> bool:
     """Returns true if the player is online, false if offline"""
     # so the donutapi is really dumb it only shows rank if the player is online like who designed this 💀
+    assert donut_api_key is not None, "Donut API key not found"
     try:
-        donut_status_response = requests.get(
+        donut_status_response = await http_client.get(
             f"https://api.donutsmp.net/v1/lookup/{username}",
             headers={"Authorization": donut_api_key},
         )
@@ -119,7 +124,9 @@ def get_donut_status(username) -> bool:
     return False
 
 
-def add_donut_stats_to_db(data: DonutPlayerStats, username, session) -> None:
+async def add_donut_stats_to_db(
+    data: DonutPlayerStats, username, session, http_client: httpx.AsyncClient
+) -> None:
     if not isinstance(data, DonutPlayerStats):
         print("Couldn't add donut data to db because it's not DonutPlayerStats")
         return
@@ -137,7 +144,7 @@ def add_donut_stats_to_db(data: DonutPlayerStats, username, session) -> None:
     }
 
     try:
-        mojang_data = get_minecraft_data(username, session)
+        mojang_data = await get_minecraft_data(username, session, http_client)
         uuid = mojang_data.uuid
     except HTTPException:
         print(
@@ -151,13 +158,16 @@ def add_donut_stats_to_db(data: DonutPlayerStats, username, session) -> None:
         )
         return
 
-    engine = get_engine()
-    with engine.begin() as conn:
-        for stat in stats_to_add:
-            if stats_to_add.get(stat, None) is not None:
-                add_value(conn, uuid, stat, stats_to_add[stat])
+    def write_to_db_sync():
+        engine = get_engine()
+        with engine.begin() as conn:
+            for stat in stats_to_add:
+                if stats_to_add.get(stat, None) is not None:
+                    add_value(conn, uuid, stat, stats_to_add[stat])
+
+    await asyncio.to_thread(write_to_db_sync)
 
 
 if __name__ == "__main__":
-    data = get_donut_stats("2b3t")
+    data = asyncio.run(get_donut_stats("2b3t", httpx.AsyncClient()))
     print(data)

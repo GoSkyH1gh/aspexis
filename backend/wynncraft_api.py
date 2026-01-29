@@ -6,6 +6,8 @@ from metrics_manager import add_value, get_engine
 from dotenv import load_dotenv
 import os
 from exceptions import NotFound
+import httpx
+import asyncio
 
 # General notes
 # * The wynncraft api requires dashed uuids so when calling something by UUID dashed_uuid should be used
@@ -280,10 +282,13 @@ def process_characters(
     return pydantic_characters
 
 
-def get_wynncraft_player_data(uuid) -> WynncraftPlayerSummary:
+async def get_wynncraft_player_data(
+    uuid: str, http_client: httpx.AsyncClient
+) -> WynncraftPlayerSummary:
     """Gets basic data about the player"""
     dashed_uuid = dashify_uuid(uuid)
-    raw_wynn_response = requests.get(
+
+    raw_wynn_response = await http_client.get(
         f"https://api.wynncraft.com/v3/player/{dashed_uuid}?fullResult",
         headers={"Authorization": f"Bearer {wynn_token}"},
     )
@@ -374,9 +379,11 @@ def get_wynncraft_player_data(uuid) -> WynncraftPlayerSummary:
         )
 
 
-def get_wynncraft_guild_data(guild_prefix: str) -> WynncraftGuildInfo:
+async def get_wynncraft_guild_data(
+    guild_prefix: str, http_client: httpx.AsyncClient
+) -> WynncraftGuildInfo:
     """Gets the guild response, player_guild is req"""
-    raw_guild_response = requests.get(
+    raw_guild_response = await http_client.get(
         f"https://api.wynncraft.com/v3/guild/prefix/{guild_prefix}?identifier=username",
         headers={"Authorization": f"Bearer {wynn_token}"},
     )
@@ -391,7 +398,9 @@ def get_wynncraft_guild_data(guild_prefix: str) -> WynncraftGuildInfo:
             guild_members.append(
                 WynncraftGuildMember(
                     username=member,
-                    uuid=undashify_uuid(guild_response["members"][rank][member]["uuid"]),
+                    uuid=undashify_uuid(
+                        guild_response["members"][rank][member]["uuid"]
+                    ),
                     online=guild_response["members"][rank][member]["online"],
                     joined=guild_response["members"][rank][member]["joined"],
                     rank=rank,
@@ -465,5 +474,6 @@ if __name__ == "__main__":
     uuid = "3ff2e63ad63045e0b96f57cd0eae708d"
     # uuid = "f3659880e6444485a6515d6f66e9360e"
     # wynn_instance.get_guild_list()
-    print(get_wynncraft_player_data(uuid))
+    data = asyncio.run(get_wynncraft_player_data(uuid, httpx.AsyncClient()))
+    print(data)
     # wynn_instance.get_guild_data('Pirates of the Black Scourge')

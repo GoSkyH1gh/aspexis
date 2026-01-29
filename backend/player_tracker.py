@@ -1,7 +1,7 @@
 import asyncio
 from typing import Dict, Set, Optional
 from pydantic import BaseModel
-import aiohttp
+import httpx
 import os
 from dotenv import load_dotenv
 from utils import dashify_uuid
@@ -123,7 +123,7 @@ def unsubscribe(uuid: str, queue: asyncio.Queue):
 
 async def get_status(uuid) -> PlayerStatus:
     print(f"ignored sources: {ignored_sources[uuid]}")
-    async with aiohttp.ClientSession() as session:
+    async with httpx.AsyncClient() as session:
         results = await asyncio.gather(
             get_wynncraft_status(session, uuid),
             get_hypixel_status(session, uuid),
@@ -199,38 +199,38 @@ async def get_status(uuid) -> PlayerStatus:
     return player_status
 
 
-async def get_wynncraft_status(session, uuid):
+async def get_wynncraft_status(client: httpx.AsyncClient, uuid):
     if "wynncraft" in ignored_sources[uuid]:
         print("wynncraft is ignored, passing")
         return None
     dashed_uuid = dashify_uuid(uuid)
-    async with session.get(
+    response = await client.get(
         f"https://api.wynncraft.com/v3/player/{dashed_uuid}",
         headers={"Authorization": f"Bearer {wynn_token}"},
-    ) as response:
-        if response.status == 404:
-            raise exceptions.NotFound()
-        response.raise_for_status()
-        response: dict = await response.json()
-        return response
+    )
+    if response.status_code == 404:
+        raise exceptions.NotFound()
+    response.raise_for_status()
+    return response.json()
 
 
-async def get_hypixel_status(session, uuid):
+async def get_hypixel_status(client: httpx.AsyncClient, uuid):
     if "hypixel" in ignored_sources[uuid]:
         return None
     headers = {"API-Key": hypixel_api_key}
     params = {"uuid": uuid}
-    async with session.get(
+
+    response = await client.get(
         "https://api.hypixel.net/v2/status", params=params, headers=headers
-    ) as response:
-        if (
-            response.status == 404
-        ):  # this doesn't ever return 404, TODO implement returning it manually
-            raise exceptions.NotFound()
-        if response.status == 429:
-            raise exceptions.UpstreamError()
-        response.raise_for_status()
-        return await response.json()
+    )
+    if (
+        response.status_code == 404
+    ):  # this doesn't ever return 404, TODO implement returning it manually
+        raise exceptions.NotFound()
+    if response.status_code == 429:
+        raise exceptions.UpstreamError()
+    response.raise_for_status()
+    return response.json()
 
 
 if __name__ == "__main__":

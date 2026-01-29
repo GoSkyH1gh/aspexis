@@ -1,5 +1,5 @@
 import asyncio
-import aiohttp
+import httpx
 import logging
 from dotenv import load_dotenv
 from utils import dashify_uuid
@@ -17,7 +17,7 @@ if hypixel_api_key is None:
 
 async def get_online_status(uuid: str):
     assert hypixel_api_key is not None, "No Hypixel API Key found while getting status"
-    async with aiohttp.ClientSession() as session:
+    async with httpx.AsyncClient() as session:
         tasks = [
             get_wynncraft_status(session, uuid),
             get_hypixel_status(session, uuid, hypixel_api_key),
@@ -54,29 +54,30 @@ async def get_online_status(uuid: str):
         return {"status": "Offline"}
 
 
-async def get_wynncraft_status(session: aiohttp.ClientSession, uuid: str):
+async def get_wynncraft_status(client: httpx.AsyncClient, uuid: str):
     dashed_uuid = dashify_uuid(uuid)
     try:
-        async with session.get(
+        response = await client.get(
             f"https://api.wynncraft.com/v3/player/{dashed_uuid}"
-        ) as response:
-            response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
-            return await response.json()
+        )
+        response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
+        return response.json()
     except Exception as e:
         logger.error(f"Wynncraft API request failed for {dashed_uuid}: {e}")
         # Re-raise the exception so asyncio.gather can catch it
         raise
 
 
-async def get_hypixel_status(session: aiohttp.ClientSession, uuid: str, api_key: str):
+async def get_hypixel_status(client: httpx.AsyncClient, uuid: str, api_key: str):
     try:
         headers = {"API-Key": api_key}
         params = {"uuid": uuid}
-        async with session.get(
+
+        response = await client.get(
             "https://api.hypixel.net/v2/status", params=params, headers=headers
-        ) as response:
-            response.raise_for_status()
-            return await response.json()
+        )
+        response.raise_for_status()
+        return response.json()
     except Exception as e:
         logger.error(f"Hypixel status API request failed for {uuid}: {e}")
         raise

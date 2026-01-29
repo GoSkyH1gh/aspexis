@@ -4,25 +4,29 @@ from sqlalchemy import text, bindparam
 from typing import Tuple, List, Dict
 import exceptions
 import time
+import httpx
+import asyncio
 
 MINECRAFT_TTL = 180
 
 
-def get_minecraft_data(search_term: str, session: Session) -> MojangData:
+async def get_minecraft_data(
+    search_term: str, session: Session, http_client: httpx.AsyncClient
+) -> MojangData:
     data = None
     try:
-        data = get_minecraft_cache(search_term, session)
+        data = await asyncio.to_thread(get_minecraft_cache, search_term, session)
     except exceptions.InvalidCache:
         pass
 
     if data is None:
         if len(search_term) <= 20:
-            mojang_instance = GetMojangAPIData(search_term)
+            mojang_instance = GetMojangAPIData(http_client, search_term)
         else:
-            mojang_instance = GetMojangAPIData(None, search_term)
-        data = mojang_instance.get_data()
+            mojang_instance = GetMojangAPIData(http_client, None, search_term)
+        data = await mojang_instance.get_data()
 
-    add_to_minecraft_cache(data.uuid, data, session)
+    await asyncio.to_thread(add_to_minecraft_cache, data.uuid, data, session)
 
     return data
 

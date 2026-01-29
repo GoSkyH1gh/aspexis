@@ -38,9 +38,32 @@ from slowapi.util import get_remote_address
 from slowapi import Limiter
 from slowapi.middleware import SlowAPIMiddleware
 
+from contextlib import asynccontextmanager
+import httpx
+
 load_dotenv()
 
-app = FastAPI()
+# client management
+
+client: httpx.AsyncClient | None = None
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    global client
+    client = httpx.AsyncClient()
+    yield
+    # Shutdown
+    await client.aclose()
+
+
+async def get_client():
+    return client
+
+
+app = FastAPI(lifespan=lifespan)
+
 
 # limiter
 
@@ -130,8 +153,12 @@ def health_check():
         },
     },
 )
-def get_profile(username, session: Session = Depends(get_db)) -> MojangData:
-    return get_minecraft_data(username, session)
+async def get_profile(
+    username,
+    session: Session = Depends(get_db),
+    http_client: httpx.AsyncClient = Depends(get_client),
+) -> MojangData:
+    return await get_minecraft_data(username, session, http_client)
 
 
 @app.get("/v1/players/capes/{uuid}")
@@ -184,33 +211,44 @@ async def get_status(uuid):
     "/v1/players/wynncraft/{uuid}",
     responses={404: {"model": exceptions.ErrorResponse, "description": "Not found"}},
 )
-def get_wynncraft(
-    uuid: str, background_tasks: BackgroundTasks
+async def get_wynncraft(
+    uuid: str,
+    background_tasks: BackgroundTasks,
+    http_client: httpx.AsyncClient = Depends(get_client),
 ) -> WynncraftPlayerSummary:
-    player_data = get_wynncraft_player_data(uuid)
+    player_data = await get_wynncraft_player_data(uuid, http_client)
     background_tasks.add_task(add_wynncraft_stats_to_db, player_data)
     return player_data
 
 
 @app.get("/v1/wynncraft/guilds/{prefix}")
-def get_wynncraft_guild(prefix) -> WynncraftGuildInfo:
-    return get_wynncraft_guild_data(prefix)
+async def get_wynncraft_guild(
+    prefix,
+    http_client: httpx.AsyncClient = Depends(get_client),
+) -> WynncraftGuildInfo:
+    return await get_wynncraft_guild_data(prefix, http_client)
 
 
 # donutsmp endpoint
 @app.get("/v1/players/donutsmp/{username}")
-def get_donut(
-    username, background_tasks: BackgroundTasks, session: Session = Depends(get_db)
+async def get_donut(
+    username,
+    background_tasks: BackgroundTasks,
+    session: Session = Depends(get_db),
+    http_client: httpx.AsyncClient = Depends(get_client),
 ) -> DonutPlayerStats:
-    player_data = get_donut_stats(username)
-    background_tasks.add_task(add_donut_stats_to_db, player_data, username, session)
+    player_data = await get_donut_stats(username, http_client)
+    background_tasks.add_task(add_donut_stats_to_db, player_data, username, session, http_client)
     return player_data
 
 
 # mcci endpoint
 @app.get("/v1/players/mccisland/{uuid}")
-def get_mcc_island(uuid) -> MCCIPlayer:
-    return get_mcci_data(uuid)
+async def get_mcc_island(
+    uuid: str,
+    http_client: httpx.AsyncClient = Depends(get_client),
+) -> MCCIPlayer:
+    return await get_mcci_data(uuid, http_client)
 
 
 # metrics
