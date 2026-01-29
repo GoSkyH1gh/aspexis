@@ -1,9 +1,10 @@
 from utils import pillow_to_b64, check_valid_uuid
-import requests
 import re
 import json
 import base64
 import io
+import asyncio
+import httpx
 from PIL import Image
 import logging
 from pydantic import BaseModel
@@ -61,7 +62,9 @@ CAPE_MAP = {
 
 
 class GetMojangAPIData:
-    def __init__(self, username, uuid=None):
+    def __init__(self, client: httpx.AsyncClient, username: str | None, uuid: str | None = None):
+        if client is None:
+            raise ValueError("HTTP Client is required")
         self.username = username
         self.uuid = uuid
         self.skin_url = None
@@ -74,9 +77,10 @@ class GetMojangAPIData:
         self.skin_showcase_b64 = None
         self.cape_back_b64 = None
         self.cape_showcase_b64 = None
-        self.session = requests.sessions.Session()
+        self.cape_showcase_b64 = None
+        self.client = client
 
-    def get_data(self) -> MojangData:
+    async def get_data(self) -> MojangData:
         """
         master function, gets uuid if not provided and then calls get_skin_data
         returns a MojangData object on success
@@ -86,10 +90,10 @@ class GetMojangAPIData:
                 raise exceptions.InvalidUserUUID()
 
         if self.uuid is None:
-            self.get_uuid()
+            await self.get_uuid()
 
-        self.get_skin_data()
-        self.get_skin_images()
+        await self.get_skin_data()
+        await self.get_skin_images()
 
         try:
             player_profile = MojangData(
@@ -110,15 +114,17 @@ class GetMojangAPIData:
 
         return player_profile
 
-    def get_uuid(self) -> str:
+    async def get_uuid(self) -> str:
         """
         receives uuid based on username
         """
-        if self.username is None or not re.match(r"^[a-zA-Z0-9_]{1,16}$", self.username):
+        if self.username is None or not re.match(
+            r"^[a-zA-Z0-9_]{1,16}$", self.username
+        ):
             raise exceptions.NotFound()
 
         try:
-            uuid_response_raw = self.session.get(
+            uuid_response_raw = await self.client.get(
                 f"https://api.minecraftservices.com/minecraft/profile/lookup/name/{self.username}",
                 timeout=10,
             )
@@ -126,15 +132,15 @@ class GetMojangAPIData:
 
             uuid_response: dict = uuid_response_raw.json()
 
-        except requests.exceptions.HTTPError as e:
-            if uuid_response_raw.status_code in [400, 404]:
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code in [400, 404]:
                 raise exceptions.NotFound()
             logger.error(f"HTTP error occurred: {e}")
             raise exceptions.UpstreamError()
-        except requests.exceptions.Timeout as e:
+        except httpx.TimeoutException as e:
             logger.error(f"Request timed out: {e}")
             raise exceptions.UpstreamTimeoutError()
-        except requests.exceptions.RequestException as e:
+        except httpx.RequestError as e:
             logger.error(f"Request exception occurred: {e}")
             raise exceptions.UpstreamError()
         except Exception as e:
@@ -145,7 +151,7 @@ class GetMojangAPIData:
         self.username = uuid_response["name"]
         return self.uuid
 
-    def get_skin_data(self) -> None:
+    async def get_skin_data(self) -> None:
         """
         This function receives data about the skin and cape, requires UUID
         structure is here because it's confusing: https://minecraft.wiki/w/Mojang_API#Query_player's_skin_and_cape
@@ -154,21 +160,21 @@ class GetMojangAPIData:
         """
 
         try:
-            player_profile_raw = self.session.get(
+            player_profile_raw = await self.client.get(
                 f"https://sessionserver.mojang.com/session/minecraft/profile/{self.uuid}",
                 timeout=10,
             )
             player_profile_raw.raise_for_status()
-            
-        except requests.exceptions.HTTPError as e:
-            if player_profile_raw.status_code == 404:
+
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 404:
                 raise exceptions.NotFound()
             logger.error(f"HTTP error occurred: {e}")
             raise exceptions.UpstreamError()
-        except requests.exceptions.Timeout as e:
+        except httpx.TimeoutException as e:
             logger.error(f"Request timed out: {e}")
             raise exceptions.UpstreamTimeoutError()
-        except requests.exceptions.RequestException as e:
+        except httpx.RequestError as e:
             logger.error(f"Request exception occurred: {e}")
             raise exceptions.UpstreamError()
         except Exception as e:
@@ -177,8 +183,8 @@ class GetMojangAPIData:
             )
             raise exceptions.ServiceError()
         if not player_profile_raw.text:
-                raise exceptions.NotFound()
-        
+            raise exceptions.NotFound()
+
         player_profile: dict = player_profile_raw.json()
         logger.info("request success for getting skin and cape data!")
 
@@ -203,25 +209,35 @@ class GetMojangAPIData:
         else:
             self.has_cape = False
 
-    def get_skin_images(self):
+    async def get_skin_images(self):
         """
         This downloads the images from skin url and optionally cape url(if it exists)
         """
-        try:
-            response_skin = self.session.get(self.skin_url)  # skin image request
-            skin_bytes = io.BytesIO(response_skin.content)
+        # Prepare fetch tasks
+        skin_task = self.client.get(self.skin_url)
+        cape_task = None
+        if self.has_cape:
+            cape_task = self.client.get(self.cape_url)
 
+        try:
+            # Execute fetches concurrently
+            if cape_task:
+                response_skin, response_cape = await asyncio.gather(skin_task, cape_task)
+            else:
+                response_skin = await skin_task
+                response_cape = None
+
+            # Process skin
+            skin_bytes = io.BytesIO(response_skin.content)
             full_skin_image = Image.open(skin_bytes)
             logger.debug("skin image opened successfully")
 
-            try:  # we overlap base face with outer layer here
+            try:
                 crop_area = (8, 8, 16, 16)
                 self.skin_showcase = full_skin_image.crop(crop_area)  # base skin face
 
                 crop_area = (40, 8, 48, 16)
-                skin_showcase_overlay = full_skin_image.crop(
-                    crop_area
-                )  # skin face overlay
+                skin_showcase_overlay = full_skin_image.crop(crop_area)  # skin face overlay
                 _, _, _, alpha_mask = skin_showcase_overlay.split()
 
                 paste_area = (0, 0)
@@ -234,55 +250,55 @@ class GetMojangAPIData:
             except Exception as e:
                 logger.error(f"something went wrong while cropping skin image: {e}")
 
+            # Process cape if available
+            if self.has_cape and response_cape:
+                try:
+                    cape_bytes = io.BytesIO(response_cape.content)
+                    full_cape_image = Image.open(cape_bytes)  # uncropped cape image
+                    logger.info("cape image opened successfully")
+                except Exception as e:
+                    logger.error(f"something went wrong while fetching cape image: {e}")
+
+                try:
+                    crop_area = (1, 1, 11, 17)
+                    self.cape_showcase = full_cape_image.crop(crop_area)
+                except Exception as e:
+                    logger.error(f"something went wrong while cropping cape image: {e}")
+
+                try:
+                    crop_area = (12, 1, 22, 17)
+                    self.cape_back = full_cape_image.crop(crop_area)
+                except Exception as e:
+                    logger.error(f"something went wrong while cropping back of cape: {e}")
+
+                self.cape_showcase_b64 = pillow_to_b64(self.cape_showcase)
+                self.cape_back_b64 = pillow_to_b64(self.cape_back)
+
+                raw_cape_data = self.cape_url[-32:]
+                try:
+                    logger.info(f"trying to access {raw_cape_data}")
+                    self.cape_name = CAPE_MAP[raw_cape_data]
+                    logger.info(f"Identified {self.cape_name} cape!")
+                except KeyError:
+                    logger.warning("Cape not regonized")
+                    self.cape_name = "Unknown cape"
+
+                return self.skin_showcase_b64, self.cape_showcase_b64, self.cape_back_b64
+
+            else:
+                logger.info(f"no cape for user {self.username}")
+                return self.skin_showcase_b64, None, None
+
         except Exception as e:
             logger.error(f"something went wrong in get_skin_images: {e}")
-
-        # cape section
-        if self.has_cape:  # only gets image if url exists
-            try:
-                response_cape = self.session.get(self.cape_url)
-                cape_bytes = io.BytesIO(response_cape.content)
-
-                full_cape_image = Image.open(cape_bytes)  # uncropped cape image
-                logger.info("cape image opened successfully")
-            except Exception as e:
-                logger.error(f"something went wrong while fetching cape image: {e}")
-
-            try:
-                crop_area = (1, 1, 11, 17)
-                self.cape_showcase = full_cape_image.crop(crop_area)
-
-            except Exception as e:
-                logger.error(f"something went wrong while cropping cape image: {e}")
-
-            try:
-                crop_area = (12, 1, 22, 17)
-                self.cape_back = full_cape_image.crop(crop_area)
-            except Exception as e:
-                logger.error(f"something went wrong while cropping back of cape: {e}")
-
-            self.cape_showcase_b64 = pillow_to_b64(self.cape_showcase)
-            self.cape_back_b64 = pillow_to_b64(self.cape_back)
-
-            raw_cape_data = self.cape_url[-32:]
-            try:
-                logger.info(f"trying to access {raw_cape_data}")
-                self.cape_name = CAPE_MAP[raw_cape_data]
-                logger.info(f"Identified {self.cape_name} cape!")
-            except KeyError:
-                logger.warning("Cape not regonized")
-                self.cape_name = "Unknown cape"
-
-            return self.skin_showcase_b64, self.cape_showcase_b64, self.cape_back_b64
-
-        else:
-            logger.info(f"no cape for user {self.username}")
-
-            return self.skin_showcase_b64, None, None
+            # If main skin fails we probably should return something or raise, 
+            # but strict preservation of behavior suggests swallowing 
+            # (though the original code swallowed exceptions somewhat liberally)
 
 
 if __name__ == "__main__":
-    #instance = GetMojangAPIData("goskyhigh")
+    pass
+    # instance = GetMojangAPIData("goskyhigh")
     # print(instance.get_data())
-    user = GetMojangAPIData(None, "d63a3a136e8a43e6918fddc5a1eb6c84")
-    print(user.get_data())
+    # user = GetMojangAPIData(None, "d63a3a136e8a43e6918fddc5a1eb6c84")
+    # print(user.get_data())
