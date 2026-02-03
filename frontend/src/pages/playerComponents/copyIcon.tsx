@@ -16,7 +16,7 @@ function CopyIcon({ textToCopy }: { textToCopy: string }) {
                 setOpen(true);
               }}
               whileHover={{ scale: 1 }}
-              whileTap={{ scale: 0.7 }}
+              whileTap={{ scale: 0.8 }}
             >
               <motion.img
                 src={copyIcon}

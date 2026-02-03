@@ -35,9 +35,14 @@ function InfoCard({
           </div>
           <Popover.Root>
             <Popover.Trigger asChild>
-              <button className="icon-button" onClick={onClick}>
+              <motion.button
+                className="icon-button"
+                onClick={onClick}
+                whileHover={{ scale: 1 }}
+                whileTap={{ scale: 0.8 }}
+              >
                 <img src={ArrowOutward} alt="View Stats" className="icon" />
-              </button>
+              </motion.button>
             </Popover.Trigger>
             <Popover.Portal>
               <Popover.Content align="start" side="right">

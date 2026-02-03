@@ -378,20 +378,25 @@ button {
   border: 1px solid #aaa0;
   border-radius: 5px;
   height: 20px;
+  padding: 0.2rem;
+  transition: background-color 0.2s;
+  cursor: pointer;
+
 }
 
 .icon-button:hover {
-  all: unset;
   display: flex;
   justify-content: center;
   align-items: center;
   border: 1px solid #aaa0;
   border-radius: 5px;
   height: 20px;
+  background-color: #aaa3;
+  padding: 0.2rem;
 }
 
-.icon-button:focus {
-  border-color: var(--color-accent);
+.icon-button:focus-visible {
+  border-color: var(--color-accent-gradient-end);
 }
 
 .center {
@@ -724,13 +729,13 @@ button {
 }
 
 .favorite-action {
-  height: 32px;
-  width: 32px;
+  height: 24px;
+  width: 24px;
 }
 
 .favorite-action:hover {
-  height: 32px;
-  width: 32px;
+  height: 24px;
+  width: 24px;
 }
 
 .favorite-action-container {
@@ -744,7 +749,7 @@ button {
 
 .text-icon {
   display: flex;
-  gap: 10px;
+  gap: 5px;
   align-items: center;
 }
 
@@ -973,4 +978,11 @@ button {
   padding-left: 0;
   list-style: none;
   flex-wrap: wrap;
+}
+
+.username-link {
+  line-height: 1.5;
+  font-size: 1.4rem;
+  padding: 5px 10px;
+  color: var(--text-primary);
 }
