@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getFavorites, Favorite, deleteFavorite } from "../utils/favorites";
 import { MdDeleteOutline, MdOutlineSearch } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { motion } from "motion/react";
 import { loadingSkin } from "./sampleData";
 import { formatISOToDistance } from "../utils/utils";
@@ -42,7 +42,13 @@ function FavoriteElement({
         alt={`${username}'s skin`}
       />
       <div className="favorite-content">
-        <h2 className="username">{mojangQuery.data?.username || username}</h2>
+        <Link
+          to={`/player/${encodeURIComponent(uuid)}`}
+          aria-label={`Search player ${mojangQuery.data?.username || username}`}
+          className="username username-link"
+        >
+          {mojangQuery.data?.username || username}
+        </Link>
         <p className="info-card-label">added {formatISOToDistance(addedOn)}</p>
         <div className="favorite-action-container">
           <motion.button

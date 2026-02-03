@@ -77,41 +77,44 @@ function WynncraftCharacters({
 
   return (
     <>
-      <Select.Root value={sort} onValueChange={setSort}>
-        <div className="wynn-sort-trigger">
-          Sort by
-          <Select.Trigger className="SelectTrigger">
-            <Select.Value placeholder="Sort by..." />
-          </Select.Trigger>
-        </div>
-        <Select.Portal>
-          <Select.Content className="SelectContent" position="popper">
-            <Select.Viewport className="SelectViewport">
-              {!removedStats.includes("playtime") && (
-                <Select.Item value="playtime" className="SelectItem">
-                  <Select.ItemText>Playtime</Select.ItemText>
+      <div className="wynn-characters-heading">
+        <h3>Characters</h3>
+        <Select.Root value={sort} onValueChange={setSort}>
+          <div className="wynn-sort-trigger">
+            Sort by
+            <Select.Trigger className="SelectTrigger">
+              <Select.Value placeholder="Sort by..." />
+            </Select.Trigger>
+          </div>
+          <Select.Portal>
+            <Select.Content className="SelectContent" position="popper">
+              <Select.Viewport className="SelectViewport">
+                {!removedStats.includes("playtime") && (
+                  <Select.Item value="playtime" className="SelectItem">
+                    <Select.ItemText>Playtime</Select.ItemText>
+                  </Select.Item>
+                )}
+                <Select.Item value="level" className="SelectItem">
+                  <Select.ItemText>Level</Select.ItemText>
                 </Select.Item>
-              )}
-              <Select.Item value="level" className="SelectItem">
-                <Select.ItemText>Level</Select.ItemText>
-              </Select.Item>
-              <Select.Item value="age" className="SelectItem">
-                <Select.ItemText>Oldest</Select.ItemText>
-              </Select.Item>
-              {!removedStats.includes("logins") && (
-                <Select.Item value="logins" className="SelectItem">
-                  <Select.ItemText>Logins</Select.ItemText>
+                <Select.Item value="age" className="SelectItem">
+                  <Select.ItemText>Oldest</Select.ItemText>
                 </Select.Item>
-              )}
-              {!removedStats.includes("professions") && (
-                <Select.Item value="professions" className="SelectItem">
-                  <Select.ItemText>Professions</Select.ItemText>
-                </Select.Item>
-              )}
-            </Select.Viewport>
-          </Select.Content>
-        </Select.Portal>
-      </Select.Root>
+                {!removedStats.includes("logins") && (
+                  <Select.Item value="logins" className="SelectItem">
+                    <Select.ItemText>Logins</Select.ItemText>
+                  </Select.Item>
+                )}
+                {!removedStats.includes("professions") && (
+                  <Select.Item value="professions" className="SelectItem">
+                    <Select.ItemText>Professions</Select.ItemText>
+                  </Select.Item>
+                )}
+              </Select.Viewport>
+            </Select.Content>
+          </Select.Portal>
+        </Select.Root>
+      </div>
       <ul className="wynncraft-character-list">
         {characters.map((char) => (
           <WynncraftCharacterModal character={char} key={char.character_uuid} />

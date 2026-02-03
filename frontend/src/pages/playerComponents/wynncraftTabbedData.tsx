@@ -183,7 +183,6 @@ function WynncraftTabbedData({
           <DistributionChartWrapper metricData={metricData} />
         </InfoCard>
       </ul>
-      <h3>Characters</h3>
       {!wynncraftData.restrictions.character_data_access && (
         <WynncraftCharacters characterList={wynncraftData.characters} />
       )}

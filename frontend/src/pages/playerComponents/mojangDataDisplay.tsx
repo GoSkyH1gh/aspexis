@@ -85,7 +85,7 @@ function MojangDataDisplay({
               </Tooltip.Portal>
             </Tooltip.Root>
         </div>
-        <div className="text-icon uuid-container">
+        <div className="text-icon uuid-container text-icon">
           <p className="uuid">uuid: {mojangResponse.uuid}</p>
           <CopyIcon textToCopy={mojangResponse.uuid} />
         </div>
