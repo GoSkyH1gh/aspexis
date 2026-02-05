@@ -109,6 +109,7 @@ function WynncraftTabbedData({
         <InfoCard
           label="Last Login"
           value={formatISOToDistance(wynncraftData.last_login)}
+          tooltip={formatISOTimestamp(wynncraftData.last_login)}
         />
       </ul>
       <ul className="info-card-list">

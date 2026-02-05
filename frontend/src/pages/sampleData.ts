@@ -324,14 +324,8 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: {
-          total: 0,
-          list: {},
-        },
-        raids: {
-          total: 0,
-          list: {},
-        },
+        dungeons: { total: 0, list: {} },
+        raids: { total: 0, list: {} },
       },
       stats: {
         mobs_killed: 120,
@@ -379,16 +373,8 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: {
-          total: 1,
-          list: {
-            Spider: 1,
-          },
-        },
-        raids: {
-          total: 0,
-          list: {},
-        },
+        dungeons: { total: 1, list: { Spider: 1 } },
+        raids: { total: 0, list: {} },
       },
       stats: {
         mobs_killed: 114,
@@ -436,14 +422,8 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: {
-          total: 0,
-          list: {},
-        },
-        raids: {
-          total: 0,
-          list: {},
-        },
+        dungeons: { total: 0, list: {} },
+        raids: { total: 0, list: {} },
       },
       stats: {
         mobs_killed: 232,
@@ -491,16 +471,8 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: {
-          total: 1,
-          list: {
-            Spider: 1,
-          },
-        },
-        raids: {
-          total: 0,
-          list: {},
-        },
+        dungeons: { total: 1, list: { Spider: 1 } },
+        raids: { total: 0, list: {} },
       },
       stats: {
         mobs_killed: 32,
@@ -548,17 +520,8 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: {
-          total: 3,
-          list: {
-            Skeleton: 1,
-            Spider: 2,
-          },
-        },
-        raids: {
-          total: 0,
-          list: {},
-        },
+        dungeons: { total: 3, list: { Skeleton: 1, Spider: 2 } },
+        raids: { total: 0, list: {} },
       },
       stats: {
         mobs_killed: 219,
@@ -606,14 +569,8 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: {
-          total: 0,
-          list: {},
-        },
-        raids: {
-          total: 0,
-          list: {},
-        },
+        dungeons: { total: 0, list: {} },
+        raids: { total: 0, list: {} },
       },
       stats: {
         mobs_killed: 0,
@@ -661,14 +618,8 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: {
-          total: 0,
-          list: {},
-        },
-        raids: {
-          total: 0,
-          list: {},
-        },
+        dungeons: { total: 0, list: {} },
+        raids: { total: 0, list: {} },
       },
       stats: {
         mobs_killed: 165,
@@ -685,7 +636,7 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
       nickname: null,
       reskin: "DARKWIZARD",
       level: 85,
-      playtime: 2,
+      playtime: 2.0,
       gamemodes: [],
       professions: {
         fishing: 0,
@@ -716,14 +667,8 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: {
-          total: 0,
-          list: {},
-        },
-        raids: {
-          total: 0,
-          list: {},
-        },
+        dungeons: { total: 0, list: {} },
+        raids: { total: 0, list: {} },
       },
       stats: {
         mobs_killed: 50,
@@ -771,16 +716,8 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: {
-          total: 1,
-          list: {
-            Skeleton: 1,
-          },
-        },
-        raids: {
-          total: 0,
-          list: {},
-        },
+        dungeons: { total: 1, list: { Skeleton: 1 } },
+        raids: { total: 0, list: {} },
       },
       stats: {
         mobs_killed: 536,
@@ -797,7 +734,7 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
       nickname: null,
       reskin: "DARKWIZARD",
       level: 80,
-      playtime: 1,
+      playtime: 1.0,
       gamemodes: [],
       professions: {
         fishing: 0,
@@ -828,14 +765,8 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: {
-          total: 0,
-          list: {},
-        },
-        raids: {
-          total: 0,
-          list: {},
-        },
+        dungeons: { total: 0, list: {} },
+        raids: { total: 0, list: {} },
       },
       stats: {
         mobs_killed: 8,
@@ -867,70 +798,70 @@ const sampleWynncraftGuildResponse = {
   members: [
     {
       username: "Grian",
-      uuid: "5f8eb73b-25be-4c5a-a50f-d27d65e30ca0",
+      uuid: "5f8eb73b25be4c5aa50fd27d65e30ca0",
       online: false,
       joined: "2014-12-21T21:33:38.991000Z",
       rank: "owner",
     },
     {
       username: "CaptainCarlo",
-      uuid: "6499c8ea-0d62-4122-8059-48885fde23ac",
+      uuid: "6499c8ea0d624122805948885fde23ac",
       online: false,
       joined: "2014-12-21T22:14:04.920000Z",
       rank: "chief",
     },
     {
       username: "Didag",
-      uuid: "a196109f-3159-491e-b322-b26ceb983ce7",
+      uuid: "a196109f3159491eb322b26ceb983ce7",
       online: false,
       joined: "2014-12-22T20:03:55.872000Z",
       rank: "captain",
     },
     {
       username: "_DeaDline_",
-      uuid: "14e57fa2-0624-471a-9915-c9e02a1df721",
+      uuid: "14e57fa20624471a9915c9e02a1df721",
       online: false,
       joined: "2015-01-04T16:43:25.065000Z",
       rank: "captain",
     },
     {
       username: "Gokatgo",
-      uuid: "5dceec41-796f-4539-8a3a-447ebf0a9d0e",
+      uuid: "5dceec41796f45398a3a447ebf0a9d0e",
       online: false,
       joined: "2014-12-21T21:48:24.807000Z",
       rank: "captain",
     },
     {
       username: "Manny",
-      uuid: "7c959ac2-6196-42d5-b6df-5a8fce2f20ee",
+      uuid: "7c959ac2619642d5b6df5a8fce2f20ee",
       online: false,
       joined: "2014-12-22T02:40:33.694000Z",
       rank: "captain",
     },
     {
       username: "karo93",
-      uuid: "81fa34f6-6740-4440-ab46-aaecf655a8d9",
+      uuid: "81fa34f667404440ab46aaecf655a8d9",
       online: false,
       joined: "2015-01-04T16:45:16.965000Z",
       rank: "captain",
     },
     {
       username: "MrDoomHaven",
-      uuid: "6c189cff-9662-4b91-92b0-b2850f0a7c37",
+      uuid: "6c189cff96624b9192b0b2850f0a7c37",
       online: false,
       joined: "2014-12-21T22:43:48.444000Z",
       rank: "captain",
     },
     {
       username: "KingBob12th",
-      uuid: "e37f31a5-035e-4ad2-b92b-0b02d7f64a3d",
+      uuid: "e37f31a5035e4ad2b92b0b02d7f64a3d",
       online: false,
       joined: "2014-12-21T22:27:18.794000Z",
       rank: "captain",
     },
     {
       username: "Katoa",
-      uuid: "c9b3aaf0-2fa3-4b46-a050-75fd8539527f",
+      uuid: "c9b3aaf02fa34b46a05075fd8539527f",
       online: false,
       joined: "2015-03-19T02:17:08.915000Z",
       rank: "recruit",

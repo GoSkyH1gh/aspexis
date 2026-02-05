@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from fastapi import HTTPException
 from metrics_manager import add_value, get_engine
 from minecraft_manager import get_minecraft_data
-
+import exceptions
 
 load_dotenv()
 
@@ -33,7 +33,7 @@ class DonutPlayerStats(BaseModel):
 async def get_donut_stats(
     username: str, http_client: httpx.AsyncClient
 ) -> DonutPlayerStats:
-    """Returns a DonutPlayerStats object on success, 404 on fail"""
+    """Returns a DonutPlayerStats object on success, raises NotFound on fail"""
     assert donut_api_key is not None, "Donut API key not found"
     try:
         donut_response_raw = await http_client.get(
@@ -47,7 +47,7 @@ async def get_donut_stats(
 
     except Exception as e:
         print(f"could not retrieve stats: {e}")
-        raise HTTPException(404, {"message": f"player {username} was not found"})
+        raise exceptions.NotFound()
 
     stats_to_convert = {
         "money": "money",
