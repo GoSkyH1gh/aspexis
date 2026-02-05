@@ -80,6 +80,7 @@ function QuickInfo({ hypixelResponse, playerStatus }: QuickInfoProps) {
         <InfoCard
           label="Last seen"
           value={formatISOToDistance(hypixelResponse.player?.last_login)}
+          tooltip={formatISOTimestamp(hypixelResponse.player?.last_login)}
         />
         <InfoCard
           label="Hypixel rank"

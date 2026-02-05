@@ -2,20 +2,40 @@ import { motion } from "motion/react";
 import ArrowOutward from "/src/assets/arrow-outward.svg";
 import { Popover } from "radix-ui";
 import { ReactNode } from "react";
+import { Tooltip } from "radix-ui";
 
-type InfoCardProps = {
+// can't use both hasStats and tooltip at the same time
+type BaseProps = {
   label: string;
   value: string | number | ReactNode;
   onClick?: () => void;
-  hasStats?: boolean;
   children?: ReactNode;
 };
+
+type WithStats = BaseProps & {
+  hasStats: true;
+  tooltip?: never;
+};
+
+type WithTooltip = BaseProps & {
+  tooltip: string;
+  hasStats?: false;
+};
+
+type Plain = BaseProps & {
+  hasStats?: false;
+  tooltip?: null;
+};
+
+type InfoCardProps = WithStats | WithTooltip | Plain;
+
 
 function InfoCard({
   label,
   value,
   onClick,
   hasStats = false,
+  tooltip = null,
   children,
 }: InfoCardProps) {
   if (hasStats) {
@@ -62,6 +82,31 @@ function InfoCard({
       </motion.li>
     );
   }
+  if (tooltip != null) {
+    return (
+      <Tooltip.Root delayDuration={50}>
+        <Tooltip.Trigger asChild>
+          <motion.li
+            className="info-card"
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              show: { opacity: 1, y: 0 },
+            }}
+          >
+            <span className="info-card-label">{label}</span>
+            <br />
+            <span className="info-card-value">{value}</span>
+          </motion.li>
+        </Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content className="TooltipContent">
+            {tooltip}
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+    );
+  }
+
   return (
     <motion.li
       className="info-card"

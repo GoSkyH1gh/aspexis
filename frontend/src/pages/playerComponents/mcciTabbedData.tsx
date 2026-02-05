@@ -59,6 +59,7 @@ function McciTabbedData({
         <InfoCard
           label="Last Login"
           value={formatISOToDistance(mcciData.last_join)}
+          tooltip={mcciData.last_join && (formatISOTimestamp(mcciData.last_join)) || null}
         />
         <InfoCard label="Rank" value={mcciData.rank ?? "No Rank"} />
         <InfoCard
