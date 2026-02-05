@@ -24,6 +24,7 @@ function Searchbar({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeInOut" }}
         type="text"
+        id="search"
         placeholder="search by username or UUID"
         className="searchbar"
         name="search"

@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Dialog } from "radix-ui";
+import { Dialog, Tooltip } from "radix-ui";
 import "./dialog.css";
 import { motion } from "motion/react";
 import View3DIcon from "/src/assets/view-3d-icon.svg";
@@ -17,22 +17,31 @@ type SkinViewProps = {
 function SkinView({ skinUrl, capeUrl, username }: SkinViewProps) {
   return (
     <Dialog.Root>
-      <Dialog.Trigger asChild>
-        <motion.button
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{
-            duration: 0.1,
-            type: "spring",
-            delay: 0.2,
-            ease: "easeOut",
-          }}
-          data-tooltip="View in 3D"
-          className="tooltip skin-button fill-button"
-        >
-          <img src={View3DIcon} alt="View skin in 3d viewer" />
-        </motion.button>
-      </Dialog.Trigger>
+      <Tooltip.Root delayDuration={50}>
+        <Tooltip.Trigger asChild>
+          <Dialog.Trigger asChild>
+            <motion.button
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{
+                duration: 0.1,
+                type: "spring",
+                delay: 0.2,
+                ease: "easeOut",
+              }}
+              className="skin-button fill-button"
+              aria-label="View in 3D"
+            >
+              <img src={View3DIcon} alt="View skin in 3d viewer" />
+            </motion.button>
+          </Dialog.Trigger>
+        </Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content className="TooltipContent">
+            View in 3D
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
       <Dialog.Portal>
         <Dialog.Overlay className="DialogOverlay" />
         <Dialog.Content className="DialogContent">

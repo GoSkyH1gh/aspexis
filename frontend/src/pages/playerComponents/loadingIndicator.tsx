@@ -8,8 +8,10 @@ function LoadingIndicator() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className="loading-container"
+      role="status"
+      aria-live="polite"
     >
-      <img src={loadingIndicator} />
+      <img src={loadingIndicator} alt="Loading..." />
     </motion.div>
   );
 }
