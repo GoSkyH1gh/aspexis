@@ -45,6 +45,43 @@ function AdvancedInfoTabs({
   const [selectedTab, setSelectedTab] = useState<string | undefined>(undefined);
   const TAB_PRIORITY = ["hypixel", "wynncraft", "donut", "mcci"] as const;
   const hasAutoSelected = useRef(false);
+  const tabRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+
+  const TAB_LABELS: Record<string, string> = {
+    hypixel: "Hypixel",
+    wynncraft: "Wynncraft",
+    donut: "Donut SMP",
+    mcci: "MCC Island",
+  };
+
+  const visibleTabs = TAB_PRIORITY.filter((tab) => loadedTabs.includes(tab));
+
+  const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      const nextTab = visibleTabs[(index + 1) % visibleTabs.length];
+      setSelectedTab(nextTab);
+      tabRefs.current.get(nextTab)?.focus();
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      const prevTab =
+        visibleTabs[(index - 1 + visibleTabs.length) % visibleTabs.length];
+      setSelectedTab(prevTab);
+      tabRefs.current.get(prevTab)?.focus();
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      if (visibleTabs.length > 0) {
+        setSelectedTab(visibleTabs[0]);
+        tabRefs.current.get(visibleTabs[0])?.focus();
+      }
+    } else if (e.key === "End") {
+      e.preventDefault();
+      if (visibleTabs.length > 0) {
+        setSelectedTab(visibleTabs[visibleTabs.length - 1]);
+        tabRefs.current.get(visibleTabs[visibleTabs.length - 1])?.focus();
+      }
+    }
+  };
 
   useEffect(() => {
     if (hasAutoSelected.current) return;
@@ -125,49 +162,39 @@ function AdvancedInfoTabs({
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, ease: "easeInOut", delay: 0.6 }}
         className="advanced-tabs"
+        role="tablist"
+        aria-label="Player Data Tabs"
       >
-        {loadedTabs.includes("hypixel") && (
+        {visibleTabs.map((tab, index) => (
           <motion.button
+            key={tab}
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            onClick={() => setSelectedTab("hypixel")}
-            className={"hypixel" === selectedTab ? "selected-tab" : ""}
+            onClick={() => setSelectedTab(tab)}
+            className={tab === selectedTab ? "selected-tab" : ""}
+            role="tab"
+            aria-selected={selectedTab === tab}
+            aria-controls="player-info-tab-panel"
+            id={`tab-${tab}`}
+            tabIndex={selectedTab === tab ? 0 : -1}
+            onKeyDown={(e) => handleKeyDown(e, index)}
+            ref={(el) => {
+              if (el) tabRefs.current.set(tab, el);
+              else tabRefs.current.delete(tab);
+            }}
           >
-            Hypixel
+            {TAB_LABELS[tab]}
           </motion.button>
-        )}
-        {loadedTabs.includes("wynncraft") && (
-          <motion.button
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            onClick={() => setSelectedTab("wynncraft")}
-            className={"wynncraft" === selectedTab ? "selected-tab" : ""}
-          >
-            Wynncraft
-          </motion.button>
-        )}
-        {loadedTabs.includes("donut") && (
-          <motion.button
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            onClick={() => setSelectedTab("donut")}
-            className={"donut" === selectedTab ? "selected-tab" : ""}
-          >
-            Donut SMP
-          </motion.button>
-        )}
-        {loadedTabs.includes("mcci") && (
-          <motion.button
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            onClick={() => setSelectedTab("mcci")}
-            className={"mcci" === selectedTab ? "selected-tab" : ""}
-          >
-            MCC Island
-          </motion.button>
-        )}
+        ))}
       </motion.div>
-      <div>{tabContents}</div>
+      <div
+        role="tabpanel"
+        id="player-info-tab-panel"
+        aria-labelledby={selectedTab ? `tab-${selectedTab}` : undefined}
+        tabIndex={0}
+      >
+        {tabContents}
+      </div>
     </motion.div>
   );
 }

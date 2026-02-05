@@ -11,6 +11,7 @@ function CopyIcon({ textToCopy }: { textToCopy: string }) {
           <Tooltip.Trigger asChild>
             <motion.button
               className="icon-button"
+              aria-label="Copy UUID to clipboard"
               onClick={() => {
                 navigator.clipboard.writeText(textToCopy);
                 setOpen(true);
@@ -20,7 +21,7 @@ function CopyIcon({ textToCopy }: { textToCopy: string }) {
             >
               <motion.img
                 src={copyIcon}
-                alt="copy uuid to clipboard"
+                alt=""
                 className="copy-icon"
               />
             </motion.button>

@@ -30,6 +30,7 @@ function HeroSearchbar() {
       <MdSearch />
       <input
         placeholder="Technoblade"
+        aria-label="Search for a player"
         value={searchbarValue}
         onChange={(e) => {
           setSerchbarValue(e.target.value);
