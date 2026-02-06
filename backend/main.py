@@ -30,10 +30,12 @@ from hypixel_manager import (
     add_hypixel_stats_to_db,
 )
 from minecraft_manager import get_minecraft_data
-from typing import List, Annotated
+from typing import List, Annotated, Literal
 import time
 from telemetry_manager import add_telemetry_event
 from capes import get_capes_for_user, UserCapeData
+from wynncraft_ability_tree import get_ability_tree, AbilityTreePage
+
 from slowapi.util import get_remote_address
 from slowapi import Limiter
 from slowapi.middleware import SlowAPIMiddleware
@@ -162,8 +164,11 @@ async def get_profile(
 
 
 @app.get("/v1/players/capes/{uuid}")
-def get_capes(uuid: str) -> List[UserCapeData]:
-    return get_capes_for_user(uuid)
+async def get_capes(
+    uuid: str,
+    http_client: httpx.AsyncClient = Depends(get_client),
+) -> List[UserCapeData]:
+    return await get_capes_for_user(uuid, http_client)
 
 
 @app.get(
@@ -228,6 +233,43 @@ async def get_wynncraft_guild(
 ) -> WynncraftGuildInfo:
     return await get_wynncraft_guild_data(prefix, http_client)
 
+ClassType = Literal[
+    "warrior",
+    "mage",
+    "archer",
+    "assassin",
+    "shaman",
+]
+
+@app.get(
+    "/v1/players/wynncraft/{uuid}/characters/{character_uuid}/ability-tree",
+    responses={
+        403: {
+            "model": exceptions.ErrorResponse,
+            "description": "Ability tree is private",
+        },
+        404: {
+            "model": exceptions.ErrorResponse,
+            "description": "Player or character not found",
+        },
+        422: {
+            "model": exceptions.ErrorResponse,
+            "description": "Invalid class",
+        },
+    },
+)
+async def get_wynncraft_character_ability_tree(
+    uuid: str,
+    character_uuid: str,
+    class_type: ClassType = Query(..., alias="class"),
+    http_client: httpx.AsyncClient = Depends(get_client),
+) -> list[AbilityTreePage]:
+    return await get_ability_tree(
+        uuid=uuid,
+        character_uuid=character_uuid,
+        class_type=class_type,
+        http_client=http_client,
+    )
 
 # donutsmp endpoint
 @app.get("/v1/players/donutsmp/{username}")
