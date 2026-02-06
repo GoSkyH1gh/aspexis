@@ -60,12 +60,35 @@ class InvalidUserUUID(HTTPException):
             detail="UUID couldn't be proccessed. Make sure you are using the undashed format.",
         )
 
+
+class UnprocessableEntity(HTTPException):
+    def __init__(self, reason: str | None = None):
+        detail = "Request content was not correct"
+        if reason:
+            detail += f": {reason}"
+        super().__init__(
+            status_code=422,
+            detail=detail,
+        )
+
+class Forbidden(HTTPException):
+    def __init__(self, reason: str | None = None):
+        detail = "Request resource is not accessible"
+        if reason:
+            detail += f": {reason}"
+        super().__init__(
+            status_code=403,
+            detail=detail,
+        )
+
+
 class TooManyRequests(HTTPException):
     def __init__(self):
         super().__init__(
             status_code=429,
             detail="Too many requests",
         )
+
 
 class InvalidCache(BaseException):
     def __init__(self, *args):
