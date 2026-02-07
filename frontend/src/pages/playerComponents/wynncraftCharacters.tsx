@@ -1,13 +1,21 @@
 import { useState } from "react";
 import "./wynncraftCharacters.css";
-import { WynncraftCharacterInfo, ProfessionInfo } from "../../client";
+import {
+  WynncraftCharacterInfo,
+  ProfessionInfo,
+  PlayerRestrictions,
+} from "../../client";
 import { Select } from "radix-ui";
 import WynncraftCharacterModal from "./wynncraftCharacterModal";
 
 function WynncraftCharacters({
   characterList,
+  uuid,
+  restrictions,
 }: {
   characterList: WynncraftCharacterInfo[];
+  uuid: string;
+  restrictions: PlayerRestrictions;
 }) {
   if (characterList.length === 0) {
     return <p>This player has no characters.</p>;
@@ -117,7 +125,12 @@ function WynncraftCharacters({
       </div>
       <ul className="wynncraft-character-list">
         {characters.map((char) => (
-          <WynncraftCharacterModal character={char} key={char.character_uuid} />
+          <WynncraftCharacterModal
+            character={char}
+            key={char.character_uuid}
+            uuid={uuid}
+            restrictions={restrictions}
+          />
         ))}
       </ul>
     </>

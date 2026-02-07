@@ -8,6 +8,7 @@ import {
   MojangData,
   UserCapeData,
   WynncraftPlayerSummary,
+  AbilityTreePage,
 } from "../client";
 import { InvalidArgumentsError } from "./errors";
 
@@ -19,6 +20,7 @@ const hypixelUrl = `${baseUrl}/v1/players/hypixel/`;
 const statusUrl = `${baseUrl}/v1/players/status/`;
 const wynncraftUrl = `${baseUrl}/v1/players/wynncraft/`;
 const wynncraftGuildUrl = `${baseUrl}/v1/wynncraft/guilds/`;
+const wynncraftAbilityTreeUrl = `${baseUrl}/v1/players/wynncraft/`;
 const donutUrl = `${baseUrl}/v1/players/donutsmp/`;
 const mcciUrl = `${baseUrl}/v1/players/mccisland/`;
 const capesUrl = `${baseUrl}/v1/players/capes/`;
@@ -119,6 +121,26 @@ export async function fetchWynncraftGuildData(
   }
   const response = await fetch(
     wynncraftGuildUrl + encodeURIComponent(guildPrefix),
+  );
+
+  if (!response.ok) {
+    throw new Error("Server error");
+  }
+
+  return response.json();
+}
+
+export async function fetchWynncraftAbilityTree(
+  uuid: string,
+  character_uuid: string,
+  class_type: string,
+): Promise<AbilityTreePage[]> {
+  if (!uuid) {
+    throw new InvalidArgumentsError();
+  }
+
+  const response = await fetch(
+    `${wynncraftAbilityTreeUrl}${uuid}/characters/${character_uuid}/ability-tree?class=${class_type}`,
   );
 
   if (!response.ok) {

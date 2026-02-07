@@ -14,11 +14,13 @@ import { WynncraftPlayerSummary, WynncraftGuildInfo } from "../../client";
 type WynncraftProps = {
   wynncraftData: WynncraftPlayerSummary;
   wynncraftGuildData: WynncraftGuildInfo | null | undefined;
+  uuid: string;
 };
 
 function WynncraftTabbedData({
   wynncraftData,
   wynncraftGuildData,
+  uuid,
 }: WynncraftProps) {
   const [metricData, setMetricData] = useState(null);
 
@@ -185,7 +187,11 @@ function WynncraftTabbedData({
         </InfoCard>
       </ul>
       {!wynncraftData.restrictions.character_data_access && (
-        <WynncraftCharacters characterList={wynncraftData.characters} />
+        <WynncraftCharacters
+          characterList={wynncraftData.characters}
+          uuid={uuid}
+          restrictions={wynncraftData.restrictions}
+        />
       )}
       {wynncraftData?.characters?.length === 0 &&
         wynncraftData.restrictions.character_data_access && (

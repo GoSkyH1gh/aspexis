@@ -66,56 +66,91 @@ def get_icon_url(
 
 
 async def get_ability_tree(
-    uuid: str, character_uuid: str, class_type: str, http_client: httpx.AsyncClient
+    uuid: str,
+    character_uuid: str,
+    class_type: str,
+    http_client: httpx.AsyncClient,
 ):
     if class_type not in VALID_CLASSES:
         raise exceptions.UnprocessableEntity("invalid wynncraft class")
+
     structure_task = get_tree_structure(class_type, http_client)
     abilities_task = get_tree_abilities(class_type, http_client)
     player_task = get_player_structure(uuid, character_uuid, http_client)
 
     structure_pages, abilities_pages, player_pages = await asyncio.gather(
-        structure_task, abilities_task, player_task
+        structure_task,
+        abilities_task,
+        player_task,
     )
 
-    # Build lookup: (page_number, node_name) -> AbilityTreeNode (with descriptions)
-    ability_descriptions = {}
+    # ------------------------------------------------------------------
+    # Ability descriptions lookup (abilities ONLY)
+    # Keyed by (page_number, ability_name)
+    # ------------------------------------------------------------------
+    ability_descriptions: dict[tuple[int, str], AbilityTreeNode] = {}
+
     for page in abilities_pages:
         for node in page.nodes:
             ability_descriptions[(page.page_number, node.name)] = node
 
-    # Build set of unlocked nodes (abilities AND connectors)
-    unlocked_keys = set()
+    # ------------------------------------------------------------------
+    # Unlocked node lookup (abilities AND connectors)
+    # Keyed by (page_number, node_type, x, y)
+    # ------------------------------------------------------------------
+    unlocked_keys: set[tuple[int, str, int, int]] = set()
+
     for page in player_pages:
         for node in page.nodes:
-            unlocked_keys.add((page.page_number, node.name))
+            unlocked_keys.add(
+                (
+                    page.page_number,
+                    node.node_type,
+                    node.x,
+                    node.y,
+                )
+            )
 
-    # Merge everything into the structure
+    # ------------------------------------------------------------------
+    # Merge structure + descriptions + unlock state
+    # ------------------------------------------------------------------
     merged_pages: list[AbilityTreePage] = []
 
     for page in structure_pages:
         merged_nodes: list[AbilityTreeNode] = []
 
         for node in page.nodes:
-            key = (page.page_number, node.name)
+            node_id = (
+                page.page_number,
+                node.node_type,
+                node.x,
+                node.y,
+            )
 
-            # Add descriptions for abilities
+            # Attach descriptions to abilities
             if node.node_type == "ability":
-                if key in ability_descriptions:
-                    desc_node = ability_descriptions[key]
+                desc_node = ability_descriptions.get((page.page_number, node.name))
+                if desc_node:
                     node.pretty_name = desc_node.pretty_name
                     node.description = desc_node.description
 
-            # Check unlock status for both abilities and connectors
-            node.unlocked = key in unlocked_keys
+            # Apply unlock state (abilities + connectors)
+            node.unlocked = node_id in unlocked_keys
+
+            # Recompute icon URL based on unlock state
             node.icon_url = get_icon_url(
-                node.node_type, node.icon_id, node.unlocked
+                node.node_type,
+                node.icon_id,
+                node.unlocked,
             )
 
             merged_nodes.append(node)
 
         merged_pages.append(
-            AbilityTreePage(page_number=page.page_number, nodes=merged_nodes)
+            AbilityTreePage(
+                page_number=page.page_number,
+                nodes=merged_nodes,
+            )
         )
 
     return merged_pages
