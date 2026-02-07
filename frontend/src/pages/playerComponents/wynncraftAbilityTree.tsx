@@ -22,21 +22,6 @@ function toLocalRow(globalY: number, pageNumber: number): number {
   return row;
 }
 function AbilityPage({ page }: { page: AbilityTreePage }) {
-  console.log(
-    "Rendering page",
-    page.page_number,
-    page.nodes.map((n) => n.name),
-  );
-  const keys = page.nodes.map(
-    (node) =>
-      `${page.page_number}-${node.node_type}-${node.name}-${node.x}-${node.y}`,
-  );
-
-  const duplicates = keys.filter((k, i) => keys.indexOf(k) !== i);
-
-  if (duplicates.length) {
-    console.warn("Duplicate keys on page", page.page_number, duplicates);
-  }
   return (
     <div className="ability-page">
       {page.nodes.map((node) => {

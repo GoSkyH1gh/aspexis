@@ -98,7 +98,8 @@ async def get_ability_tree(
     ability_descriptions: dict[tuple[int, str], AbilityTreeNode] = {}
 
     for page in abilities_pages:
-        for node in page.nodes:
+        for original_node in page.nodes:
+            node = original_node.model_copy(deep=True)
             ability_descriptions[(page.page_number, node.name)] = node
 
     # ------------------------------------------------------------------
@@ -125,8 +126,16 @@ async def get_ability_tree(
 
     for page in structure_pages:
         merged_nodes: list[AbilityTreeNode] = []
+        seen: set[tuple[str, int, int]] = set()
 
-        for node in page.nodes:
+        for original_node in page.nodes:
+            node = original_node.model_copy(deep=True)
+
+            key = (node.node_type, node.x, node.y)
+            if key in seen:
+                continue
+            seen.add(key)
+
             node_id = (
                 page.page_number,
                 node.node_type,
@@ -141,10 +150,10 @@ async def get_ability_tree(
                     node.pretty_name = desc_node.pretty_name
                     node.description = desc_node.description
 
-            # Apply unlock state (abilities + connectors)
+            # Apply unlock state
             node.unlocked = node_id in unlocked_keys
 
-            # Recompute icon URL based on unlock state
+            # Recompute icon URL
             node.icon_url = get_icon_url(
                 node.node_type,
                 node.icon_id,

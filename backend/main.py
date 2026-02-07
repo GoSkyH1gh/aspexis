@@ -233,6 +233,7 @@ async def get_wynncraft_guild(
 ) -> WynncraftGuildInfo:
     return await get_wynncraft_guild_data(prefix, http_client)
 
+
 ClassType = Literal[
     "warrior",
     "mage",
@@ -241,16 +242,13 @@ ClassType = Literal[
     "shaman",
 ]
 
+
 @app.get(
     "/v1/players/wynncraft/{uuid}/characters/{character_uuid}/ability-tree",
     responses={
         403: {
             "model": exceptions.ErrorResponse,
             "description": "Ability tree is private",
-        },
-        404: {
-            "model": exceptions.ErrorResponse,
-            "description": "Player or character not found",
         },
         422: {
             "model": exceptions.ErrorResponse,
@@ -271,6 +269,7 @@ async def get_wynncraft_character_ability_tree(
         http_client=http_client,
     )
 
+
 # donutsmp endpoint
 @app.get("/v1/players/donutsmp/{username}")
 async def get_donut(
@@ -280,7 +279,9 @@ async def get_donut(
     http_client: httpx.AsyncClient = Depends(get_client),
 ) -> DonutPlayerStats:
     player_data = await get_donut_stats(username, http_client)
-    background_tasks.add_task(add_donut_stats_to_db, player_data, username, session, http_client)
+    background_tasks.add_task(
+        add_donut_stats_to_db, player_data, username, session, http_client
+    )
     return player_data
 
 
