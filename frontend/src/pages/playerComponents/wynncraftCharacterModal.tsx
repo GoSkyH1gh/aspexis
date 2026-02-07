@@ -132,6 +132,7 @@ function CharacterDetails({
       return (
         <HorizontalInfoCard
           label={toProperCase(profession)}
+          key={profession}
           value={character.professions![validProfession]}
           imageSrc={getProfessionUrl(profession)}
           imageAlt={profession}

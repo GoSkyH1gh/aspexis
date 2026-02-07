@@ -6,6 +6,10 @@ from dotenv import load_dotenv
 import os
 from typing import Literal
 import exceptions
+from upstash_redis.asyncio import Redis
+import json
+
+redis = Redis.from_env()
 
 load_dotenv()
 
@@ -18,6 +22,9 @@ if not wynn_token:
 VALID_CLASSES = {"warrior", "mage", "archer", "assassin", "shaman"}
 
 BASE_CDN_URL = "https://cdn.wynncraft.com/nextgen/abilities/2.1"
+
+STATIC_DATA_TTL_SECONDS = 60 * 60 * 4
+DYNAMIC_DATA_TTL_SECONDS = 60 * 5
 
 
 class AbilityTreeNode(BaseModel):
@@ -156,7 +163,7 @@ async def get_ability_tree(
     return merged_pages
 
 
-async def get_tree_structure(
+async def fetch_tree_structure(
     class_type: str, http_client: httpx.AsyncClient
 ) -> list[AbilityTreePage]:
     tree_response = await http_client.get(
@@ -219,7 +226,7 @@ async def get_tree_structure(
     ]
 
 
-async def get_player_structure(
+async def fetch_player_structure(
     uuid: str, character_uuid: str, http_client: httpx.AsyncClient
 ):
     # this is similar to get_tree_structure
@@ -289,7 +296,7 @@ async def get_player_structure(
     return processed_pages
 
 
-async def get_tree_abilities(
+async def fetch_tree_abilities(
     class_type: str, http_client: httpx.AsyncClient
 ) -> list[AbilityTreePage]:
     # only abilities, but contains rich descriptions
@@ -331,6 +338,69 @@ async def get_tree_abilities(
         processed_pages.append(tree_page)
 
     return processed_pages
+
+
+async def get_tree_structure(
+    class_type: str, http_client: httpx.AsyncClient
+) -> list[AbilityTreePage]:
+    key = f"wynncraft_tree_structure_{class_type}"
+    cached = await redis.get(key)
+
+    if cached is not None:
+        raw_pages = json.loads(cached)
+        return [AbilityTreePage.model_validate(page) for page in raw_pages]
+
+    pages = await fetch_tree_structure(class_type, http_client)
+
+    await redis.set(
+        key,
+        json.dumps([page.model_dump() for page in pages]),
+        ex=STATIC_DATA_TTL_SECONDS,
+    )
+
+    return pages
+
+
+async def get_tree_abilities(
+    class_type: str, http_client: httpx.AsyncClient
+) -> list[AbilityTreePage]:
+    key = f"wynncraft_tree_abilities_{class_type}"
+    cached = await redis.get(key)
+
+    if cached is not None:
+        raw_pages = json.loads(cached)
+        return [AbilityTreePage.model_validate(page) for page in raw_pages]
+
+    pages = await fetch_tree_abilities(class_type, http_client)
+
+    await redis.set(
+        key,
+        json.dumps([page.model_dump() for page in pages]),
+        ex=STATIC_DATA_TTL_SECONDS,
+    )
+
+    return pages
+
+
+async def get_player_structure(
+    uuid: str, character_uuid: str, http_client: httpx.AsyncClient
+) -> list[AbilityTreePage]:
+    key = f"wynncraft_player_structure_{uuid}_{character_uuid}"
+    cached = await redis.get(key)
+
+    if cached is not None:
+        raw_pages = json.loads(cached)
+        return [AbilityTreePage.model_validate(page) for page in raw_pages]
+
+    pages = await fetch_player_structure(uuid, character_uuid, http_client)
+
+    await redis.set(
+        key,
+        json.dumps([page.model_dump() for page in pages]),
+        ex=DYNAMIC_DATA_TTL_SECONDS,
+    )
+
+    return pages
 
 
 if __name__ == "__main__":

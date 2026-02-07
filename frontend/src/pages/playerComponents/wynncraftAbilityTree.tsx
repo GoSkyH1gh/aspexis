@@ -27,6 +27,16 @@ function AbilityPage({ page }: { page: AbilityTreePage }) {
     page.page_number,
     page.nodes.map((n) => n.name),
   );
+  const keys = page.nodes.map(
+    (node) =>
+      `${page.page_number}-${node.node_type}-${node.name}-${node.x}-${node.y}`,
+  );
+
+  const duplicates = keys.filter((k, i) => keys.indexOf(k) !== i);
+
+  if (duplicates.length) {
+    console.warn("Duplicate keys on page", page.page_number, duplicates);
+  }
   return (
     <div className="ability-page">
       {page.nodes.map((node) => {
@@ -34,7 +44,7 @@ function AbilityPage({ page }: { page: AbilityTreePage }) {
         if (node.node_type == "connector") {
           return (
             <div
-              key={`${page.page_number}-${node.name}-${node.x}-${node.y}`}
+              key={`${page.page_number}-${node.node_type}-${node.x}-${node.y}`}
               className="ability-node"
               style={{
                 gridColumn: node.x,
@@ -101,6 +111,7 @@ function WynncraftAbilityTree({
   character: WynncraftCharacterInfo;
   uuid: string;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
   const wynncraftAbilityTreeQuery = useQuery({
     queryKey: ["wynncraft_ability_tree", character.character_uuid],
     queryFn: () =>
@@ -109,17 +120,41 @@ function WynncraftAbilityTree({
         character.character_uuid,
         character.character_class.toLowerCase(),
       ),
+    enabled: isOpen,
   });
 
   return (
-    <Dialog.Root>
+    <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
       <Dialog.Trigger>Open Ability Tree</Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="DialogOverlay AbilityTreeOverlay" />
         <Dialog.Content className="DialogContent AbilityTreeContent">
-          {wynncraftAbilityTreeQuery.isLoading && <div className="wynn-ability-tree-loading"><LoadingIndicator /></div>}
+          {wynncraftAbilityTreeQuery.isLoading && (
+            <>
+              <Dialog.Close asChild>
+                <button className="dialog-close wynn-ability-tree-close">
+                  <Icon icon={"material-symbols:close-rounded"} />
+                </button>
+              </Dialog.Close>
+              <div className="wynn-ability-tree-loading">
+                <LoadingIndicator />
+              </div>
+            </>
+          )}
           {wynncraftAbilityTreeQuery.data && (
             <AbilityTree pages={wynncraftAbilityTreeQuery.data} />
+          )}
+          {wynncraftAbilityTreeQuery.isError && (
+            <>
+              <Dialog.Close asChild>
+                <button className="dialog-close wynn-ability-tree-close">
+                  <Icon icon={"material-symbols:close-rounded"} />
+                </button>
+              </Dialog.Close>
+              <div className="wynn-ability-tree-loading">
+                Ability Tree could not be loaded.
+              </div>
+            </>
           )}
         </Dialog.Content>
       </Dialog.Portal>
