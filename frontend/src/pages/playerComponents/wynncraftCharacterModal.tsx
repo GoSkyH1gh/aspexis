@@ -1,5 +1,6 @@
 import { Dialog, Tooltip } from "radix-ui";
 import {
+  PlayerRestrictions,
   WynncraftCharacterInfo,
   WynncraftCharacterSkillPoints,
 } from "../../client";
@@ -7,6 +8,7 @@ import { motion } from "motion/react";
 import { toProperCase, formatValue } from "../../utils/utils";
 import { Icon } from "@iconify/react";
 import HorizontalInfoCard from "./horizontalInfoCard";
+import WynncraftAbilityTree from "./wynncraftAbilityTree";
 
 const modesMap = {
   ironman: "https://cdn.wynncraft.com/nextgen/badges/ironman.svg",
@@ -282,8 +284,12 @@ function CharacterDetails({
 
 export default function WynncraftCharacterModal({
   character,
+  uuid,
+  restrictions,
 }: {
   character: WynncraftCharacterInfo;
+  uuid: string;
+  restrictions: PlayerRestrictions;
 }) {
   return (
     <Dialog.Root>
@@ -318,11 +324,16 @@ export default function WynncraftCharacterModal({
         <Dialog.Content className="DialogContent wynn-char-modal">
           <div className="skin-viewer-header">
             <CharacterHeader character={character} />
-            <Dialog.Close asChild>
-              <button className="dialog-close">
-                <Icon icon={"material-symbols:close-rounded"} />
-              </button>
-            </Dialog.Close>
+            <div className="wynn-header-close">
+              {!restrictions.character_build_access && (
+                <WynncraftAbilityTree character={character} uuid={uuid} />
+              )}
+              <Dialog.Close asChild>
+                <button className="dialog-close">
+                  <Icon icon={"material-symbols:close-rounded"} />
+                </button>
+              </Dialog.Close>
+            </div>
           </div>
           <CharacterDetails character={character} />
         </Dialog.Content>

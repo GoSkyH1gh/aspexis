@@ -131,6 +131,7 @@ function AdvancedInfoTabs({
           <WynncraftTabbedData
             wynncraftData={wynncraftData}
             wynncraftGuildData={wynncraftGuildData}
+            uuid={uuid}
           />
         );
       }
