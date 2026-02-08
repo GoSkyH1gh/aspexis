@@ -19,7 +19,7 @@ wynn_token = os.getenv("WYNN_TOKEN")
 if not wynn_token:
     raise RuntimeError("Wynncraft Token not set in environment variables.")
 
-profession_names = [
+PROFESSION_NAMES = [
     "fishing",
     "woodcutting",
     "mining",
@@ -34,6 +34,75 @@ profession_names = [
     "armouring",
 ]
 
+STORYLINES = [
+    {
+        "name": "Recover the Past",
+        "quests": [
+            "King's Recruit",
+            "Infested Plants",
+            "Mushroom Man",
+            "Taking the Tower",
+            "Elemental Exercise",
+            "Arachnids' Ascent",
+            "Recover the Past",
+        ],
+    },
+    {
+        "name": "WynnExcavation",
+        "quests": [
+            "WynnExcavation Site A",
+            "WynnExcavation Site B",
+            "WynnExcavation Site C",
+            "WynnExcavation Site D",
+        ],
+    },
+    {
+        "name": "An Iron Heart",
+        "quests": ["An Iron Heart Part I", "An Iron Heart Part II"],
+    },
+    {
+        "name": "Realm of Light",
+        "quests": [
+            "Realm of Light I - The Worm Holes",
+            "Realm of Light II - Taproot",
+            "Realm of Light III - A Headless History",
+            "Realm of Light IV - Finding the Light",
+            "Realm of Light V - The Realm of Light",
+        ],
+    },
+    {
+        "name": "Hunger of the Gerts",
+        "quests": ["Hunger of the Gerts Part I", "Hunger of the Gerts Part II"],
+    },
+    {
+        "name": "Aldorei's Secret",
+        "quests": ["Aldorei's Secret Part I", "Aldorei's Secret Part II"],
+    },
+    {
+        "name": "Corkus",
+        "quests": [
+            "The Envoy Part I",
+            "The Envoy Part II",
+            "The Feathers Fly Part I",
+            "The Feathers Fly Part II",
+            "The Breaking Point",
+        ],
+    },
+    {
+        "name": "Dwarves and Doguns",
+        "quests": [
+            "Dwarves and Doguns Part I",
+            "Dwarves and Doguns Part II",
+            "Dwarves and Doguns Part III",
+            "Dwarves and Doguns Part IV",
+        ],
+    },
+    {
+        "name": "Silent Expanse",
+        "quests": ["A Journey Beyond", "A Journey Further", "A Hunter's Calling"],
+    },
+]
+
 
 class PlayerRestrictions(BaseModel):
     main_access: bool
@@ -45,6 +114,18 @@ class PlayerRestrictions(BaseModel):
 class ContentProgress(BaseModel):
     total: int | None
     list: dict[str, int]
+
+
+class StorylineQuest(BaseModel):
+    name: str
+    completed: bool
+
+
+class Storyline(BaseModel):
+    name: str
+    quests_completed: int
+    quests_available: int
+    quests: list[StorylineQuest]
 
 
 class ProfessionInfo(BaseModel):
@@ -88,6 +169,7 @@ class WynncraftCharacterContent(BaseModel):
     wars: int | None
     dungeons: ContentProgress
     raids: ContentProgress
+    storylines: list[Storyline] | None
 
 
 class WynncraftCharacterInfo(BaseModel):
@@ -164,7 +246,7 @@ def get_character_professions(selected_character: dict) -> ProfessionInfo:
     profession_args = {}
     # accessing the level for each profession and creating a dict that looks like
     # {'fishing': '100', 'mining': 33, ...}
-    for profession in profession_names:
+    for profession in PROFESSION_NAMES:
         try:
             profession_args[profession] = selected_character["professions"][profession][
                 "level"
@@ -173,6 +255,31 @@ def get_character_professions(selected_character: dict) -> ProfessionInfo:
             profession_args[profession] = 0
 
     return ProfessionInfo(**profession_args)
+
+
+def get_storylines(player_quests: list[str]) -> list[Storyline]:
+    storylines: list[Storyline] = []
+    for storyline in STORYLINES:
+        storyline_quests_list: list[StorylineQuest] = []
+        for quest in storyline["quests"]:
+            storyline_quests_list.append(
+                StorylineQuest(name=quest, completed=quest in player_quests)
+            )
+
+        storyline_quests_completed = 0
+        for quest in storyline_quests_list:
+            if quest.completed:
+                storyline_quests_completed += 1
+
+        storylines.append(
+            Storyline(
+                name=storyline["name"],
+                quests_completed=storyline_quests_completed,
+                quests_available=len(storyline_quests_list),
+                quests=storyline_quests_list,
+            )
+        )
+    return storylines
 
 
 def process_characters(
@@ -237,6 +344,15 @@ def process_characters(
             else len(selected_character.get("quests", []))
         )
 
+        if "quests" in removed_stats:
+            player_quests = None
+        else:
+            player_quests = selected_character.get("quests", [])
+
+        storylines: list[Storyline] | None = None
+        if player_quests is not None:
+            storylines = get_storylines(player_quests)
+
         character_content = WynncraftCharacterContent(
             content_completed=get_character_stat(
                 "contentCompletion", selected_character, removed_stats
@@ -253,6 +369,7 @@ def process_characters(
             lootruns=get_character_stat("lootruns", selected_character, removed_stats),
             raids=raids,
             dungeons=dungeons,
+            storylines=storylines,
         )
 
         # we're doing playtime separately because it has different logic

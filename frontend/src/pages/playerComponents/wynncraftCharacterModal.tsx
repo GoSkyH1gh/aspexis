@@ -3,6 +3,7 @@ import {
   PlayerRestrictions,
   WynncraftCharacterInfo,
   WynncraftCharacterSkillPoints,
+  Storyline,
 } from "../../client";
 import { motion } from "motion/react";
 import { toProperCase, formatValue } from "../../utils/utils";
@@ -45,6 +46,35 @@ const getProfessionUrl = (profession: string) =>
 
 const classImageUrl =
   "https://cdn.wynncraft.com/nextgen/themes/journey/assets/classes/";
+
+function StorylineCard({ storyline }: { storyline: Storyline }) {
+  return (
+    <Tooltip.Root delayDuration={150}>
+      <Tooltip.Trigger asChild>
+        <li className="horizontal-info-card-item">
+          <span className="horizontal-info-card-label">{storyline.name}</span>
+          <span className="horizontal-info-card-number">
+            {storyline.quests_available === storyline.quests_completed
+              ? "✓"
+              : storyline.quests_completed + "/" + storyline.quests_available}
+          </span>
+        </li>
+      </Tooltip.Trigger>
+      <Tooltip.Portal>
+        <Tooltip.Content className="TooltipContent">
+          {storyline.quests.map((quest) => (
+            <div key={quest.name} className="wynn-storylines">
+              <span className="wynn-fixed-width">
+                {quest.completed ? "✓" : "×"}
+              </span>{" "}
+              {quest.name}
+            </div>
+          ))}
+        </Tooltip.Content>
+      </Tooltip.Portal>
+    </Tooltip.Root>
+  );
+}
 
 function CharacterHeader({ character }: { character: WynncraftCharacterInfo }) {
   return (
@@ -277,6 +307,16 @@ function CharacterDetails({
         <>
           <h3>Professions</h3>
           <ul className="profession-list">{professionElements}</ul>
+        </>
+      )}
+      {character.content.storylines && (
+        <>
+          <h3>Storylines</h3>
+          <ul className="horizontal-card-list">
+            {character.content.storylines.map((storyline) => (
+              <StorylineCard key={storyline.name} storyline={storyline} />
+            ))}
+          </ul>
         </>
       )}
     </>
