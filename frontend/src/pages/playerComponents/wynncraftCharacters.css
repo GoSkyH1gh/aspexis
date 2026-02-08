@@ -266,10 +266,6 @@
   font-display: block;
 }
 
-.font-ascii {
-  font-family: "ascii";
-}
-
 @font-face {
   font-family: "common";
   src: url("https://cdn.wynncraft.com/nextgen/fonts/common.woff");
@@ -278,16 +274,24 @@
   font-display: block;
 }
 
-.font-common {
-  font-family: "common";
-}
-
 @font-face {
   font-family: "default";
   src: url("https://cdn.wynncraft.com/nextgen/fonts/default.woff");
   font-weight: normal;
   font-style: normal;
   font-display: block;
+}
+
+.AbilityTreeTooltip {
+  font-family: "ascii";
+}
+
+.font-ascii {
+  font-family: "ascii";
+}
+
+.font-common {
+  font-family: "common";
 }
 
 .font-default {
@@ -304,4 +308,26 @@
   display: flex;
   justify-content: center;
   padding: 3rem;
+}
+
+.ability-connector {
+  animation: pulse ease-in-out 3s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ability-connector {
+    animation: none;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 1;
+  }
 }

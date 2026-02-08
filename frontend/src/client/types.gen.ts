@@ -37,6 +37,10 @@ export type AbilityTreeNode = {
      */
     unlocked: boolean;
     /**
+     * Node Id
+     */
+    node_id: string;
+    /**
      * Icon Id
      */
     icon_id: string;
@@ -1295,10 +1299,6 @@ export type GetWynncraftCharacterAbilityTreeV1PlayersWynncraftUuidCharactersChar
      * Ability tree is private
      */
     403: ErrorResponse;
-    /**
-     * Player or character not found
-     */
-    404: ErrorResponse;
     /**
      * Invalid class
      */
