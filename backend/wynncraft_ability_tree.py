@@ -50,6 +50,7 @@ class AbilityTreeNode(BaseModel):
     y: int
     unlocked: bool
 
+    node_id: str
     icon_id: str
     icon_url: str
 
@@ -70,6 +71,17 @@ def get_icon_url(
         return f"{BASE_CDN_URL}/nodes/{icon_id}{unlocked_suffix}.png"
     elif node_type == "connector":
         return f"{BASE_CDN_URL}/connectors/grid/{icon_id}{unlocked_suffix}.png"
+
+
+def get_node_id(
+    page: int,
+    node_type: Literal["ability", "connector"],
+    icon_id: str,
+    unlocked: bool,
+    x: int,
+    y: int,
+) -> str:
+    return f"{page}:{node_type}:{icon_id}:{x}:{y}:{unlocked}"
 
 
 async def get_ability_tree(
@@ -106,18 +118,17 @@ async def get_ability_tree(
     # Unlocked node lookup (abilities AND connectors)
     # Keyed by (page_number, node_type, x, y)
     # ------------------------------------------------------------------
-    unlocked_keys: set[tuple[int, str, int, int]] = set()
+    unlocked_nodes: dict[tuple[int, str, int, int], AbilityTreeNode] = {}
 
     for page in player_pages:
         for node in page.nodes:
-            unlocked_keys.add(
-                (
-                    page.page_number,
-                    node.node_type,
-                    node.x,
-                    node.y,
-                )
+            key = (
+                page.page_number,
+                node.node_type,
+                node.x,
+                node.y,
             )
+            unlocked_nodes[key] = node
 
     # ------------------------------------------------------------------
     # Merge structure + descriptions + unlock state
@@ -136,31 +147,78 @@ async def get_ability_tree(
                 continue
             seen.add(key)
 
-            node_id = (
+            lookup_key = (
                 page.page_number,
                 node.node_type,
                 node.x,
                 node.y,
             )
 
-            # Attach descriptions to abilities
+            is_unlocked = lookup_key in unlocked_nodes
+
             if node.node_type == "ability":
+                # Attach descriptions to abilities
                 desc_node = ability_descriptions.get((page.page_number, node.name))
                 if desc_node:
                     node.pretty_name = desc_node.pretty_name
                     node.description = desc_node.description
 
-            # Apply unlock state
-            node.unlocked = node_id in unlocked_keys
+                node.unlocked = is_unlocked
+                node.node_id = get_node_id(
+                    page.page_number,
+                    node.node_type,
+                    node.icon_id,
+                    node.unlocked,
+                    node.x,
+                    node.y,
+                )
+                node.icon_url = get_icon_url(
+                    node.node_type,
+                    node.icon_id,
+                    node.unlocked,
+                )
+                merged_nodes.append(node)
 
-            # Recompute icon URL
-            node.icon_url = get_icon_url(
-                node.node_type,
-                node.icon_id,
-                node.unlocked,
-            )
+            elif node.node_type == "connector":
+                # 1. Locked Connector (always present, from structure)
+                locked_node = node.model_copy(deep=True)
+                locked_node.unlocked = False
+                locked_node.node_id = get_node_id(
+                    page.page_number,
+                    node.node_type,
+                    node.icon_id,
+                    False,
+                    node.x,
+                    node.y,
+                )
+                locked_node.icon_url = get_icon_url(
+                    node.node_type,
+                    node.icon_id,
+                    False,
+                )
+                merged_nodes.append(locked_node)
 
-            merged_nodes.append(node)
+                # 2. Unlocked Connector (if unlocked, from player data)
+                if is_unlocked:
+                    unlocked_source = unlocked_nodes[lookup_key]
+                    
+                    unlocked_node = unlocked_source.model_copy(deep=True)
+                    unlocked_node.unlocked = True
+                    # Ensure node_id reflects unlocked state and specific details
+                    unlocked_node.node_id = get_node_id(
+                        page.page_number,
+                        unlocked_node.node_type,
+                        unlocked_node.icon_id,  # Use unlocked icon_id/connector_type
+                        True,
+                        unlocked_node.x,
+                        unlocked_node.y,
+                    )
+                    unlocked_node.icon_url = get_icon_url(
+                        unlocked_node.node_type,
+                        unlocked_node.icon_id,
+                        True,
+                    )
+                    merged_nodes.append(unlocked_node)
 
         merged_pages.append(
             AbilityTreePage(
@@ -224,6 +282,14 @@ async def fetch_tree_structure(
                     x=coords.get("x", 0),
                     y=coords.get("y", 0),
                     unlocked=False,
+                    node_id=get_node_id(
+                        page_num,
+                        node_type,
+                        icon_id,
+                        False,
+                        coords.get("x", 0),
+                        coords.get("y", 0),
+                    ),
                     icon_id=icon_id,
                     icon_url=get_icon_url(node_type, icon_id, False),
                 )
@@ -289,6 +355,14 @@ async def fetch_player_structure(
             y=coords.get("y", 0),
             connector_type=connector_type,
             unlocked=True,  # All items from this endpoint are unlocked
+            node_id=get_node_id(
+                page_num,
+                node_type,
+                icon_id,
+                True,
+                coords.get("x", 0),
+                coords.get("y", 0),
+            ),
             icon_id=icon_id,
             icon_url=get_icon_url(node_type, icon_id, True),
         )
@@ -339,6 +413,14 @@ async def fetch_tree_abilities(
                     y=node_info["coordinates"]["y"],
                     connector_type=None,
                     unlocked=False,
+                    node_id=get_node_id(
+                        page_number,
+                        "ability",
+                        icon_id,
+                        False,
+                        node_info["coordinates"]["x"],
+                        node_info["coordinates"]["y"],
+                    ),
                     icon_id=icon_id,
                     icon_url=get_icon_url("ability", icon_id, False),
                 )

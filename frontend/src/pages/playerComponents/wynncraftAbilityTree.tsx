@@ -29,30 +29,30 @@ function AbilityPage({ page }: { page: AbilityTreePage }) {
         if (node.node_type == "connector") {
           return (
             <div
-              key={`${page.page_number}-${node.node_type}-${node.x}-${node.y}`}
-              className="ability-node"
+              key={node.node_id}
+              className="ability-node ability-connector"
               style={{
                 gridColumn: node.x,
                 gridRow: row,
               }}
             >
-              <img src={node.icon_url} alt={node.name} />
+              <img src={node.icon_url} alt={node.name} draggable={false} />
             </div>
           );
         }
         if (node.node_type == "ability" && node.description) {
           return (
             <div
-              key={`${page.page_number}-${node.name}-${node.x}-${node.y}`}
+              key={node.node_id}
               className={`ability-node ${node.icon_id.split(".")[1]}`}
               style={{
                 gridColumn: node.x,
                 gridRow: row,
               }}
             >
-              <Tooltip.Root delayDuration={250}>
+              <Tooltip.Root delayDuration={250} disableHoverableContent={true} >
                 <Tooltip.Trigger asChild>
-                  <img src={node.icon_url} alt={node.name} />
+                  <img src={node.icon_url} alt={node.name} draggable={false} />
                 </Tooltip.Trigger>
                 <Tooltip.Portal>
                   <Tooltip.Content className="TooltipContent AbilityTreeTooltip">
