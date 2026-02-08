@@ -670,6 +670,42 @@ export type ProfessionInfo = {
 };
 
 /**
+ * Storyline
+ */
+export type Storyline = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Quests Completed
+     */
+    quests_completed: number;
+    /**
+     * Quests Available
+     */
+    quests_available: number;
+    /**
+     * Quests
+     */
+    quests: Array<StorylineQuest>;
+};
+
+/**
+ * StorylineQuest
+ */
+export type StorylineQuest = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Completed
+     */
+    completed: boolean;
+};
+
+/**
  * UserCapeData
  */
 export type UserCapeData = {
@@ -740,6 +776,10 @@ export type WynncraftCharacterContent = {
     wars: number | null;
     dungeons: ContentProgress;
     raids: ContentProgress;
+    /**
+     * Storylines
+     */
+    storylines: Array<Storyline> | null;
 };
 
 /**

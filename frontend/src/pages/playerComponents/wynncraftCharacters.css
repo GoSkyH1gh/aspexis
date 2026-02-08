@@ -331,3 +331,15 @@
     opacity: 1;
   }
 }
+
+.wynn-fixed-width {
+  display: flex;
+  width: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.wynn-storylines {
+  display: flex;
+  gap: 0.5rem
+}

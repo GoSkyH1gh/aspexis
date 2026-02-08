@@ -381,7 +381,6 @@ button {
   padding: 0.2rem;
   transition: background-color 0.2s;
   cursor: pointer;
-
 }
 
 .icon-button:hover {
