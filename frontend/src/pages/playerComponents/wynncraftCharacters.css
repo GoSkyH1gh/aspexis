@@ -343,3 +343,21 @@
   display: flex;
   gap: 0.5rem
 }
+
+.wynncraft-character-item-small img {
+  height: 20px;
+  width: 20px;
+}
+
+.wynncraft-character-item-small {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.wynncraft-character-item-small p {
+  font-size: 1.1rem;
+  margin: 0;
+  padding: 0;
+}

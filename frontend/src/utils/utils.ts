@@ -5,7 +5,7 @@ import {
   formatDistanceToNowStrict,
 } from "date-fns";
 
-function formatISOTimestamp(timestamp: string | null) {
+function formatISOTimestamp(timestamp: string | null | undefined) {
   // Convert string to Date object
   if (!timestamp) {
     return "Unknown";
@@ -44,7 +44,7 @@ const formatValue = (
   }
 };
 
-const formatISOToDistance = (isoDate: string | null) => {
+const formatISOToDistance = (isoDate: string | null | undefined) => {
   if (!isoDate) {
     return "Unknown";
   }
@@ -114,6 +114,14 @@ function toProperCase(str: string) {
     .join(" ");
 }
 
+const parseUnknownISO = (str: string | null | undefined) => {
+  if (!str) {
+    return null;
+  } else {
+    return parseISO(str);
+  }
+};
+
 export {
   formatISOTimestamp,
   formatValue,
@@ -122,6 +130,7 @@ export {
   formatLogTime,
   formatISOToDistance,
   toProperCase,
+  parseUnknownISO,
 };
 
 import { useState } from "react";

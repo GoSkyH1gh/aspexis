@@ -216,14 +216,19 @@ export function PlayerPage() {
         </div>
       )}
 
-      {hypixelQuery.isPending && mojangQuery.data && <LoadingIndicator />}
+      {hypixelQuery.isPending &&
+        wynncraftQuery.isPending &&
+        mcciQuery.isPending &&
+        mojangQuery.data && <LoadingIndicator />}
 
       {/* Hypixel data loaded */}
       {loadedTabs.length >= 1 && mojangQuery.data && (
         <div>
-          {hypixelQuery.data && (
+          {(hypixelQuery.data || wynncraftQuery.data || mcciQuery.data) && (
             <QuickInfo
-              hypixelResponse={hypixelQuery.data}
+              hypixelData={hypixelQuery.data}
+              wynncraftData={wynncraftQuery.data}
+              mcciData={mcciQuery.data}
               playerStatus={statusQuery.data}
             />
           )}

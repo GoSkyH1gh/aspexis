@@ -472,7 +472,7 @@ async def get_wynncraft_player_data(
 
         player_summary = WynncraftPlayerSummary(
             username=wynn_response["username"],
-            uuid=wynn_response["uuid"],
+            uuid=undashify_uuid(wynn_response["uuid"]),
             online=wynn_response["online"],
             rank=player_rank,
             rank_badge=wynn_response["rankBadge"],

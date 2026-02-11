@@ -616,6 +616,40 @@ export type PlayerRestrictions = {
 };
 
 /**
+ * PlayerStatus
+ */
+export type PlayerStatus = {
+    /**
+     * Wynncraft Restricted
+     */
+    wynncraft_restricted: boolean;
+    /**
+     * Wynncraft Online
+     */
+    wynncraft_online: boolean;
+    /**
+     * Wynncraft Server
+     */
+    wynncraft_server: string | null;
+    /**
+     * Wynncraft Character
+     */
+    wynncraft_character: string | null;
+    /**
+     * Hypixel Online
+     */
+    hypixel_online: boolean;
+    /**
+     * Hypixel Game Type
+     */
+    hypixel_game_type: string | null;
+    /**
+     * Hypixel Mode
+     */
+    hypixel_mode: string | null;
+};
+
+/**
  * ProfessionInfo
  */
 export type ProfessionInfo = {
@@ -1221,7 +1255,7 @@ export type GetGuildV1HypixelGuildsIdGetResponses = {
 
 export type GetGuildV1HypixelGuildsIdGetResponse = GetGuildV1HypixelGuildsIdGetResponses[keyof GetGuildV1HypixelGuildsIdGetResponses];
 
-export type GetStatusV1PlayersStatusUuidGetData = {
+export type GetPlayerStatusV1PlayersStatusUuidGetData = {
     body?: never;
     path: {
         /**
@@ -1233,21 +1267,23 @@ export type GetStatusV1PlayersStatusUuidGetData = {
     url: '/v1/players/status/{uuid}';
 };
 
-export type GetStatusV1PlayersStatusUuidGetErrors = {
+export type GetPlayerStatusV1PlayersStatusUuidGetErrors = {
     /**
      * Validation Error
      */
     422: HttpValidationError;
 };
 
-export type GetStatusV1PlayersStatusUuidGetError = GetStatusV1PlayersStatusUuidGetErrors[keyof GetStatusV1PlayersStatusUuidGetErrors];
+export type GetPlayerStatusV1PlayersStatusUuidGetError = GetPlayerStatusV1PlayersStatusUuidGetErrors[keyof GetPlayerStatusV1PlayersStatusUuidGetErrors];
 
-export type GetStatusV1PlayersStatusUuidGetResponses = {
+export type GetPlayerStatusV1PlayersStatusUuidGetResponses = {
     /**
      * Successful Response
      */
-    200: unknown;
+    200: PlayerStatus;
 };
+
+export type GetPlayerStatusV1PlayersStatusUuidGetResponse = GetPlayerStatusV1PlayersStatusUuidGetResponses[keyof GetPlayerStatusV1PlayersStatusUuidGetResponses];
 
 export type GetWynncraftV1PlayersWynncraftUuidGetData = {
     body?: never;

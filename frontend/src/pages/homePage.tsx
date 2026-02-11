@@ -10,6 +10,7 @@ import { MdKeyboardArrowDown } from "react-icons/md";
 import QuickInfo from "./playerComponents/quickInfo.js";
 import AdvancedInfoTabs from "./playerComponents/advancedInfoTabs.js";
 import {
+  sampleStatusResponse,
   sampleHypixelResponse,
   sampleHypixelGuildResponse,
   sampleMCCIResponse,
@@ -127,8 +128,10 @@ export function HomePage() {
           </div>
           <div className="info-card-showcase">
             <QuickInfo
-              hypixelResponse={sampleHypixelResponse}
-              playerStatus={{ status: "Offline" }}
+              hypixelData={sampleHypixelResponse}
+              wynncraftData={sampleWynncraftResponse}
+              playerStatus={sampleStatusResponse}
+              mcciData={sampleMCCIResponse}
             />
             <div className="hypixel-data-text">
               <h3 className="vertical-text">Get insights at a glance</h3>

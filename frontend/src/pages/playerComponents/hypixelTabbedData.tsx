@@ -1,5 +1,9 @@
 import InfoCard from "./infoCard";
-import { formatValue, handleStatClick } from "../../utils/utils";
+import {
+  formatValue,
+  handleStatClick,
+  formatISOToDistance,
+} from "../../utils/utils";
 import { Dialog } from "radix-ui";
 import "./dialog.css";
 import { toProperCase, formatISOTimestamp } from "../../utils/utils";
@@ -27,6 +31,22 @@ function HypixelTabbedData({
   const [metricData, setMetricData] = useState(null);
   return (
     <>
+      <ul className="info-card-list">
+        <InfoCard label="Rank" value={hypixelData.player.rank || "No Rank"} />
+        <InfoCard
+          label="Guild"
+          value={hypixelData?.guild?.name || "No guild"}
+        />
+        <InfoCard
+          label="First seen on"
+          value={formatISOTimestamp(hypixelData.player?.first_login)}
+        />
+        <InfoCard
+          label="Last seen"
+          value={formatISOToDistance(hypixelData.player?.last_login)}
+          tooltip={formatISOTimestamp(hypixelData.player?.last_login)}
+        />
+      </ul>
       <h3>Global Stats</h3>
       <ul className="info-card-list">
         <InfoCard
@@ -305,7 +325,10 @@ function HypixelGuild({ hypixelData, hypixelGuildQuery }: HypixelDataProps) {
           <motion.button
             className="load-more-button"
             initial={{ scale: 1, backgroundColor: "var(--color-selected)" }}
-            whileHover={{ scale: 1.3, backgroundColor: "var(--color-selected-hover)" }}
+            whileHover={{
+              scale: 1.3,
+              backgroundColor: "var(--color-selected-hover)",
+            }}
             disabled={isFetchingNextPage}
             onClick={handleLoadMore}
           >
