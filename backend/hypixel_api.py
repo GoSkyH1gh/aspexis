@@ -103,12 +103,14 @@ class HypixelGuildMember(BaseModel):
     rank: str
     joined: str
 
+
 class HypixelGuildMemberFull(BaseModel):
     username: str
     uuid: str
     rank: str
     joined: str
     skin_showcase_b64: str
+
 
 class HypixelGuild(BaseModel):
     source: str
@@ -127,9 +129,7 @@ class HypixelFullData(BaseModel):
     guild: Optional[HypixelGuild]
 
 
-def get_core_hypixel_data(
-    uuid, hypixel_api_key=None
-) -> HypixelPlayer:
+def get_core_hypixel_data(uuid, hypixel_api_key=None) -> HypixelPlayer:
     payload = {"uuid": uuid}
 
     if hypixel_api_key is None:
@@ -351,15 +351,17 @@ def get_guild_data(uuid: str = None, id: str = None) -> HypixelGuild:
     return guild_profile
 
 
-def convert_unix_milliseconds_to_UTC(timestamp: int) -> Optional[str]:
+def convert_unix_milliseconds_to_UTC(timestamp: int | None) -> str | None:
     if timestamp is None:
         return None
 
-    regular_timestamp = timestamp / 1000
-
-    return datetime.datetime.fromtimestamp(regular_timestamp).strftime(
-        "%Y-%m-%dT%H:%M:%S.%fZ"
+    dt = datetime.datetime.fromtimestamp(
+        timestamp / 1000,
+        tz=datetime.timezone.utc,
     )
+
+    # ISO 8601 with milliseconds, true UTC "Z"
+    return dt.isoformat(timespec="milliseconds").replace("+00:00", "Z")
 
 
 if __name__ == "__main__":

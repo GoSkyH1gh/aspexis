@@ -1,6 +1,5 @@
 import {
   HypixelFullData,
-  WynncraftCharacterInfo,
   WynncraftGuildInfo,
   DonutPlayerStats,
   McciPlayer,
@@ -9,6 +8,7 @@ import {
   UserCapeData,
   WynncraftPlayerSummary,
   AbilityTreePage,
+  PlayerStatus,
 } from "../client";
 import { InvalidArgumentsError } from "./errors";
 
@@ -43,7 +43,9 @@ export async function fetchMojang(
   return response.json();
 }
 
-export async function fetchStatus(uuid: string | undefined): Promise<any> {
+export async function fetchStatus(
+  uuid: string | undefined,
+): Promise<PlayerStatus> {
   if (!uuid) {
     throw new InvalidArgumentsError();
   }

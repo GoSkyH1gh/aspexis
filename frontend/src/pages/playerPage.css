@@ -170,7 +170,7 @@ button:hover {
 }
 
 .mojang-data,
-.hypixel-data,
+.quick-info,
 .advanced-info-tabs,
 .player-tracker {
   width: 100%;
@@ -231,13 +231,15 @@ button:hover {
   box-shadow: 0 4px 30px var(--color-shadow);
   padding: 10px;
   border-radius: 5px;
+  height: fit-content;
 }
 
 .info-card-label {
   color: var(--text-secondary);
   font-size: 0.85em;
   margin: 0;
-  font-family: "Google Sans Code", monospace;
+  /*font-family: "Google Sans Code", monospace;*/
+  letter-spacing: 0.03rem;
 }
 
 .info-card-value {
@@ -984,4 +986,29 @@ button {
   font-size: 1.4rem;
   padding: 5px 10px;
   color: var(--text-primary);
+}
+
+
+.last-activity-card {
+  display: block;
+  backdrop-filter: blur(10px);
+  background-color: var(--color-surface-layer-2);
+  border: 1px solid var(--color-surface-layer-2);
+  box-shadow: 0 4px 30px var(--color-shadow);
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.quick-info-character {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+}
+
+.quick-info {
+  padding: 25px 25px 25px 25px;
+}
+
+.quick-info-card-list {
+  margin-bottom: 0;
 }

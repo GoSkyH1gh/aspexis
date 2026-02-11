@@ -20,6 +20,16 @@ const sampleMojangResponse = {
   cape_url: null,
 };
 
+const sampleStatusResponse = {
+  wynncraft_restricted: false,
+  wynncraft_online: false,
+  wynncraft_server: null,
+  wynncraft_character: null,
+  hypixel_online: false,
+  hypixel_game_type: null,
+  hypixel_mode: null,
+};
+
 const sampleHypixelResponse = {
   player: {
     source: "hypixel_api",
@@ -270,7 +280,7 @@ const sampleHypixelGuildResponse = [
 
 const sampleWynncraftResponse: WynncraftPlayerSummary = {
   username: "Grian",
-  uuid: "5f8eb73b-25be-4c5a-a50f-d27d65e30ca0",
+  uuid: "5f8eb73b25be4c5aa50fd27d65e30ca0",
   online: false,
   rank: "Media",
   rank_badge: "nextgen/badges/rank_media.svg",
@@ -326,6 +336,114 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         wars: 0,
         dungeons: { total: 0, list: {} },
         raids: { total: 0, list: {} },
+        storylines: [
+          {
+            name: "Recover the Past",
+            quests_completed: 0,
+            quests_available: 7,
+            quests: [
+              { name: "King's Recruit", completed: false },
+              { name: "Infested Plants", completed: false },
+              { name: "Mushroom Man", completed: false },
+              { name: "Taking the Tower", completed: false },
+              { name: "Elemental Exercise", completed: false },
+              { name: "Arachnids' Ascent", completed: false },
+              { name: "Recover the Past", completed: false },
+            ],
+          },
+          {
+            name: "WynnExcavation",
+            quests_completed: 0,
+            quests_available: 4,
+            quests: [
+              { name: "WynnExcavation Site A", completed: false },
+              { name: "WynnExcavation Site B", completed: false },
+              { name: "WynnExcavation Site C", completed: false },
+              { name: "WynnExcavation Site D", completed: false },
+            ],
+          },
+          {
+            name: "An Iron Heart",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "An Iron Heart Part I", completed: false },
+              { name: "An Iron Heart Part II", completed: false },
+            ],
+          },
+          {
+            name: "Realm of Light",
+            quests_completed: 0,
+            quests_available: 5,
+            quests: [
+              { name: "Realm of Light I - The Worm Holes", completed: false },
+              { name: "Realm of Light II - Taproot", completed: false },
+              {
+                name: "Realm of Light III - A Headless History",
+                completed: false,
+              },
+              {
+                name: "Realm of Light IV - Finding the Light",
+                completed: false,
+              },
+              {
+                name: "Realm of Light V - The Realm of Light",
+                completed: false,
+              },
+            ],
+          },
+          {
+            name: "Hunger of the Gerts",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "Hunger of the Gerts Part I", completed: false },
+              { name: "Hunger of the Gerts Part II", completed: false },
+            ],
+          },
+          {
+            name: "Aldorei's Secret",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "Aldorei's Secret Part I", completed: false },
+              { name: "Aldorei's Secret Part II", completed: false },
+            ],
+          },
+          {
+            name: "Corkus",
+            quests_completed: 0,
+            quests_available: 5,
+            quests: [
+              { name: "The Envoy Part I", completed: false },
+              { name: "The Envoy Part II", completed: false },
+              { name: "The Feathers Fly Part I", completed: false },
+              { name: "The Feathers Fly Part II", completed: false },
+              { name: "The Breaking Point", completed: false },
+            ],
+          },
+          {
+            name: "Dwarves and Doguns",
+            quests_completed: 0,
+            quests_available: 4,
+            quests: [
+              { name: "Dwarves and Doguns Part I", completed: false },
+              { name: "Dwarves and Doguns Part II", completed: false },
+              { name: "Dwarves and Doguns Part III", completed: false },
+              { name: "Dwarves and Doguns Part IV", completed: false },
+            ],
+          },
+          {
+            name: "Silent Expanse",
+            quests_completed: 0,
+            quests_available: 3,
+            quests: [
+              { name: "A Journey Beyond", completed: false },
+              { name: "A Journey Further", completed: false },
+              { name: "A Hunter's Calling", completed: false },
+            ],
+          },
+        ],
       },
       stats: {
         mobs_killed: 120,
@@ -375,6 +493,114 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         wars: 0,
         dungeons: { total: 1, list: { Spider: 1 } },
         raids: { total: 0, list: {} },
+        storylines: [
+          {
+            name: "Recover the Past",
+            quests_completed: 0,
+            quests_available: 7,
+            quests: [
+              { name: "King's Recruit", completed: false },
+              { name: "Infested Plants", completed: false },
+              { name: "Mushroom Man", completed: false },
+              { name: "Taking the Tower", completed: false },
+              { name: "Elemental Exercise", completed: false },
+              { name: "Arachnids' Ascent", completed: false },
+              { name: "Recover the Past", completed: false },
+            ],
+          },
+          {
+            name: "WynnExcavation",
+            quests_completed: 0,
+            quests_available: 4,
+            quests: [
+              { name: "WynnExcavation Site A", completed: false },
+              { name: "WynnExcavation Site B", completed: false },
+              { name: "WynnExcavation Site C", completed: false },
+              { name: "WynnExcavation Site D", completed: false },
+            ],
+          },
+          {
+            name: "An Iron Heart",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "An Iron Heart Part I", completed: false },
+              { name: "An Iron Heart Part II", completed: false },
+            ],
+          },
+          {
+            name: "Realm of Light",
+            quests_completed: 0,
+            quests_available: 5,
+            quests: [
+              { name: "Realm of Light I - The Worm Holes", completed: false },
+              { name: "Realm of Light II - Taproot", completed: false },
+              {
+                name: "Realm of Light III - A Headless History",
+                completed: false,
+              },
+              {
+                name: "Realm of Light IV - Finding the Light",
+                completed: false,
+              },
+              {
+                name: "Realm of Light V - The Realm of Light",
+                completed: false,
+              },
+            ],
+          },
+          {
+            name: "Hunger of the Gerts",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "Hunger of the Gerts Part I", completed: false },
+              { name: "Hunger of the Gerts Part II", completed: false },
+            ],
+          },
+          {
+            name: "Aldorei's Secret",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "Aldorei's Secret Part I", completed: false },
+              { name: "Aldorei's Secret Part II", completed: false },
+            ],
+          },
+          {
+            name: "Corkus",
+            quests_completed: 0,
+            quests_available: 5,
+            quests: [
+              { name: "The Envoy Part I", completed: false },
+              { name: "The Envoy Part II", completed: false },
+              { name: "The Feathers Fly Part I", completed: false },
+              { name: "The Feathers Fly Part II", completed: false },
+              { name: "The Breaking Point", completed: false },
+            ],
+          },
+          {
+            name: "Dwarves and Doguns",
+            quests_completed: 0,
+            quests_available: 4,
+            quests: [
+              { name: "Dwarves and Doguns Part I", completed: false },
+              { name: "Dwarves and Doguns Part II", completed: false },
+              { name: "Dwarves and Doguns Part III", completed: false },
+              { name: "Dwarves and Doguns Part IV", completed: false },
+            ],
+          },
+          {
+            name: "Silent Expanse",
+            quests_completed: 0,
+            quests_available: 3,
+            quests: [
+              { name: "A Journey Beyond", completed: false },
+              { name: "A Journey Further", completed: false },
+              { name: "A Hunter's Calling", completed: false },
+            ],
+          },
+        ],
       },
       stats: {
         mobs_killed: 114,
@@ -424,6 +650,114 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         wars: 0,
         dungeons: { total: 0, list: {} },
         raids: { total: 0, list: {} },
+        storylines: [
+          {
+            name: "Recover the Past",
+            quests_completed: 0,
+            quests_available: 7,
+            quests: [
+              { name: "King's Recruit", completed: false },
+              { name: "Infested Plants", completed: false },
+              { name: "Mushroom Man", completed: false },
+              { name: "Taking the Tower", completed: false },
+              { name: "Elemental Exercise", completed: false },
+              { name: "Arachnids' Ascent", completed: false },
+              { name: "Recover the Past", completed: false },
+            ],
+          },
+          {
+            name: "WynnExcavation",
+            quests_completed: 0,
+            quests_available: 4,
+            quests: [
+              { name: "WynnExcavation Site A", completed: false },
+              { name: "WynnExcavation Site B", completed: false },
+              { name: "WynnExcavation Site C", completed: false },
+              { name: "WynnExcavation Site D", completed: false },
+            ],
+          },
+          {
+            name: "An Iron Heart",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "An Iron Heart Part I", completed: false },
+              { name: "An Iron Heart Part II", completed: false },
+            ],
+          },
+          {
+            name: "Realm of Light",
+            quests_completed: 0,
+            quests_available: 5,
+            quests: [
+              { name: "Realm of Light I - The Worm Holes", completed: false },
+              { name: "Realm of Light II - Taproot", completed: false },
+              {
+                name: "Realm of Light III - A Headless History",
+                completed: false,
+              },
+              {
+                name: "Realm of Light IV - Finding the Light",
+                completed: false,
+              },
+              {
+                name: "Realm of Light V - The Realm of Light",
+                completed: false,
+              },
+            ],
+          },
+          {
+            name: "Hunger of the Gerts",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "Hunger of the Gerts Part I", completed: false },
+              { name: "Hunger of the Gerts Part II", completed: false },
+            ],
+          },
+          {
+            name: "Aldorei's Secret",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "Aldorei's Secret Part I", completed: false },
+              { name: "Aldorei's Secret Part II", completed: false },
+            ],
+          },
+          {
+            name: "Corkus",
+            quests_completed: 0,
+            quests_available: 5,
+            quests: [
+              { name: "The Envoy Part I", completed: false },
+              { name: "The Envoy Part II", completed: false },
+              { name: "The Feathers Fly Part I", completed: false },
+              { name: "The Feathers Fly Part II", completed: false },
+              { name: "The Breaking Point", completed: false },
+            ],
+          },
+          {
+            name: "Dwarves and Doguns",
+            quests_completed: 0,
+            quests_available: 4,
+            quests: [
+              { name: "Dwarves and Doguns Part I", completed: false },
+              { name: "Dwarves and Doguns Part II", completed: false },
+              { name: "Dwarves and Doguns Part III", completed: false },
+              { name: "Dwarves and Doguns Part IV", completed: false },
+            ],
+          },
+          {
+            name: "Silent Expanse",
+            quests_completed: 0,
+            quests_available: 3,
+            quests: [
+              { name: "A Journey Beyond", completed: false },
+              { name: "A Journey Further", completed: false },
+              { name: "A Hunter's Calling", completed: false },
+            ],
+          },
+        ],
       },
       stats: {
         mobs_killed: 232,
@@ -473,6 +807,114 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         wars: 0,
         dungeons: { total: 1, list: { Spider: 1 } },
         raids: { total: 0, list: {} },
+        storylines: [
+          {
+            name: "Recover the Past",
+            quests_completed: 0,
+            quests_available: 7,
+            quests: [
+              { name: "King's Recruit", completed: false },
+              { name: "Infested Plants", completed: false },
+              { name: "Mushroom Man", completed: false },
+              { name: "Taking the Tower", completed: false },
+              { name: "Elemental Exercise", completed: false },
+              { name: "Arachnids' Ascent", completed: false },
+              { name: "Recover the Past", completed: false },
+            ],
+          },
+          {
+            name: "WynnExcavation",
+            quests_completed: 0,
+            quests_available: 4,
+            quests: [
+              { name: "WynnExcavation Site A", completed: false },
+              { name: "WynnExcavation Site B", completed: false },
+              { name: "WynnExcavation Site C", completed: false },
+              { name: "WynnExcavation Site D", completed: false },
+            ],
+          },
+          {
+            name: "An Iron Heart",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "An Iron Heart Part I", completed: false },
+              { name: "An Iron Heart Part II", completed: false },
+            ],
+          },
+          {
+            name: "Realm of Light",
+            quests_completed: 0,
+            quests_available: 5,
+            quests: [
+              { name: "Realm of Light I - The Worm Holes", completed: false },
+              { name: "Realm of Light II - Taproot", completed: false },
+              {
+                name: "Realm of Light III - A Headless History",
+                completed: false,
+              },
+              {
+                name: "Realm of Light IV - Finding the Light",
+                completed: false,
+              },
+              {
+                name: "Realm of Light V - The Realm of Light",
+                completed: false,
+              },
+            ],
+          },
+          {
+            name: "Hunger of the Gerts",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "Hunger of the Gerts Part I", completed: false },
+              { name: "Hunger of the Gerts Part II", completed: false },
+            ],
+          },
+          {
+            name: "Aldorei's Secret",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "Aldorei's Secret Part I", completed: false },
+              { name: "Aldorei's Secret Part II", completed: false },
+            ],
+          },
+          {
+            name: "Corkus",
+            quests_completed: 0,
+            quests_available: 5,
+            quests: [
+              { name: "The Envoy Part I", completed: false },
+              { name: "The Envoy Part II", completed: false },
+              { name: "The Feathers Fly Part I", completed: false },
+              { name: "The Feathers Fly Part II", completed: false },
+              { name: "The Breaking Point", completed: false },
+            ],
+          },
+          {
+            name: "Dwarves and Doguns",
+            quests_completed: 0,
+            quests_available: 4,
+            quests: [
+              { name: "Dwarves and Doguns Part I", completed: false },
+              { name: "Dwarves and Doguns Part II", completed: false },
+              { name: "Dwarves and Doguns Part III", completed: false },
+              { name: "Dwarves and Doguns Part IV", completed: false },
+            ],
+          },
+          {
+            name: "Silent Expanse",
+            quests_completed: 0,
+            quests_available: 3,
+            quests: [
+              { name: "A Journey Beyond", completed: false },
+              { name: "A Journey Further", completed: false },
+              { name: "A Hunter's Calling", completed: false },
+            ],
+          },
+        ],
       },
       stats: {
         mobs_killed: 32,
@@ -522,6 +964,114 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         wars: 0,
         dungeons: { total: 3, list: { Skeleton: 1, Spider: 2 } },
         raids: { total: 0, list: {} },
+        storylines: [
+          {
+            name: "Recover the Past",
+            quests_completed: 0,
+            quests_available: 7,
+            quests: [
+              { name: "King's Recruit", completed: false },
+              { name: "Infested Plants", completed: false },
+              { name: "Mushroom Man", completed: false },
+              { name: "Taking the Tower", completed: false },
+              { name: "Elemental Exercise", completed: false },
+              { name: "Arachnids' Ascent", completed: false },
+              { name: "Recover the Past", completed: false },
+            ],
+          },
+          {
+            name: "WynnExcavation",
+            quests_completed: 0,
+            quests_available: 4,
+            quests: [
+              { name: "WynnExcavation Site A", completed: false },
+              { name: "WynnExcavation Site B", completed: false },
+              { name: "WynnExcavation Site C", completed: false },
+              { name: "WynnExcavation Site D", completed: false },
+            ],
+          },
+          {
+            name: "An Iron Heart",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "An Iron Heart Part I", completed: false },
+              { name: "An Iron Heart Part II", completed: false },
+            ],
+          },
+          {
+            name: "Realm of Light",
+            quests_completed: 0,
+            quests_available: 5,
+            quests: [
+              { name: "Realm of Light I - The Worm Holes", completed: false },
+              { name: "Realm of Light II - Taproot", completed: false },
+              {
+                name: "Realm of Light III - A Headless History",
+                completed: false,
+              },
+              {
+                name: "Realm of Light IV - Finding the Light",
+                completed: false,
+              },
+              {
+                name: "Realm of Light V - The Realm of Light",
+                completed: false,
+              },
+            ],
+          },
+          {
+            name: "Hunger of the Gerts",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "Hunger of the Gerts Part I", completed: false },
+              { name: "Hunger of the Gerts Part II", completed: false },
+            ],
+          },
+          {
+            name: "Aldorei's Secret",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "Aldorei's Secret Part I", completed: false },
+              { name: "Aldorei's Secret Part II", completed: false },
+            ],
+          },
+          {
+            name: "Corkus",
+            quests_completed: 0,
+            quests_available: 5,
+            quests: [
+              { name: "The Envoy Part I", completed: false },
+              { name: "The Envoy Part II", completed: false },
+              { name: "The Feathers Fly Part I", completed: false },
+              { name: "The Feathers Fly Part II", completed: false },
+              { name: "The Breaking Point", completed: false },
+            ],
+          },
+          {
+            name: "Dwarves and Doguns",
+            quests_completed: 0,
+            quests_available: 4,
+            quests: [
+              { name: "Dwarves and Doguns Part I", completed: false },
+              { name: "Dwarves and Doguns Part II", completed: false },
+              { name: "Dwarves and Doguns Part III", completed: false },
+              { name: "Dwarves and Doguns Part IV", completed: false },
+            ],
+          },
+          {
+            name: "Silent Expanse",
+            quests_completed: 0,
+            quests_available: 3,
+            quests: [
+              { name: "A Journey Beyond", completed: false },
+              { name: "A Journey Further", completed: false },
+              { name: "A Hunter's Calling", completed: false },
+            ],
+          },
+        ],
       },
       stats: {
         mobs_killed: 219,
@@ -571,6 +1121,114 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         wars: 0,
         dungeons: { total: 0, list: {} },
         raids: { total: 0, list: {} },
+        storylines: [
+          {
+            name: "Recover the Past",
+            quests_completed: 0,
+            quests_available: 7,
+            quests: [
+              { name: "King's Recruit", completed: false },
+              { name: "Infested Plants", completed: false },
+              { name: "Mushroom Man", completed: false },
+              { name: "Taking the Tower", completed: false },
+              { name: "Elemental Exercise", completed: false },
+              { name: "Arachnids' Ascent", completed: false },
+              { name: "Recover the Past", completed: false },
+            ],
+          },
+          {
+            name: "WynnExcavation",
+            quests_completed: 0,
+            quests_available: 4,
+            quests: [
+              { name: "WynnExcavation Site A", completed: false },
+              { name: "WynnExcavation Site B", completed: false },
+              { name: "WynnExcavation Site C", completed: false },
+              { name: "WynnExcavation Site D", completed: false },
+            ],
+          },
+          {
+            name: "An Iron Heart",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "An Iron Heart Part I", completed: false },
+              { name: "An Iron Heart Part II", completed: false },
+            ],
+          },
+          {
+            name: "Realm of Light",
+            quests_completed: 0,
+            quests_available: 5,
+            quests: [
+              { name: "Realm of Light I - The Worm Holes", completed: false },
+              { name: "Realm of Light II - Taproot", completed: false },
+              {
+                name: "Realm of Light III - A Headless History",
+                completed: false,
+              },
+              {
+                name: "Realm of Light IV - Finding the Light",
+                completed: false,
+              },
+              {
+                name: "Realm of Light V - The Realm of Light",
+                completed: false,
+              },
+            ],
+          },
+          {
+            name: "Hunger of the Gerts",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "Hunger of the Gerts Part I", completed: false },
+              { name: "Hunger of the Gerts Part II", completed: false },
+            ],
+          },
+          {
+            name: "Aldorei's Secret",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "Aldorei's Secret Part I", completed: false },
+              { name: "Aldorei's Secret Part II", completed: false },
+            ],
+          },
+          {
+            name: "Corkus",
+            quests_completed: 0,
+            quests_available: 5,
+            quests: [
+              { name: "The Envoy Part I", completed: false },
+              { name: "The Envoy Part II", completed: false },
+              { name: "The Feathers Fly Part I", completed: false },
+              { name: "The Feathers Fly Part II", completed: false },
+              { name: "The Breaking Point", completed: false },
+            ],
+          },
+          {
+            name: "Dwarves and Doguns",
+            quests_completed: 0,
+            quests_available: 4,
+            quests: [
+              { name: "Dwarves and Doguns Part I", completed: false },
+              { name: "Dwarves and Doguns Part II", completed: false },
+              { name: "Dwarves and Doguns Part III", completed: false },
+              { name: "Dwarves and Doguns Part IV", completed: false },
+            ],
+          },
+          {
+            name: "Silent Expanse",
+            quests_completed: 0,
+            quests_available: 3,
+            quests: [
+              { name: "A Journey Beyond", completed: false },
+              { name: "A Journey Further", completed: false },
+              { name: "A Hunter's Calling", completed: false },
+            ],
+          },
+        ],
       },
       stats: {
         mobs_killed: 0,
@@ -620,6 +1278,114 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         wars: 0,
         dungeons: { total: 0, list: {} },
         raids: { total: 0, list: {} },
+        storylines: [
+          {
+            name: "Recover the Past",
+            quests_completed: 0,
+            quests_available: 7,
+            quests: [
+              { name: "King's Recruit", completed: false },
+              { name: "Infested Plants", completed: false },
+              { name: "Mushroom Man", completed: false },
+              { name: "Taking the Tower", completed: false },
+              { name: "Elemental Exercise", completed: false },
+              { name: "Arachnids' Ascent", completed: false },
+              { name: "Recover the Past", completed: false },
+            ],
+          },
+          {
+            name: "WynnExcavation",
+            quests_completed: 0,
+            quests_available: 4,
+            quests: [
+              { name: "WynnExcavation Site A", completed: false },
+              { name: "WynnExcavation Site B", completed: false },
+              { name: "WynnExcavation Site C", completed: false },
+              { name: "WynnExcavation Site D", completed: false },
+            ],
+          },
+          {
+            name: "An Iron Heart",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "An Iron Heart Part I", completed: false },
+              { name: "An Iron Heart Part II", completed: false },
+            ],
+          },
+          {
+            name: "Realm of Light",
+            quests_completed: 0,
+            quests_available: 5,
+            quests: [
+              { name: "Realm of Light I - The Worm Holes", completed: false },
+              { name: "Realm of Light II - Taproot", completed: false },
+              {
+                name: "Realm of Light III - A Headless History",
+                completed: false,
+              },
+              {
+                name: "Realm of Light IV - Finding the Light",
+                completed: false,
+              },
+              {
+                name: "Realm of Light V - The Realm of Light",
+                completed: false,
+              },
+            ],
+          },
+          {
+            name: "Hunger of the Gerts",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "Hunger of the Gerts Part I", completed: false },
+              { name: "Hunger of the Gerts Part II", completed: false },
+            ],
+          },
+          {
+            name: "Aldorei's Secret",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "Aldorei's Secret Part I", completed: false },
+              { name: "Aldorei's Secret Part II", completed: false },
+            ],
+          },
+          {
+            name: "Corkus",
+            quests_completed: 0,
+            quests_available: 5,
+            quests: [
+              { name: "The Envoy Part I", completed: false },
+              { name: "The Envoy Part II", completed: false },
+              { name: "The Feathers Fly Part I", completed: false },
+              { name: "The Feathers Fly Part II", completed: false },
+              { name: "The Breaking Point", completed: false },
+            ],
+          },
+          {
+            name: "Dwarves and Doguns",
+            quests_completed: 0,
+            quests_available: 4,
+            quests: [
+              { name: "Dwarves and Doguns Part I", completed: false },
+              { name: "Dwarves and Doguns Part II", completed: false },
+              { name: "Dwarves and Doguns Part III", completed: false },
+              { name: "Dwarves and Doguns Part IV", completed: false },
+            ],
+          },
+          {
+            name: "Silent Expanse",
+            quests_completed: 0,
+            quests_available: 3,
+            quests: [
+              { name: "A Journey Beyond", completed: false },
+              { name: "A Journey Further", completed: false },
+              { name: "A Hunter's Calling", completed: false },
+            ],
+          },
+        ],
       },
       stats: {
         mobs_killed: 165,
@@ -669,6 +1435,114 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         wars: 0,
         dungeons: { total: 0, list: {} },
         raids: { total: 0, list: {} },
+        storylines: [
+          {
+            name: "Recover the Past",
+            quests_completed: 0,
+            quests_available: 7,
+            quests: [
+              { name: "King's Recruit", completed: false },
+              { name: "Infested Plants", completed: false },
+              { name: "Mushroom Man", completed: false },
+              { name: "Taking the Tower", completed: false },
+              { name: "Elemental Exercise", completed: false },
+              { name: "Arachnids' Ascent", completed: false },
+              { name: "Recover the Past", completed: false },
+            ],
+          },
+          {
+            name: "WynnExcavation",
+            quests_completed: 0,
+            quests_available: 4,
+            quests: [
+              { name: "WynnExcavation Site A", completed: false },
+              { name: "WynnExcavation Site B", completed: false },
+              { name: "WynnExcavation Site C", completed: false },
+              { name: "WynnExcavation Site D", completed: false },
+            ],
+          },
+          {
+            name: "An Iron Heart",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "An Iron Heart Part I", completed: false },
+              { name: "An Iron Heart Part II", completed: false },
+            ],
+          },
+          {
+            name: "Realm of Light",
+            quests_completed: 0,
+            quests_available: 5,
+            quests: [
+              { name: "Realm of Light I - The Worm Holes", completed: false },
+              { name: "Realm of Light II - Taproot", completed: false },
+              {
+                name: "Realm of Light III - A Headless History",
+                completed: false,
+              },
+              {
+                name: "Realm of Light IV - Finding the Light",
+                completed: false,
+              },
+              {
+                name: "Realm of Light V - The Realm of Light",
+                completed: false,
+              },
+            ],
+          },
+          {
+            name: "Hunger of the Gerts",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "Hunger of the Gerts Part I", completed: false },
+              { name: "Hunger of the Gerts Part II", completed: false },
+            ],
+          },
+          {
+            name: "Aldorei's Secret",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "Aldorei's Secret Part I", completed: false },
+              { name: "Aldorei's Secret Part II", completed: false },
+            ],
+          },
+          {
+            name: "Corkus",
+            quests_completed: 0,
+            quests_available: 5,
+            quests: [
+              { name: "The Envoy Part I", completed: false },
+              { name: "The Envoy Part II", completed: false },
+              { name: "The Feathers Fly Part I", completed: false },
+              { name: "The Feathers Fly Part II", completed: false },
+              { name: "The Breaking Point", completed: false },
+            ],
+          },
+          {
+            name: "Dwarves and Doguns",
+            quests_completed: 0,
+            quests_available: 4,
+            quests: [
+              { name: "Dwarves and Doguns Part I", completed: false },
+              { name: "Dwarves and Doguns Part II", completed: false },
+              { name: "Dwarves and Doguns Part III", completed: false },
+              { name: "Dwarves and Doguns Part IV", completed: false },
+            ],
+          },
+          {
+            name: "Silent Expanse",
+            quests_completed: 0,
+            quests_available: 3,
+            quests: [
+              { name: "A Journey Beyond", completed: false },
+              { name: "A Journey Further", completed: false },
+              { name: "A Hunter's Calling", completed: false },
+            ],
+          },
+        ],
       },
       stats: {
         mobs_killed: 50,
@@ -718,6 +1592,114 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         wars: 0,
         dungeons: { total: 1, list: { Skeleton: 1 } },
         raids: { total: 0, list: {} },
+        storylines: [
+          {
+            name: "Recover the Past",
+            quests_completed: 0,
+            quests_available: 7,
+            quests: [
+              { name: "King's Recruit", completed: false },
+              { name: "Infested Plants", completed: false },
+              { name: "Mushroom Man", completed: false },
+              { name: "Taking the Tower", completed: false },
+              { name: "Elemental Exercise", completed: false },
+              { name: "Arachnids' Ascent", completed: false },
+              { name: "Recover the Past", completed: false },
+            ],
+          },
+          {
+            name: "WynnExcavation",
+            quests_completed: 0,
+            quests_available: 4,
+            quests: [
+              { name: "WynnExcavation Site A", completed: false },
+              { name: "WynnExcavation Site B", completed: false },
+              { name: "WynnExcavation Site C", completed: false },
+              { name: "WynnExcavation Site D", completed: false },
+            ],
+          },
+          {
+            name: "An Iron Heart",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "An Iron Heart Part I", completed: false },
+              { name: "An Iron Heart Part II", completed: false },
+            ],
+          },
+          {
+            name: "Realm of Light",
+            quests_completed: 0,
+            quests_available: 5,
+            quests: [
+              { name: "Realm of Light I - The Worm Holes", completed: false },
+              { name: "Realm of Light II - Taproot", completed: false },
+              {
+                name: "Realm of Light III - A Headless History",
+                completed: false,
+              },
+              {
+                name: "Realm of Light IV - Finding the Light",
+                completed: false,
+              },
+              {
+                name: "Realm of Light V - The Realm of Light",
+                completed: false,
+              },
+            ],
+          },
+          {
+            name: "Hunger of the Gerts",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "Hunger of the Gerts Part I", completed: false },
+              { name: "Hunger of the Gerts Part II", completed: false },
+            ],
+          },
+          {
+            name: "Aldorei's Secret",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "Aldorei's Secret Part I", completed: false },
+              { name: "Aldorei's Secret Part II", completed: false },
+            ],
+          },
+          {
+            name: "Corkus",
+            quests_completed: 0,
+            quests_available: 5,
+            quests: [
+              { name: "The Envoy Part I", completed: false },
+              { name: "The Envoy Part II", completed: false },
+              { name: "The Feathers Fly Part I", completed: false },
+              { name: "The Feathers Fly Part II", completed: false },
+              { name: "The Breaking Point", completed: false },
+            ],
+          },
+          {
+            name: "Dwarves and Doguns",
+            quests_completed: 0,
+            quests_available: 4,
+            quests: [
+              { name: "Dwarves and Doguns Part I", completed: false },
+              { name: "Dwarves and Doguns Part II", completed: false },
+              { name: "Dwarves and Doguns Part III", completed: false },
+              { name: "Dwarves and Doguns Part IV", completed: false },
+            ],
+          },
+          {
+            name: "Silent Expanse",
+            quests_completed: 0,
+            quests_available: 3,
+            quests: [
+              { name: "A Journey Beyond", completed: false },
+              { name: "A Journey Further", completed: false },
+              { name: "A Hunter's Calling", completed: false },
+            ],
+          },
+        ],
       },
       stats: {
         mobs_killed: 536,
@@ -767,6 +1749,114 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         wars: 0,
         dungeons: { total: 0, list: {} },
         raids: { total: 0, list: {} },
+        storylines: [
+          {
+            name: "Recover the Past",
+            quests_completed: 0,
+            quests_available: 7,
+            quests: [
+              { name: "King's Recruit", completed: false },
+              { name: "Infested Plants", completed: false },
+              { name: "Mushroom Man", completed: false },
+              { name: "Taking the Tower", completed: false },
+              { name: "Elemental Exercise", completed: false },
+              { name: "Arachnids' Ascent", completed: false },
+              { name: "Recover the Past", completed: false },
+            ],
+          },
+          {
+            name: "WynnExcavation",
+            quests_completed: 0,
+            quests_available: 4,
+            quests: [
+              { name: "WynnExcavation Site A", completed: false },
+              { name: "WynnExcavation Site B", completed: false },
+              { name: "WynnExcavation Site C", completed: false },
+              { name: "WynnExcavation Site D", completed: false },
+            ],
+          },
+          {
+            name: "An Iron Heart",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "An Iron Heart Part I", completed: false },
+              { name: "An Iron Heart Part II", completed: false },
+            ],
+          },
+          {
+            name: "Realm of Light",
+            quests_completed: 0,
+            quests_available: 5,
+            quests: [
+              { name: "Realm of Light I - The Worm Holes", completed: false },
+              { name: "Realm of Light II - Taproot", completed: false },
+              {
+                name: "Realm of Light III - A Headless History",
+                completed: false,
+              },
+              {
+                name: "Realm of Light IV - Finding the Light",
+                completed: false,
+              },
+              {
+                name: "Realm of Light V - The Realm of Light",
+                completed: false,
+              },
+            ],
+          },
+          {
+            name: "Hunger of the Gerts",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "Hunger of the Gerts Part I", completed: false },
+              { name: "Hunger of the Gerts Part II", completed: false },
+            ],
+          },
+          {
+            name: "Aldorei's Secret",
+            quests_completed: 0,
+            quests_available: 2,
+            quests: [
+              { name: "Aldorei's Secret Part I", completed: false },
+              { name: "Aldorei's Secret Part II", completed: false },
+            ],
+          },
+          {
+            name: "Corkus",
+            quests_completed: 0,
+            quests_available: 5,
+            quests: [
+              { name: "The Envoy Part I", completed: false },
+              { name: "The Envoy Part II", completed: false },
+              { name: "The Feathers Fly Part I", completed: false },
+              { name: "The Feathers Fly Part II", completed: false },
+              { name: "The Breaking Point", completed: false },
+            ],
+          },
+          {
+            name: "Dwarves and Doguns",
+            quests_completed: 0,
+            quests_available: 4,
+            quests: [
+              { name: "Dwarves and Doguns Part I", completed: false },
+              { name: "Dwarves and Doguns Part II", completed: false },
+              { name: "Dwarves and Doguns Part III", completed: false },
+              { name: "Dwarves and Doguns Part IV", completed: false },
+            ],
+          },
+          {
+            name: "Silent Expanse",
+            quests_completed: 0,
+            quests_available: 3,
+            quests: [
+              { name: "A Journey Beyond", completed: false },
+              { name: "A Journey Further", completed: false },
+              { name: "A Hunter's Calling", completed: false },
+            ],
+          },
+        ],
       },
       stats: {
         mobs_killed: 8,
@@ -959,6 +2049,7 @@ const sampleCapeResponse = [
 ];
 
 export {
+  sampleStatusResponse,
   sampleHypixelGuildResponse,
   sampleHypixelResponse,
   sampleMCCIResponse,

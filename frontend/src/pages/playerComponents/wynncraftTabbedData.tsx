@@ -114,9 +114,12 @@ function WynncraftTabbedData({
           tooltip={formatISOTimestamp(wynncraftData.last_login)}
         />
       </ul>
-      <ul className="info-card-list">
-        <InfoCard label="Guild" value={wynncraftData.guild_name} />
-      </ul>
+      {wynncraftData.guild_name && (
+        <ul className="info-card-list">
+          <InfoCard label="Guild" value={wynncraftData.guild_name} />
+        </ul>
+      )}
+
       <h3>Global Stats</h3>
       <ul className="info-card-list">
         <InfoCard

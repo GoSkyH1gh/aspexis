@@ -1,30 +1,36 @@
 import InfoCard from "./infoCard.js";
 import { motion } from "motion/react";
-import { formatISOTimestamp, formatISOToDistance } from "../../utils/utils.js";
-import { HypixelFullData } from "../../client/types.gen.js";
-
-type StatusData = {
-  status: string;
-};
+import {
+  formatISOTimestamp,
+  formatISOToDistance,
+  parseUnknownISO,
+} from "../../utils/utils.js";
+import {
+  HypixelFullData,
+  McciPlayer,
+  PlayerStatus,
+  WynncraftPlayerSummary,
+} from "../../client/types.gen.js";
+import WynncraftCharacterModal from "./wynncraftCharacterModal.js";
+import { Tooltip } from "radix-ui";
 
 type QuickInfoProps = {
-  hypixelResponse:
-    | HypixelFullData
-    | null
-    | "not found"
-    | "not found (server error)";
-  playerStatus: StatusData | null;
+  hypixelData: HypixelFullData | null | undefined;
+  wynncraftData: WynncraftPlayerSummary | null | undefined;
+  mcciData: McciPlayer | null | undefined;
+  playerStatus: PlayerStatus | null | undefined;
 };
 
-function QuickInfo({ hypixelResponse, playerStatus }: QuickInfoProps) {
-  if (
-    !hypixelResponse ||
-    hypixelResponse === "not found" ||
-    hypixelResponse === "not found (server error)"
-  ) {
+function QuickInfo({
+  hypixelData,
+  wynncraftData,
+  mcciData,
+  playerStatus,
+}: QuickInfoProps) {
+  if (!hypixelData && !wynncraftData && !mcciData) {
     return (
       <motion.div
-        className="hypixel-data"
+        className="quick-info"
         variants={{
           hidden: { opacity: 0, y: 20 },
           show: {
@@ -41,9 +47,98 @@ function QuickInfo({ hypixelResponse, playerStatus }: QuickInfoProps) {
       </motion.div>
     );
   }
+
+  function minDate(dates: (Date | null)[]) {
+    const valid = dates.filter((d) => d instanceof Date);
+    return valid.length === 0 ? null : valid.reduce((a, b) => (b < a ? b : a));
+  }
+
+  function maxDate(dates: (Date | null)[]) {
+    const valid = dates.filter((d) => d instanceof Date);
+    return valid.length === 0 ? null : valid.reduce((a, b) => (b > a ? b : a));
+  }
+
+  const hypixelFirstJoinDate = parseUnknownISO(hypixelData?.player.first_login);
+  const wynncraftFirstJoinDate = parseUnknownISO(wynncraftData?.first_login);
+  const mcciFirstJoinDate = parseUnknownISO(mcciData?.first_join);
+
+  const hypixelLastJoinDate = parseUnknownISO(hypixelData?.player.last_login);
+  const wynncraftLastJoinDate = parseUnknownISO(wynncraftData?.last_login);
+  const mcciLastJoinDate = parseUnknownISO(mcciData?.last_join);
+
+  const firstJoinDates = [
+    hypixelFirstJoinDate,
+    wynncraftFirstJoinDate,
+    mcciFirstJoinDate,
+  ];
+
+  const lastJoinDates = [
+    hypixelLastJoinDate,
+    wynncraftLastJoinDate,
+    mcciLastJoinDate,
+  ];
+
+  const firstJoinDate = minDate(firstJoinDates);
+  const lastJoinDate = maxDate(lastJoinDates);
+
+  let lastJoinServer;
+  if (lastJoinDate === hypixelLastJoinDate) {
+    lastJoinServer = "Hypixel";
+  } else if (lastJoinDate === wynncraftLastJoinDate) {
+    lastJoinServer = "Wynncraft";
+  } else if (lastJoinDate === mcciLastJoinDate) {
+    lastJoinServer = "Mcc Island";
+  }
+  const activeWynncraftCharacter = wynncraftData?.characters.find(
+    (character) =>
+      character.character_uuid === playerStatus?.wynncraft_character,
+  );
+  let lastActivityElement;
+  if (playerStatus?.hypixel_online || playerStatus?.wynncraft_online) {
+    if (playerStatus.wynncraft_online) {
+      lastActivityElement = (
+        <InfoCard
+          label="Online"
+          value={`Playing Wynncraft on ${playerStatus.wynncraft_server}`}
+        />
+      );
+    } else {
+      lastActivityElement = (
+        <li className="last-activity-card">
+          <span className="info-card-label">Online</span>
+          <br />
+          <span className="info-card-value">
+            Playing Hypixel <br />
+            {playerStatus.hypixel_game_type} • {playerStatus.hypixel_mode}
+          </span>
+        </li>
+      );
+    }
+  } else {
+    lastActivityElement = (
+      <Tooltip.Root delayDuration={50}>
+        <Tooltip.Trigger asChild>
+          <li className="last-activity-card">
+            <span className="info-card-label">Last activity</span>
+            <br />
+            <span className="info-card-value">
+              {formatISOToDistance(lastJoinDate?.toISOString())}
+              {lastJoinServer && <> on {lastJoinServer}</>}
+            </span>
+          </li>
+        </Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content className="TooltipContent">
+            {formatISOTimestamp(lastJoinDate?.toISOString())}
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+    );
+  }
+
   return (
     <motion.div
-      className="hypixel-data"
+      className="quick-info"
       variants={{
         hidden: { opacity: 0, y: 20 },
         show: {
@@ -57,7 +152,7 @@ function QuickInfo({ hypixelResponse, playerStatus }: QuickInfoProps) {
     >
       <h2 className="compact-heading">Quick Info</h2>
       <motion.ul
-        className="info-card-list"
+        className="info-card-list quick-info-card-list"
         variants={{
           hidden: { opacity: 0 },
           show: {
@@ -72,23 +167,28 @@ function QuickInfo({ hypixelResponse, playerStatus }: QuickInfoProps) {
         initial="hidden"
         animate="show"
       >
-        <InfoCard label="Status" value={playerStatus?.status} />
+        {activeWynncraftCharacter &&
+          wynncraftData &&
+          playerStatus?.wynncraft_online && (
+            <InfoCard
+              label="Online Wynncraft character"
+              value={
+                <div className="quick-info-character">
+                  <WynncraftCharacterModal
+                    character={activeWynncraftCharacter}
+                    restrictions={wynncraftData.restrictions}
+                    uuid={wynncraftData.uuid}
+                    smallVersion={true}
+                  />
+                </div>
+              }
+            />
+          )}
+        {lastActivityElement}
+
         <InfoCard
           label="First seen on"
-          value={formatISOTimestamp(hypixelResponse.player?.first_login)}
-        />
-        <InfoCard
-          label="Last seen"
-          value={formatISOToDistance(hypixelResponse.player?.last_login)}
-          tooltip={formatISOTimestamp(hypixelResponse.player?.last_login)}
-        />
-        <InfoCard
-          label="Hypixel rank"
-          value={hypixelResponse.player?.rank || "No Rank"}
-        />
-        <InfoCard
-          label="Hypixel guild"
-          value={hypixelResponse?.guild?.name || "No guild"}
+          value={formatISOTimestamp(firstJoinDate?.toISOString())}
         />
       </motion.ul>
     </motion.div>

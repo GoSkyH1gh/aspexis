@@ -9,7 +9,7 @@ from wynncraft_api import (
     WynncraftGuildInfo,
     add_wynncraft_stats_to_db,
 )
-from online_status import get_online_status
+from online_status import get_status, PlayerStatus
 from dotenv import load_dotenv
 from minecraft_api import MojangData
 from donut_api import get_donut_stats, DonutPlayerStats, add_donut_stats_to_db
@@ -205,8 +205,8 @@ def get_guild(
 
 
 @app.get("/v1/players/status/{uuid}")
-async def get_status(uuid):
-    return await get_online_status(uuid)
+async def get_player_status(uuid) -> PlayerStatus:
+    return await get_status(uuid)
 
 
 # wynncraft endpoints

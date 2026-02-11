@@ -327,11 +327,102 @@ export default function WynncraftCharacterModal({
   character,
   uuid,
   restrictions,
+  smallVersion = false,
 }: {
   character: WynncraftCharacterInfo;
   uuid: string;
   restrictions: PlayerRestrictions;
+  smallVersion?: boolean;
 }) {
+  if (smallVersion) {
+    return (
+      <Dialog.Root>
+        <Dialog.Trigger asChild>
+          <button
+            className={`wynncraft-character-item wynncraft-character-item-small`}
+          >
+            <p className="em-text">
+              {(character.nickname && (
+                <Tooltip.Root delayDuration={150}>
+                  <Tooltip.Trigger asChild>
+                    <span className="wynn-custom-name">
+                      {character.nickname}
+                    </span>
+                  </Tooltip.Trigger>
+                  <Tooltip.Portal>
+                    <Tooltip.Content className="TooltipContent">
+                      {character.character_class}
+                    </Tooltip.Content>
+                  </Tooltip.Portal>
+                </Tooltip.Root>
+              )) ||
+                character.character_class}
+            </p>
+            {character.gamemodes.length >= 1 && (
+              <div className="wynn-modes">
+                {character.gamemodes.sort().map((gamemode) => {
+                  if (character.stats?.deaths) {
+                    if (character.stats.deaths >= 1 && gamemode == "hardcore") {
+                      gamemode = "defeated_hardcore";
+                    }
+                  }
+                  if (
+                    gamemode == "ironman" &&
+                    character.gamemodes.includes("ultimate_ironman")
+                  ) {
+                    return;
+                  }
+
+                  const validGamemode = gamemode as keyof typeof modesMap;
+                  return (
+                    <Tooltip.Root delayDuration={50}>
+                      <Tooltip.Trigger asChild>
+                        <img
+                          src={modesMap[validGamemode]}
+                          className="wynn-mode"
+                        />
+                      </Tooltip.Trigger>
+                      <Tooltip.Portal>
+                        <Tooltip.Content className="TooltipContent">
+                          {modeAttributeMap[validGamemode]}
+                        </Tooltip.Content>
+                      </Tooltip.Portal>
+                    </Tooltip.Root>
+                  );
+                })}
+              </div>
+            )}
+            {
+              <p className="secondary-text wynn-char-preview">
+                Lv {character.level}
+              </p>
+            }
+          </button>
+        </Dialog.Trigger>
+        <Dialog.Portal>
+          <Dialog.Title />
+          <Dialog.Overlay className="DialogOverlay" />
+          <Dialog.Content className="DialogContent wynn-char-modal">
+            <div className="skin-viewer-header">
+              <CharacterHeader character={character} />
+              <div className="wynn-header-close">
+                {!restrictions.character_build_access && (
+                  <WynncraftAbilityTree character={character} uuid={uuid} />
+                )}
+                <Dialog.Close asChild>
+                  <button className="dialog-close">
+                    <Icon icon={"material-symbols:close-rounded"} />
+                  </button>
+                </Dialog.Close>
+              </div>
+            </div>
+            <CharacterDetails character={character} />
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+    );
+  }
+
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
