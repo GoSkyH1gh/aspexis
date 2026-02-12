@@ -20,9 +20,12 @@ import {
   fetchWynncraftGuildData,
 } from "../utils/queries";
 import { Toast } from "radix-ui";
+import { useSearchHistory } from "../hooks/useSearchHistory";
+import { useEffect } from "react";
 
 export function PlayerPage() {
   const { username } = useParams();
+  const { addToHistory } = useSearchHistory();
 
   // Prefetch heavy components in the background after page loads
   usePrefetch([
@@ -38,6 +41,12 @@ export function PlayerPage() {
 
   const uuid: string | undefined = mojangQuery.data?.uuid;
   const mojangUsername: string | undefined = mojangQuery.data?.username;
+
+  useEffect(() => {
+    if (mojangQuery.isSuccess && mojangQuery.data?.username) {
+      addToHistory(mojangQuery.data.username);
+    }
+  }, [mojangQuery.isSuccess, mojangQuery.data, addToHistory]);
 
   const statusQuery = useQuery({
     queryKey: ["status", uuid],

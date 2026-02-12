@@ -988,7 +988,6 @@ button {
   color: var(--text-primary);
 }
 
-
 .last-activity-card {
   display: block;
   backdrop-filter: blur(10px);
@@ -1011,4 +1010,68 @@ button {
 
 .quick-info-card-list {
   margin-bottom: 0;
+}
+
+.search-history-popover {
+  background: var(--color-surface-layer-2);
+  backdrop-filter: blur(25px) brightness(50%);
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 8px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  width: var(--radix-anchor-width);
+  min-width: 200px;
+}
+
+.search-history-item {
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  gap: 10px;
+  cursor: pointer;
+  color: #e0e0e0;
+  width: 200px;
+}
+
+.search-history-item:hover,
+.search-history-item.highlighted {
+  background: var(--color-surface-layer-3);
+}
+
+.history-icon {
+  opacity: 0.6;
+}
+
+.search-history-popover {
+  padding: 0;
+}
+
+.history-text {
+  flex-grow: 1;
+}
+
+.remove-history-button {
+  background: none;
+  border: none;
+  color: #aaa;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: none;
+  padding: 4px;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.2s, background-color 0.2s, color 0.2s;
+}
+
+.search-history-item:hover .remove-history-button,
+.search-history-item:focus-within .remove-history-button {
+  opacity: 1;
+}
+
+.remove-history-button:hover {
+  /*background-color: rgba(255, 255, 255, 0.1);*/
+  color: #fff;
 }
