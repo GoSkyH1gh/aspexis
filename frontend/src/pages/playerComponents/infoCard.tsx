@@ -10,6 +10,7 @@ type BaseProps = {
   value: string | number | ReactNode;
   onClick?: () => void;
   children?: ReactNode;
+  onlineIndicator?: boolean;
 };
 
 type WithStats = BaseProps & {
@@ -29,6 +30,18 @@ type Plain = BaseProps & {
 
 type InfoCardProps = WithStats | WithTooltip | Plain;
 
+const StatusDot = () => {
+  return (
+    <div
+      className="status-dot"
+      aria-hidden="true"
+      role="status"
+      aria-live="polite"
+    >
+      <div />
+    </div>
+  );
+};
 
 function InfoCard({
   label,
@@ -36,6 +49,7 @@ function InfoCard({
   onClick,
   hasStats = false,
   tooltip = null,
+  onlineIndicator = false,
   children,
 }: InfoCardProps) {
   if (hasStats) {
@@ -51,7 +65,10 @@ function InfoCard({
           <div>
             <span className="info-card-label">{label}</span>
             <br />
-            <span className="info-card-value">{value}</span>
+            <span className="info-card-value">
+              {onlineIndicator && <StatusDot />}
+              {value}
+            </span>
           </div>
           <Popover.Root>
             <Popover.Trigger asChild>
@@ -95,7 +112,10 @@ function InfoCard({
           >
             <span className="info-card-label">{label}</span>
             <br />
-            <span className="info-card-value">{value}</span>
+            <span className="info-card-value">
+              {onlineIndicator && <StatusDot />}
+              {value}
+            </span>
           </motion.li>
         </Tooltip.Trigger>
         <Tooltip.Portal>
@@ -117,7 +137,10 @@ function InfoCard({
     >
       <span className="info-card-label">{label}</span>
       <br />
-      <span className="info-card-value">{value}</span>
+      <span className="info-card-value">
+        {onlineIndicator && <StatusDot />}
+        {value}
+      </span>
     </motion.li>
   );
 }

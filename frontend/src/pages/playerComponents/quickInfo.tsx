@@ -19,6 +19,7 @@ type QuickInfoProps = {
   wynncraftData: WynncraftPlayerSummary | null | undefined;
   mcciData: McciPlayer | null | undefined;
   playerStatus: PlayerStatus | null | undefined;
+  isLoading: boolean;
 };
 
 function QuickInfo({
@@ -26,7 +27,48 @@ function QuickInfo({
   wynncraftData,
   mcciData,
   playerStatus,
+  isLoading,
 }: QuickInfoProps) {
+  if (isLoading) {
+    return (
+      <motion.div
+        className="quick-info"
+        variants={{
+          hidden: { opacity: 0, y: 20 },
+          show: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.25, ease: "easeInOut" },
+          },
+        }}
+        initial="hidden"
+        animate="show"
+      >
+        <h2 className="compact-heading">Quick Info</h2>
+
+        <motion.ul
+          className="info-card-list quick-info-card-list"
+          variants={{
+            hidden: { opacity: 0 },
+            show: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.1,
+                duration: 0.5,
+                ease: "easeInOut",
+              },
+            },
+          }}
+          initial="hidden"
+          animate="show"
+        >
+          <InfoCard label="Last activity" value={<span>Loading...</span>} />
+          <InfoCard label="First seen on" value={<span>Loading...</span>} />
+        </motion.ul>
+      </motion.div>
+    );
+  }
+
   if (!hypixelData && !wynncraftData && !mcciData) {
     return (
       <motion.div
@@ -99,19 +141,17 @@ function QuickInfo({
       lastActivityElement = (
         <InfoCard
           label="Online"
+          onlineIndicator={true}
           value={`Playing Wynncraft on ${playerStatus.wynncraft_server}`}
         />
       );
     } else {
       lastActivityElement = (
-        <li className="last-activity-card">
-          <span className="info-card-label">Online</span>
-          <br />
-          <span className="info-card-value">
-            Playing Hypixel <br />
-            {playerStatus.hypixel_game_type} • {playerStatus.hypixel_mode}
-          </span>
-        </li>
+        <InfoCard
+          label="Online"
+          value={`Playing Hypixel • ${playerStatus.hypixel_game_type} • ${playerStatus.hypixel_mode}`}
+          onlineIndicator={true}
+        />
       );
     }
   } else {
@@ -151,6 +191,7 @@ function QuickInfo({
       animate="show"
     >
       <h2 className="compact-heading">Quick Info</h2>
+
       <motion.ul
         className="info-card-list quick-info-card-list"
         variants={{
@@ -167,6 +208,7 @@ function QuickInfo({
         initial="hidden"
         animate="show"
       >
+        {lastActivityElement}
         {activeWynncraftCharacter &&
           wynncraftData &&
           playerStatus?.wynncraft_online && (
@@ -184,7 +226,6 @@ function QuickInfo({
               }
             />
           )}
-        {lastActivityElement}
 
         <InfoCard
           label="First seen on"

@@ -10,6 +10,7 @@ import { toProperCase, formatValue } from "../../utils/utils";
 import { Icon } from "@iconify/react";
 import HorizontalInfoCard from "./horizontalInfoCard";
 import WynncraftAbilityTree from "./wynncraftAbilityTree";
+import InfoCard from "./infoCard";
 
 const modesMap = {
   ironman: "https://cdn.wynncraft.com/nextgen/badges/ironman.svg",
