@@ -21,7 +21,7 @@ class UpstreamError(HTTPException):
 
     def __init__(self):
         super().__init__(
-            detail="Recieved an error from Upstream",
+            detail="Received an error from Upstream",
             status_code=502,
         )
 
@@ -50,14 +50,14 @@ class ServiceError(HTTPException):
     """Generic Exception 500"""
 
     def __init__(self):
-        super().__init__(status_code=500, detail="Server coudn't resolve the request")
+        super().__init__(status_code=500, detail="Server could not resolve the request")
 
 
 class InvalidUserUUID(HTTPException):
     def __init__(self):
         super().__init__(
             status_code=400,
-            detail="UUID couldn't be proccessed. Make sure you are using the undashed format.",
+            detail="UUID couldn't be processed. Make sure you are using the undashed format.",
         )
 
 
@@ -70,6 +70,7 @@ class UnprocessableEntity(HTTPException):
             status_code=422,
             detail=detail,
         )
+
 
 class Forbidden(HTTPException):
     def __init__(self, reason: str | None = None):
@@ -90,6 +91,6 @@ class TooManyRequests(HTTPException):
         )
 
 
-class InvalidCache(BaseException):
+class InvalidCache(Exception):
     def __init__(self, *args):
         super().__init__(*args)
