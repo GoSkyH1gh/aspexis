@@ -17,7 +17,7 @@ from mcci_api import MCCIPlayer, get_mcci_data
 from metrics_manager import get_stats, HistogramData
 from db import get_db
 
-import exceptions
+from exceptions import ErrorResponse
 from player_tracker import subscribe, unsubscribe
 import asyncio
 from sqlalchemy.orm import Session
@@ -30,7 +30,7 @@ from hypixel_manager import (
     add_hypixel_stats_to_db,
 )
 from minecraft_manager import get_minecraft_data
-from typing import List, Annotated, Literal
+from typing import List, Annotated, Literal, Any
 import time
 from telemetry_manager import add_telemetry_event
 from capes import get_capes_for_user, UserCapeData
@@ -42,8 +42,20 @@ from slowapi.middleware import SlowAPIMiddleware
 
 from contextlib import asynccontextmanager
 import httpx
+from utils import normalize_uuid
 
 load_dotenv()
+
+COMMON_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
+    400: {"model": ErrorResponse, "description": "Bad Request"},
+    403: {"model": ErrorResponse, "description": "Forbidden"},
+    404: {"model": ErrorResponse, "description": "Not Found"},
+    422: {"model": ErrorResponse, "description": "Unprocessable Entity"},
+    429: {"model": ErrorResponse, "description": "Too Many Requests"},
+    500: {"model": ErrorResponse, "description": "Internal Server Error"},
+    502: {"model": ErrorResponse, "description": "Upstream Error"},
+    504: {"model": ErrorResponse, "description": "Upstream Timeout"},
+}
 
 # client management
 
@@ -54,7 +66,9 @@ client: httpx.AsyncClient | None = None
 async def lifespan(app: FastAPI):
     # Startup
     global client
-    client = httpx.AsyncClient()
+    client = httpx.AsyncClient(
+        timeout=httpx.Timeout(10.0, connect=5.0),
+    )
     yield
     # Shutdown
     await client.aclose()
@@ -64,7 +78,20 @@ async def get_client():
     return client
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(
+    title="Aspexis API",
+    description="API for Minecraft-related player statistics. \
+        Rate limits: 180/m, 1000/10m, 10,000/d per IP.",
+    version="1.0.0",
+    contact={
+        "name": "Aspexis",
+        "url": "https://aspexis.netlify.app",
+    },
+    license_info={
+        "name": "MIT",
+    },
+    lifespan=lifespan,
+)
 
 
 # limiter
@@ -80,8 +107,8 @@ def get_client_ip(request: Request) -> str:
 limiter = Limiter(
     key_func=get_client_ip,
     strategy="moving-window",
-    application_limits=["600/10 minutes", "2000/hour", "10000/day"],
-    default_limits=["100/minute"],
+    application_limits=["1000/10 minutes", "10000/day"],
+    default_limits=["180/minute"],
 )
 
 app.state.limiter = limiter
@@ -127,13 +154,23 @@ async def telemetry_middleware(request: Request, call_next):
         )
 
 
-@app.get("/")
+@app.get(
+    "/",
+    tags=["General"],
+    name="Root",
+    description="Returns a simple greeting message from the Aspexis API.",
+)
 def root():
     response = {"message": "hi, this is the Aspexis API"}
     return response
 
 
-@app.get("/healthz")
+@app.get(
+    "/healthz",
+    tags=["General"],
+    name="Health Check",
+    description="Basic endpoint to check if the API is up and running.",
+)
 @limiter.exempt
 def health_check():
     return {"status": "ok"}
@@ -141,21 +178,15 @@ def health_check():
 
 @app.get(
     "/v1/players/mojang/{username}",
-    responses={
-        400: {"model": exceptions.ErrorResponse, "description": "Bad Request"},
-        404: {"model": exceptions.ErrorResponse, "description": "Not Found"},
-        500: {
-            "model": exceptions.ErrorResponse,
-            "description": "Internal Server Error",
-        },
-        502: {"model": exceptions.ErrorResponse, "description": "Upstream Error"},
-        504: {
-            "model": exceptions.ErrorResponse,
-            "description": "Upstream Timeout Error",
-        },
-    },
+    responses=COMMON_ERROR_RESPONSES,
+    tags=["Minecraft"],
+    response_model=MojangData,
+    name="Get Mojang Profile",
+    description="Fetches Minecraft profile data (UUID, name, skin) from Mojang servers.",
 )
+@limiter.limit("40/minute")
 async def get_profile(
+    request: Request,
     username,
     session: Session = Depends(get_db),
     http_client: httpx.AsyncClient = Depends(get_client),
@@ -163,39 +194,51 @@ async def get_profile(
     return await get_minecraft_data(username, session, http_client)
 
 
-@app.get("/v1/players/capes/{uuid}")
+@app.get(
+    "/v1/players/capes/{uuid}",
+    tags=["Minecraft"],
+    response_model=List[UserCapeData],
+    responses=COMMON_ERROR_RESPONSES,
+    name="Get Player Capes",
+    description="Retrieves all available capes for a specific Minecraft player UUID from various providers.",
+)
 async def get_capes(
     uuid: str,
     http_client: httpx.AsyncClient = Depends(get_client),
 ) -> List[UserCapeData]:
+    uuid = normalize_uuid(uuid)
     return await get_capes_for_user(uuid, http_client)
 
 
 @app.get(
     "/v1/players/hypixel/{uuid}",
-    responses={
-        400: {"model": exceptions.ErrorResponse, "description": "Bad Request"},
-        404: {"model": exceptions.ErrorResponse, "description": "Not Found"},
-        500: {
-            "model": exceptions.ErrorResponse,
-            "description": "Internal Server Error",
-        },
-        502: {"model": exceptions.ErrorResponse, "description": "Upstream Error"},
-        504: {
-            "model": exceptions.ErrorResponse,
-            "description": "Upstream Timeout Error",
-        },
-    },
+    responses=COMMON_ERROR_RESPONSES,
+    tags=["Hypixel"],
+    response_model=HypixelFullData,
+    name="Get Hypixel Stats",
+    description="Fetches comprehensive Hypixel player statistics and overall progress.",
 )
+@limiter.limit("60/minute")
 def get_hypixel(
-    uuid, background_tasks: BackgroundTasks, session: Session = Depends(get_db)
+    request: Request,
+    uuid: str,
+    background_tasks: BackgroundTasks,
+    session: Session = Depends(get_db),
 ) -> HypixelFullData:
+    uuid = normalize_uuid(uuid)
     data = get_hypixel_data(uuid, session)
     background_tasks.add_task(add_hypixel_stats_to_db, data)
     return data
 
 
-@app.get("/v1/hypixel/guilds/{id}")
+@app.get(
+    "/v1/hypixel/guilds/{id}",
+    tags=["Hypixel"],
+    responses=COMMON_ERROR_RESPONSES,
+    response_model=List[HypixelGuildMemberFull],
+    name="Get Hypixel Guild Members",
+    description="Retrieves a list of members for a specific Hypixel guild with pagination.",
+)
 def get_guild(
     id,
     query_params: Annotated[HypixelGuildMemberParams, Query()],
@@ -204,8 +247,16 @@ def get_guild(
     return get_full_guild_members(id, session, query_params.limit, query_params.offset)
 
 
-@app.get("/v1/players/status/{uuid}")
-async def get_player_status(uuid) -> PlayerStatus:
+@app.get(
+    "/v1/players/status/{uuid}",
+    tags=["Minecraft"],
+    response_model=PlayerStatus,
+    responses=COMMON_ERROR_RESPONSES,
+    name="Get Player Online Status",
+    description="Checks if a player is currently online on supported Minecraft servers.",
+)
+async def get_player_status(uuid: str) -> PlayerStatus:
+    uuid = normalize_uuid(uuid)
     return await get_status(uuid)
 
 
@@ -214,19 +265,31 @@ async def get_player_status(uuid) -> PlayerStatus:
 
 @app.get(
     "/v1/players/wynncraft/{uuid}",
-    responses={404: {"model": exceptions.ErrorResponse, "description": "Not found"}},
+    responses=COMMON_ERROR_RESPONSES,
+    tags=["Wynncraft"],
+    response_model=WynncraftPlayerSummary,
+    name="Get Wynncraft Stats",
+    description="Fetches detailed Wynncraft player statistics and account summary.",
 )
 async def get_wynncraft(
     uuid: str,
     background_tasks: BackgroundTasks,
     http_client: httpx.AsyncClient = Depends(get_client),
 ) -> WynncraftPlayerSummary:
+    uuid = normalize_uuid(uuid)
     player_data = await get_wynncraft_player_data(uuid, http_client)
     background_tasks.add_task(add_wynncraft_stats_to_db, player_data)
     return player_data
 
 
-@app.get("/v1/wynncraft/guilds/{prefix}")
+@app.get(
+    "/v1/wynncraft/guilds/{prefix}",
+    tags=["Wynncraft"],
+    responses=COMMON_ERROR_RESPONSES,
+    response_model=WynncraftGuildInfo,
+    name="Get Wynncraft Guild Data",
+    description="Retrieves detailed information about a Wynncraft guild using its prefix.",
+)
 async def get_wynncraft_guild(
     prefix,
     http_client: httpx.AsyncClient = Depends(get_client),
@@ -245,16 +308,11 @@ ClassType = Literal[
 
 @app.get(
     "/v1/players/wynncraft/{uuid}/characters/{character_uuid}/ability-tree",
-    responses={
-        403: {
-            "model": exceptions.ErrorResponse,
-            "description": "Ability tree is private",
-        },
-        422: {
-            "model": exceptions.ErrorResponse,
-            "description": "Invalid class",
-        },
-    },
+    responses=COMMON_ERROR_RESPONSES,
+    tags=["Wynncraft"],
+    response_model=List[AbilityTreePage],
+    name="Get Wynncraft Character Ability Tree",
+    description="Fetches the ability tree configuration for a specific Wynncraft character.",
 )
 async def get_wynncraft_character_ability_tree(
     uuid: str,
@@ -262,6 +320,7 @@ async def get_wynncraft_character_ability_tree(
     class_type: ClassType = Query(..., alias="class"),
     http_client: httpx.AsyncClient = Depends(get_client),
 ) -> list[AbilityTreePage]:
+    uuid = normalize_uuid(uuid)
     return await get_ability_tree(
         uuid=uuid,
         character_uuid=character_uuid,
@@ -271,9 +330,16 @@ async def get_wynncraft_character_ability_tree(
 
 
 # donutsmp endpoint
-@app.get("/v1/players/donutsmp/{username}")
+@app.get(
+    "/v1/players/donutsmp/{username}",
+    tags=["DonutSMP"],
+    response_model=DonutPlayerStats,
+    responses=COMMON_ERROR_RESPONSES,
+    name="Get DonutSMP Stats",
+    description="Retrieves player statistics for the DonutSMP server.",
+)
 async def get_donut(
-    username,
+    username: str,
     background_tasks: BackgroundTasks,
     session: Session = Depends(get_db),
     http_client: httpx.AsyncClient = Depends(get_client),
@@ -286,23 +352,45 @@ async def get_donut(
 
 
 # mcci endpoint
-@app.get("/v1/players/mccisland/{uuid}")
+@app.get(
+    "/v1/players/mccisland/{uuid}",
+    tags=["MCCI"],
+    responses=COMMON_ERROR_RESPONSES,
+    response_model=MCCIPlayer,
+    name="Get MCC Island Stats",
+    description="Fetches player statistics and progress from the MCC Island server.",
+)
 async def get_mcc_island(
     uuid: str,
     http_client: httpx.AsyncClient = Depends(get_client),
 ) -> MCCIPlayer:
+    uuid = normalize_uuid(uuid)
     return await get_mcci_data(uuid, http_client)
 
 
 # metrics
-@app.get("/v1/metrics/{metric_key}/distribution/{player_uuid}")
+@app.get(
+    "/v1/metrics/{metric_key}/distribution/{player_uuid}",
+    tags=["Metrics"],
+    response_model=HistogramData,
+    responses=COMMON_ERROR_RESPONSES,
+    name="Get Metric Distribution",
+    description="Retrieves statistical distribution data for a specific player metric.",
+)
 def get_metric(metric_key: str, player_uuid: str) -> HistogramData:
+    player_uuid = normalize_uuid(player_uuid)
     return get_stats(metric_key, player_uuid)
 
 
 # player tracker
-@app.get("/v1/tracker/{uuid}/status")
+@app.get(
+    "/v1/tracker/{uuid}/status",
+    tags=["Tracker"],
+    name="Track Player Online Status",
+    description="Establishes a real-time SSE connection to track a player's online status.",
+)
 async def track_player(uuid: str, request: Request):
+    uuid = normalize_uuid(uuid)
     queue = await subscribe(uuid)
 
     async def event_generator():

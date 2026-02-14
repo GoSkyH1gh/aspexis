@@ -6,6 +6,7 @@ import exceptions
 import time
 import httpx
 import asyncio
+from utils import normalize_uuid
 
 MINECRAFT_TTL = 180
 
@@ -23,6 +24,7 @@ async def get_minecraft_data(
         if len(search_term) <= 20:
             mojang_instance = GetMojangAPIData(http_client, search_term)
         else:
+            search_term = normalize_uuid(search_term)
             mojang_instance = GetMojangAPIData(http_client, None, search_term)
         data = await mojang_instance.get_data()
 
@@ -46,6 +48,7 @@ def get_minecraft_cache(search_term: str, session: Session) -> MojangData:
             {"search_term": search_term},
         ).fetchone()
     else:
+        search_term = normalize_uuid(search_term)
         cache_data = session.execute(
             text(
                 """

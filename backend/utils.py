@@ -1,6 +1,8 @@
 from io import BytesIO
 import base64
 from PIL import Image
+import exceptions
+from uuid import UUID
 
 
 def pillow_to_b64(pil_image, img_format="PNG"):
@@ -81,3 +83,10 @@ def check_valid_uuid(uuid: str) -> bool:
         return False
     else:
         return True
+
+
+def normalize_uuid(value: str) -> str:
+    try:
+        return UUID(value).hex
+    except ValueError:
+        raise exceptions.UnprocessableEntity("Invalid UUID")
