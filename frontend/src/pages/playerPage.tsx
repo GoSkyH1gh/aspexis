@@ -239,6 +239,11 @@ export function PlayerPage() {
               wynncraftData={wynncraftQuery.data}
               mcciData={mcciQuery.data}
               playerStatus={statusQuery.data}
+              isLoading={
+                hypixelQuery.isPending ||
+                wynncraftQuery.isPending ||
+                mcciQuery.isPending
+              }
             />
           )}
           <AdvancedInfoTabs

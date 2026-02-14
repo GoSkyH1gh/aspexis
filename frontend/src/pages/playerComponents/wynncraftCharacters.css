@@ -94,6 +94,7 @@
 
 .wynn-mode {
   height: 25px;
+  image-rendering: pixelated;
 }
 
 .wynn-modes {
@@ -341,7 +342,7 @@
 
 .wynn-storylines {
   display: flex;
-  gap: 0.5rem
+  gap: 0.5rem;
 }
 
 .wynncraft-character-item-small img {
@@ -354,6 +355,8 @@
   gap: 0.5rem;
   align-items: center;
   justify-content: center;
+  padding: 1px 10px;
+  width: 100%;
 }
 
 .wynncraft-character-item-small p {

@@ -39,7 +39,7 @@ const SearchInput = React.forwardRef<HTMLInputElement, any>(
         />
       </>
     );
-  }
+  },
 );
 
 SearchInput.displayName = "SearchInput";
@@ -97,7 +97,7 @@ function SearchRow({ disabled, urlToNavigate }: SearchRowProps) {
   };
 
   const filteredHistory = history.filter((item) =>
-    item.toLowerCase().includes(inputValue.toLowerCase())
+    item.toLowerCase().includes(inputValue.toLowerCase()),
   );
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -106,8 +106,9 @@ function SearchRow({ disabled, urlToNavigate }: SearchRowProps) {
       // If we have a highlighted item in the filtered list, use it
       if (open && highlightedIndex >= 0 && filteredHistory[highlightedIndex]) {
         handleSearchClick(filteredHistory[highlightedIndex]);
+        setInputValue(filteredHistory[highlightedIndex]);
       } else {
-        setOpen(false); 
+        setOpen(false);
         handleSearchClick();
       }
     } else if (e.key === "ArrowDown") {
@@ -117,7 +118,7 @@ function SearchRow({ disabled, urlToNavigate }: SearchRowProps) {
         setHighlightedIndex(0);
       } else {
         setHighlightedIndex((prev) =>
-          prev < filteredHistory.length - 1 ? prev + 1 : prev
+          prev < filteredHistory.length - 1 ? prev + 1 : prev,
         );
       }
     } else if (e.key === "ArrowUp") {
@@ -127,7 +128,7 @@ function SearchRow({ disabled, urlToNavigate }: SearchRowProps) {
       setOpen(false);
     }
   };
-  
+
   // Helper to ensure we don't try to rely on "open" state which might be stale in closure if not careful,
   // but here we use it directly.
 
@@ -142,10 +143,12 @@ function SearchRow({ disabled, urlToNavigate }: SearchRowProps) {
   useEffect(() => {
     if (filteredHistory.length === 0) {
       setOpen(false);
-    } else if (document.activeElement === searchRowRef.current?.querySelector("input")) {
-        // Re-open if we have results and are focused (e.g. after typing)
-        // Check strict equality to avoid loop, though setOpen is stable
-        setOpen(true);
+    } else if (
+      document.activeElement === searchRowRef.current?.querySelector("input")
+    ) {
+      // Re-open if we have results and are focused (e.g. after typing)
+      // Check strict equality to avoid loop, though setOpen is stable
+      setOpen(true);
     }
   }, [filteredHistory.length, inputValue]); // React to input changes impacting filter
 
@@ -169,11 +172,13 @@ function SearchRow({ disabled, urlToNavigate }: SearchRowProps) {
             onOpenAutoFocus={(e) => e.preventDefault()}
             onCloseAutoFocus={(e) => e.preventDefault()}
             onInteractOutside={(e) => {
-               if (searchRowRef.current && searchRowRef.current.contains(e.target as Node)) {
-                 e.preventDefault();
-               }
+              if (
+                searchRowRef.current &&
+                searchRowRef.current.contains(e.target as Node)
+              ) {
+                e.preventDefault();
+              }
             }}
-            
           >
             <div className="search-history-list">
               {filteredHistory.map((item, index) => (
@@ -182,10 +187,16 @@ function SearchRow({ disabled, urlToNavigate }: SearchRowProps) {
                   className={`search-history-item ${
                     index === highlightedIndex ? "highlighted" : ""
                   }`}
-                  onClick={() => handleSearchClick(item)}
+                  onClick={() => {
+                    handleSearchClick(item);
+                    setInputValue(item);
+                  }}
                   onMouseEnter={() => setHighlightedIndex(index)}
                 >
-                  <Icon icon="material-symbols:history" className="history-icon" />
+                  <Icon
+                    icon="material-symbols:history"
+                    className="history-icon"
+                  />
                   <span className="history-text">{item}</span>
                   <button
                     className="remove-history-button"
@@ -195,7 +206,7 @@ function SearchRow({ disabled, urlToNavigate }: SearchRowProps) {
                     }}
                     aria-label={`Remove ${item} from history`}
                   >
-                   <Icon icon="material-symbols:close-rounded" />
+                    <Icon icon="material-symbols:close-rounded" />
                   </button>
                 </div>
               ))}
