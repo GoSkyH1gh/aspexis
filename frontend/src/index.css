@@ -1,3 +1,7 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 :root {
   --hue: 245;
 
@@ -137,11 +141,17 @@ a:hover {
   color: #535bf2;
 }
 
+html {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
   overflow-x: hidden;
+  max-width: 100%;
 }
 
 button:focus,
@@ -151,7 +161,7 @@ button:focus-visible {
 
 .app-container {
   display: flex;
-  box-sizing: border-box
+  box-sizing: border-box;
 }
 
 .sidebar {
@@ -272,8 +282,7 @@ button:focus-visible {
 
 @media screen and (width < 500px) {
   .app-container {
-    margin: 0 10px;
-    width: 100%;
+    margin: 0;
   }
 }
 
