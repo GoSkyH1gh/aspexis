@@ -1,4 +1,6 @@
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -42,13 +44,7 @@
   --color-overlay-background: rgba(0, 0, 0, 0.5);
   --color-border-subtle: rgba(170, 170, 170, 0.06); /* #aaa1 approx */
 
-  font-family:
-    "Rubik",
-    system-ui,
-    Avenir,
-    Helvetica,
-    Arial,
-    sans-serif;
+  font-family: "Rubik", system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -105,7 +101,8 @@
 @font-face {
   font-family: "Rubik";
   /* Ensure the file names match exactly what's in your /public/fonts/ folder */
-  src: url("/fonts/rubik-variable.woff2") format("woff2-variations"),
+  src:
+    url("/fonts/rubik-variable.woff2") format("woff2-variations"),
     url("/fonts/rubik-variable.woff2") format("woff2");
   font-weight: 300 900; /* Covers your 300, 400, 500, 550, 600, 650, and 900 */
   font-style: normal;
@@ -115,7 +112,8 @@
 /* 2. Epunda Slab (Display - Hero Headers) */
 @font-face {
   font-family: "Epunda Slab";
-  src: url("/fonts/epunda-slab-variable.woff2") format("woff2-variations"),
+  src:
+    url("/fonts/epunda-slab-variable.woff2") format("woff2-variations"),
     url("/fonts/epunda-slab-variable.woff2") format("woff2");
   font-weight: 300 900; /* Covers your 300, 500, 600, and 900 */
   font-style: normal;
@@ -125,7 +123,8 @@
 /* 3. Google Sans Code (Technical - UUID, Stats, Tech Data) */
 @font-face {
   font-family: "Google Sans Code";
-  src: url("/fonts/google-sans-code-variable.woff2") format("woff2-variations"),
+  src:
+    url("/fonts/google-sans-code-variable.woff2") format("woff2-variations"),
     url("/fonts/google-sans-code-variable.woff2") format("woff2");
   font-weight: 300 800; /* Covers your 300, 400, and 800 */
   font-style: normal;
@@ -142,8 +141,13 @@ a:hover {
 }
 
 html {
-  overflow-x: hidden;
   max-width: 100%;
+}
+
+@media screen and (width < 750px) {
+  html {
+    overflow-x: clip;
+  }
 }
 
 body {
@@ -309,8 +313,14 @@ h1 {
 */
 
 .icon {
-  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
-  transition: transform 0.2s ease, color 0.2s ease;
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
   color: #aaa;
   cursor: pointer;
 }
@@ -340,7 +350,6 @@ h1 {
 @keyframes tooltip-fade-out {
   from {
     opacity: 1;
-    
   }
   to {
     opacity: 0;

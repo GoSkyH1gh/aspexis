@@ -205,6 +205,7 @@
   background-image: url("https://cdn.wynncraft.com/nextgen/abilities/2.1/page.svg");
   background-size: 100%;
   padding: 0px 25px;
+  box-sizing: content-box; /*makes things have no extra gaps*/
 }
 
 .ability-node {
