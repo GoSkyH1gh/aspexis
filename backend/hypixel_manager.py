@@ -171,12 +171,14 @@ def add_to_hypixel_guild_cache(id: str, data: HypixelGuild, session: Session) ->
     )
     session.commit()
 
+
 # params for fastapi
 class HypixelGuildMemberParams(BaseModel):
     limit: int = Field(20, gt=0, le=50)
     offset: int = Field(0, ge=0)
 
-def get_full_guild_members(
+
+async def get_full_guild_members(
     id: str, session: Session, amount_to_load: int, offset: int = 0
 ) -> List[HypixelGuildMemberFull]:
     guild_data = None
@@ -191,26 +193,22 @@ def get_full_guild_members(
     if guild_data is None:
         raise exceptions.ServiceError()
 
-    resolved_uuids, unsolved_uuids = bulk_get_usernames_cache(
+    resolved_uuids, unsolved_uuids = await bulk_get_usernames_cache(
         [member.uuid for member in guild_data.members], session
     )
     print(f"found {len(resolved_uuids)} in cache, {len(unsolved_uuids)} left")
 
     print(
-        f"fetching {len(guild_data.members[offset:offset + amount_to_load])} members out of {len(guild_data.members)}"
+        f"fetching {len(guild_data.members[offset : offset + amount_to_load])} members out of {len(guild_data.members)}"
     )
 
     final_members = []
 
-    with ThreadPoolExecutor(
-        max_workers=4
-    ) as executor:
+    with ThreadPoolExecutor(max_workers=4) as executor:
         futures = []
         for member in guild_data.members[offset : offset + amount_to_load]:
             futures.append(
-                executor.submit(
-                    get_member, member, unsolved_uuids, resolved_uuids
-                )
+                executor.submit(get_member, member, unsolved_uuids, resolved_uuids)
             )
 
         for future in as_completed(futures):
@@ -245,11 +243,12 @@ def get_member(
                     rank=member.rank, joined=member.joined, **resolved_member
                 )
 
+
 def add_hypixel_stats_to_db(hypixel_data: HypixelFullData):
     if not isinstance(hypixel_data, HypixelFullData):
         print("Invalid data type passed to add_hypixel_stats_to_db")
         return
-    
+
     stats_to_add = {
         21: hypixel_data.player.network_level,
         22: hypixel_data.player.karma,
@@ -261,6 +260,7 @@ def add_hypixel_stats_to_db(hypixel_data: HypixelFullData):
         for stat in stats_to_add:
             if stats_to_add.get(stat, None) is not None:
                 add_value(conn, hypixel_data.player.uuid, stat, stats_to_add[stat])
+
 
 if __name__ == "__main__":
     db_engine = get_engine()

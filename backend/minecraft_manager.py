@@ -5,20 +5,106 @@ from typing import Tuple, List, Dict
 import exceptions
 import time
 import httpx
-import asyncio
-from utils import normalize_uuid
+from utils import normalize_uuid, is_valid_uuid
+from redis.asyncio import Redis
+import json
 
-MINECRAFT_TTL = 180
+HARD_MINECRAFT_TTL = 60 * 60 * 24 * 7
+MINECRAFT_TTL = 60 * 3
+# we want to keep minecraft data fresh for normal searches, but
+# hypixel guild lookups can quickly get rate-limited, so we consider
+# data stale much later than normal searches
+
+MINECRAFT_DATA_KEY = "aspexis:minecraft:data:"
+MINECRAFT_USERNAME_KEY = "aspexis:minecraft:username:"
+
+
+async def get_minecraft_cache(search_term: str, redis: Redis) -> MojangData | None:
+    """Gets cache data for one search term with the default TTL"""
+
+    if not is_valid_uuid(search_term):
+        uuid = await redis.get(f"{MINECRAFT_USERNAME_KEY}{search_term.lower()}")
+        if not uuid:
+            return None
+    else:
+        uuid = search_term
+
+    data = await redis.get(f"{MINECRAFT_DATA_KEY}{uuid}")
+
+    if data is not None:
+        data = json.loads(data)
+        timestamp = data.get("timestamp", 0)
+        if time.time() - timestamp < MINECRAFT_TTL:
+            return MojangData(source="cache", **data["data"])
+
+    return None
+
+
+async def set_minecraft_cache(data: MojangData, redis: Redis):
+    cache_dict = {"timestamp": time.time(), "data": data.model_dump(exclude={"source"})}
+    await redis.set(
+        f"{MINECRAFT_USERNAME_KEY}{data.username.lower()}", data.uuid, ex=MINECRAFT_TTL
+    )
+    await redis.set(
+        f"{MINECRAFT_DATA_KEY}{data.uuid}",
+        json.dumps(cache_dict),
+        ex=HARD_MINECRAFT_TTL,
+    )
+
+
+async def bulk_get_usernames_cache(
+    uuids: list[str],
+    redis: Redis,
+) -> tuple[list[dict[str, str]], list[str]]:
+    """
+    Bulk fetch Minecraft identity data from Redis.
+    Used for guild lookups (ignores soft TTL).
+    """
+
+    if not uuids:
+        return [], []
+
+    # Normalize UUIDs
+    normalized_uuids = [normalize_uuid(u) for u in uuids]
+
+    keys = [f"{MINECRAFT_DATA_KEY}{uuid}" for uuid in normalized_uuids]
+
+    results = await redis.mget(keys)
+
+    resolved_results: list[dict[str, str]] = []
+    unresolved_uuids: list[str] = []
+
+    for uuid, raw in zip(normalized_uuids, results):
+        if not raw:
+            unresolved_uuids.append(uuid)
+            continue
+
+        try:
+            parsed = json.loads(raw)
+            payload = parsed.get("data")
+            if not payload:
+                unresolved_uuids.append(uuid)
+                continue
+
+            resolved_results.append(
+                {
+                    "uuid": uuid,
+                    "username": payload.get("username"),
+                    "skin_showcase_b64": payload.get("skin_showcase_b64"),
+                }
+            )
+
+        except Exception:
+            unresolved_uuids.append(uuid)
+
+    return resolved_results, unresolved_uuids
 
 
 async def get_minecraft_data(
-    search_term: str, session: Session, http_client: httpx.AsyncClient
+    search_term: str, session: Session, http_client: httpx.AsyncClient, redis: Redis
 ) -> MojangData:
-    data = None
-    try:
-        data = await asyncio.to_thread(get_minecraft_cache, search_term, session)
-    except exceptions.InvalidCache:
-        pass
+
+    data = await get_minecraft_cache(search_term, redis)
 
     if data is None:
         if len(search_term) <= 20:
@@ -28,87 +114,6 @@ async def get_minecraft_data(
             mojang_instance = GetMojangAPIData(http_client, None, search_term)
         data = await mojang_instance.get_data()
 
-    await asyncio.to_thread(add_to_minecraft_cache, data.uuid, data, session)
-
+    await set_minecraft_cache(data, redis)
+    # await asyncio.to_thread(add_to_minecraft_cache, data.uuid, data, session)
     return data
-
-
-def get_minecraft_cache(search_term: str, session: Session) -> MojangData:
-    """Gets cache from either uuid or username"""
-    if search_term is None:
-        raise exceptions.InvalidCache()
-
-    if len(search_term) <= 20:
-        cache_data = session.execute(
-            text(
-                """
-                SELECT data, extract(epoch from timestamp) as timestamp FROM minecraft_cache
-                WHERE LOWER(data->>'username') = LOWER(:search_term)"""
-            ),
-            {"search_term": search_term},
-        ).fetchone()
-    else:
-        search_term = normalize_uuid(search_term)
-        cache_data = session.execute(
-            text(
-                """
-                SELECT data, extract(epoch from timestamp) as timestamp FROM minecraft_cache
-                WHERE uuid = :uuid"""
-            ),
-            {"uuid": search_term},
-        ).fetchone()
-
-    if cache_data is None:
-        raise exceptions.InvalidCache()
-
-    current_time = time.time()
-    epoch_cache_time = int(cache_data.timestamp)
-    if current_time - epoch_cache_time < MINECRAFT_TTL:
-        try:
-            return MojangData(source="cache", **cache_data.data)
-        except Exception as e:
-            print(f"Coudn't validate MojangData from cache: {e}")
-
-    raise exceptions.InvalidCache()
-
-
-def add_to_minecraft_cache(uuid: str, data: MojangData, session: Session):
-    if data.source == "mojang_api":
-        session.execute(
-            text(
-                """
-                INSERT INTO minecraft_cache (uuid, data, timestamp) 
-                VALUES (:uuid, :data, NOW())
-                ON CONFLICT (uuid)
-                DO UPDATE SET 
-                    data = EXCLUDED.data,
-                    timestamp = NOW()
-                """
-            ),
-            {"uuid": uuid, "data": data.model_dump_json(exclude={"source"})},
-        )
-        session.commit()
-
-
-def bulk_get_usernames_cache(
-    uuids: list[str], session: Session
-) -> Tuple[List[Dict[str, str]], List[str]]:
-    cache_data = session.execute(
-        text(
-            "SELECT uuid, data->>'username' as username, data->>'skin_showcase_b64' as skin_showcase_b64 FROM minecraft_cache WHERE uuid IN :uuids;"
-        ).bindparams(bindparam("uuids", expanding=True)),
-        {"uuids": uuids},
-    ).fetchall()
-    resolved_results = []
-    unsolved_uuids = uuids.copy()
-    for row in cache_data:
-        uuid = str(row.uuid).replace("-", "")
-        resolved_results.append(
-            {
-                "uuid": uuid,
-                "username": row.username,
-                "skin_showcase_b64": row.skin_showcase_b64,
-            }
-        )
-        unsolved_uuids.remove(uuid)
-    return resolved_results, unsolved_uuids

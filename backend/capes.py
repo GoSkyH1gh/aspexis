@@ -1,4 +1,4 @@
-from upstash_redis.asyncio import Redis
+from redis.asyncio import Redis
 from dotenv import load_dotenv
 import httpx
 import json
@@ -9,14 +9,19 @@ from PIL import Image
 import io
 from utils import pillow_to_b64
 import asyncio
+from redis_manager import get_redis
+import hashlib
 
 load_dotenv()
 logger = logging.getLogger(__name__)
-redis = Redis.from_env()
 
-browser_headers = {
+BROWSER_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 }
+
+GENERIC_CAPES_KEY = "aspexis:cape:generic"
+USER_CAPES_KEY = "aspexis:cape:user:"
+IMAGE_CAPES_KEY = "aspexis:cape:image:"
 
 
 class GenericCapeData(BaseModel):
@@ -38,7 +43,12 @@ class UserCapeData(BaseModel):
     removed: bool
 
 
-def proccess_generic_capes(cape_data) -> list[GenericCapeData]:
+def get_image_key(url: str) -> str:
+    digest = hashlib.sha256(url.encode()).hexdigest()
+    return f"{IMAGE_CAPES_KEY}{digest}"
+
+
+def process_generic_capes(cape_data) -> list[GenericCapeData]:
     capes: list[GenericCapeData] = []
     cape_data = json.loads(cape_data)
     for cape in cape_data:
@@ -60,15 +70,17 @@ def get_cape_dictionary(cape_list: list[GenericCapeData]) -> dict[str, GenericCa
     return cape_dict
 
 
-async def get_generic_cape_data(client: httpx.AsyncClient) -> list[GenericCapeData]:
+async def get_generic_cape_data(
+    client: httpx.AsyncClient, redis: Redis
+) -> list[GenericCapeData]:
     """Fetches data from capes.me about all known capes and caches it in Redis."""
-    cape_data_raw = await redis.get("generic_capes_me_data")
+    cape_data_raw = await redis.get(GENERIC_CAPES_KEY)
     if cape_data_raw:
-        return proccess_generic_capes(cape_data_raw)
+        return process_generic_capes(cape_data_raw)
 
     try:
         response = await client.get(
-            "https://capes.me/api/capes", timeout=10, headers=browser_headers
+            "https://capes.me/api/capes", timeout=10, headers=BROWSER_HEADERS
         )
         response.raise_for_status()
     except httpx.HTTPStatusError as e:
@@ -87,16 +99,16 @@ async def get_generic_cape_data(client: httpx.AsyncClient) -> list[GenericCapeDa
     response_data = response.json()
 
     await redis.set(
-        "generic_capes_me_data", json.dumps(response_data), ex=3600
+        GENERIC_CAPES_KEY, json.dumps(response_data), ex=3600
     )  # cache for 1 hour
 
-    return proccess_generic_capes(json.dumps(response_data))
+    return process_generic_capes(json.dumps(response_data))
 
 
-async def get_capes_for_user(uuid: str, client: httpx.AsyncClient):
+async def get_capes_for_user(uuid: str, client: httpx.AsyncClient, redis: Redis):
     """Fetches capes for a specific user by UUID."""
 
-    user_cape_data_raw = await redis.get(f"user_capes_me_data_{uuid}")
+    user_cape_data_raw = await redis.get(f"{USER_CAPES_KEY}{uuid}")
     if user_cape_data_raw:
         capes = []
         for cape in json.loads(user_cape_data_raw):
@@ -105,7 +117,7 @@ async def get_capes_for_user(uuid: str, client: httpx.AsyncClient):
 
     try:
         response = await client.get(
-            f"https://capes.me/api/user/{uuid}", timeout=10, headers=browser_headers
+            f"https://capes.me/api/user/{uuid}", timeout=10, headers=BROWSER_HEADERS
         )
         response.raise_for_status()
     except httpx.HTTPStatusError as e:
@@ -127,16 +139,18 @@ async def get_capes_for_user(uuid: str, client: httpx.AsyncClient):
 
     user_cape_data = response_data.get("capes", [])
 
-    generic_cape_data = await get_generic_cape_data(client)
+    generic_cape_data = await get_generic_cape_data(client, redis)
     cape_dictionary = get_cape_dictionary(
         generic_cape_data
     )  # this is to easily map cape type from capes.me to url
 
     user_capes: list[UserCapeData] = []
-    
+
     # We can process these in parallel for better performance since they are independent I/O
-    async def fetch_cape_image(cape):
-        image_data = await get_cape_images(cape_dictionary[cape.get("type")].url, client)
+    async def fetch_cape_image(cape, redis: Redis):
+        image_data = await get_cape_images(
+            cape_dictionary[cape.get("type")].url, client, redis
+        )
         return UserCapeData(
             name=cape_dictionary[cape.get("type")].name,
             url=cape_dictionary[cape.get("type")].url,
@@ -144,19 +158,23 @@ async def get_capes_for_user(uuid: str, client: httpx.AsyncClient):
             removed=cape.get("removed", False),
         )
 
-    tasks = [fetch_cape_image(cape) for cape in user_cape_data]
+    tasks = [fetch_cape_image(cape, redis) for cape in user_cape_data]
     if tasks:
         user_capes = await asyncio.gather(*tasks)
 
     await redis.set(
-        f"user_capes_me_data_{uuid}", json.dumps([cape.model_dump() for cape in user_capes]), ex=900
+        f"{USER_CAPES_KEY}{uuid}",
+        json.dumps([cape.model_dump() for cape in user_capes]),
+        ex=900,
     )
 
     return user_capes
 
 
-async def get_cape_images(cape_url: str, client: httpx.AsyncClient) -> CapeImageData:
-    cape_data = await redis.get(f"cape_image_data_{cape_url}")
+async def get_cape_images(
+    cape_url: str, client: httpx.AsyncClient, redis: Redis
+) -> CapeImageData:
+    cape_data = await redis.get(get_image_key(cape_url))
     if cape_data:
         cape_data_json = json.loads(cape_data)
         return CapeImageData(**cape_data_json)
@@ -197,15 +215,21 @@ async def get_cape_images(cape_url: str, client: httpx.AsyncClient) -> CapeImage
     )
 
     await redis.set(
-        f"cape_image_data_{cape_url}", full_cape_data.model_dump_json(), ex=86400
+        get_image_key(cape_url), full_cape_data.model_dump_json(), ex=86400
     )  # cache for 24 hours
 
     return full_cape_data
 
 
 if __name__ == "__main__":
+
     async def main():
+        redis = await get_redis()
         async with httpx.AsyncClient() as client:
-            print(await get_capes_for_user("3ff2e63ad63045e0b96f57cd0eae708d", client))
+            print(
+                await get_capes_for_user(
+                    "3ff2e63ad63045e0b96f57cd0eae708d", client, redis
+                )
+            )
 
     asyncio.run(main())
