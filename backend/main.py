@@ -43,6 +43,8 @@ from slowapi.middleware import SlowAPIMiddleware
 from contextlib import asynccontextmanager
 import httpx
 from utils import normalize_uuid
+from redis_manager import get_redis
+from redis.asyncio import Redis
 
 load_dotenv()
 
@@ -177,21 +179,23 @@ def health_check():
 
 
 @app.get(
-    "/v1/players/mojang/{username}",
+    "/v1/players/mojang/{identifier}",
     responses=COMMON_ERROR_RESPONSES,
     tags=["Minecraft"],
     response_model=MojangData,
     name="Get Mojang Profile",
-    description="Fetches Minecraft profile data (UUID, name, skin) from Mojang servers.",
+    description="Fetches Minecraft profile data (UUID, name, skin) from Mojang servers.\
+         The identifier can be a username or uuid.",
 )
 @limiter.limit("40/minute")
 async def get_profile(
     request: Request,
-    username,
+    identifier,
     session: Session = Depends(get_db),
     http_client: httpx.AsyncClient = Depends(get_client),
+    redis: Redis = Depends(get_redis)
 ) -> MojangData:
-    return await get_minecraft_data(username, session, http_client)
+    return await get_minecraft_data(identifier, session, http_client, redis)
 
 
 @app.get(
@@ -205,9 +209,10 @@ async def get_profile(
 async def get_capes(
     uuid: str,
     http_client: httpx.AsyncClient = Depends(get_client),
+    redis: Redis = Depends(get_redis),
 ) -> List[UserCapeData]:
     uuid = normalize_uuid(uuid)
-    return await get_capes_for_user(uuid, http_client)
+    return await get_capes_for_user(uuid, http_client, redis)
 
 
 @app.get(
@@ -319,6 +324,7 @@ async def get_wynncraft_character_ability_tree(
     character_uuid: str,
     class_type: ClassType = Query(..., alias="class"),
     http_client: httpx.AsyncClient = Depends(get_client),
+    redis: Redis = Depends(get_redis),
 ) -> list[AbilityTreePage]:
     uuid = normalize_uuid(uuid)
     return await get_ability_tree(
@@ -326,6 +332,7 @@ async def get_wynncraft_character_ability_tree(
         character_uuid=character_uuid,
         class_type=class_type,
         http_client=http_client,
+        redis=redis,
     )
 
 

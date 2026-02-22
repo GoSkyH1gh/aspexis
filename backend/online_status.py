@@ -85,7 +85,7 @@ async def get_status(uuid: str) -> PlayerStatus:
     if isinstance(wynncraft_raw, exceptions.NotFound):
         pass  # not found = no data
     elif isinstance(wynncraft_raw, exceptions.UpstreamError):
-        raise
+        raise wynncraft_raw
     elif isinstance(wynncraft_raw, BaseException):
         raise exceptions.ServiceError()
     else:
@@ -102,6 +102,7 @@ async def get_status(uuid: str) -> PlayerStatus:
         hypixel_response = hypixel_raw
 
     # ---- Process Wynncraft ----
+    wynncraft_character = None
     wynncraft_online = False
     wynncraft_server = None
     wynncraft_restricted = False

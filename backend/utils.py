@@ -90,3 +90,11 @@ def normalize_uuid(value: str) -> str:
         return UUID(value).hex
     except ValueError:
         raise exceptions.UnprocessableEntity("Invalid UUID")
+
+
+def is_valid_uuid(value: str) -> bool:
+    try:
+        UUID(value)
+        return True
+    except ValueError:
+        return False

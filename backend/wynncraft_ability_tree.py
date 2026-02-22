@@ -6,10 +6,9 @@ from dotenv import load_dotenv
 import os
 from typing import Literal
 import exceptions
-from upstash_redis.asyncio import Redis
+from redis.asyncio import Redis
 import json
-
-redis = Redis.from_env()
+from redis_manager import get_redis
 
 load_dotenv()
 
@@ -25,6 +24,10 @@ BASE_CDN_URL = "https://cdn.wynncraft.com/nextgen/abilities/2.1"
 
 STATIC_DATA_TTL_SECONDS = 60 * 60 * 4
 DYNAMIC_DATA_TTL_SECONDS = 60 * 5
+
+TREE_STRUCTURE_KEY = "aspexis:wynncraft:tree:structure:"
+TREE_ABILITIES_KEY = "aspexis:wynncraft:tree:abilities:"
+PLAYER_STRUCTURE_KEY = "aspexis:wynncraft:player:structure:"
 
 
 class AbilityTreeNode(BaseModel):
@@ -89,13 +92,14 @@ async def get_ability_tree(
     character_uuid: str,
     class_type: str,
     http_client: httpx.AsyncClient,
+    redis: Redis,
 ):
     if class_type not in VALID_CLASSES:
         raise exceptions.UnprocessableEntity("invalid wynncraft class")
 
-    structure_task = get_tree_structure(class_type, http_client)
-    abilities_task = get_tree_abilities(class_type, http_client)
-    player_task = get_player_structure(uuid, character_uuid, http_client)
+    structure_task = get_tree_structure(class_type, http_client, redis)
+    abilities_task = get_tree_abilities(class_type, http_client, redis)
+    player_task = get_player_structure(uuid, character_uuid, http_client, redis)
 
     structure_pages, abilities_pages, player_pages = await asyncio.gather(
         structure_task,
@@ -201,7 +205,7 @@ async def get_ability_tree(
                 # 2. Unlocked Connector (if unlocked, from player data)
                 if is_unlocked:
                     unlocked_source = unlocked_nodes[lookup_key]
-                    
+
                     unlocked_node = unlocked_source.model_copy(deep=True)
                     unlocked_node.unlocked = True
                     # Ensure node_id reflects unlocked state and specific details
@@ -432,9 +436,9 @@ async def fetch_tree_abilities(
 
 
 async def get_tree_structure(
-    class_type: str, http_client: httpx.AsyncClient
+    class_type: str, http_client: httpx.AsyncClient, redis: Redis
 ) -> list[AbilityTreePage]:
-    key = f"wynncraft_tree_structure_{class_type}"
+    key = f"{TREE_STRUCTURE_KEY}{class_type}"
     cached = await redis.get(key)
 
     if cached is not None:
@@ -453,9 +457,9 @@ async def get_tree_structure(
 
 
 async def get_tree_abilities(
-    class_type: str, http_client: httpx.AsyncClient
+    class_type: str, http_client: httpx.AsyncClient, redis: Redis
 ) -> list[AbilityTreePage]:
-    key = f"wynncraft_tree_abilities_{class_type}"
+    key = f"{TREE_ABILITIES_KEY}{class_type}"
     cached = await redis.get(key)
 
     if cached is not None:
@@ -474,9 +478,9 @@ async def get_tree_abilities(
 
 
 async def get_player_structure(
-    uuid: str, character_uuid: str, http_client: httpx.AsyncClient
+    uuid: str, character_uuid: str, http_client: httpx.AsyncClient, redis: Redis
 ) -> list[AbilityTreePage]:
-    key = f"wynncraft_player_structure_{uuid}_{character_uuid}"
+    key = f"{PLAYER_STRUCTURE_KEY}{uuid}:{character_uuid}"
     cached = await redis.get(key)
 
     if cached is not None:
@@ -495,12 +499,16 @@ async def get_player_structure(
 
 
 if __name__ == "__main__":
-    data = asyncio.run(
-        get_ability_tree(
+
+    async def main():
+        redis = await get_redis()
+        data = await get_ability_tree(
             "3ff2e63ad63045e0b96f57cd0eae708d",
             "b44f68d8-e73a-437b-acda-ee938282932f",
             "warrior",
             httpx.AsyncClient(),
+            redis,
         )
-    )
-    print(data)
+        print(data)
+
+    asyncio.run(main())

@@ -9,7 +9,6 @@ from exceptions import NotFound
 import httpx
 import asyncio
 
-# General notes
 # * The wynncraft api requires dashed uuids so when calling something by UUID dashed_uuid should be used
 
 load_dotenv()
