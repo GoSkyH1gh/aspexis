@@ -63,8 +63,6 @@ CAPE_MAP = {
 
 class GetMojangAPIData:
     def __init__(self, client: httpx.AsyncClient, username: str | None, uuid: str | None = None):
-        if client is None:
-            raise ValueError("HTTP Client is required")
         self.username = username
         self.uuid = uuid
         self.skin_url = None

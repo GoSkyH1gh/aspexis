@@ -95,7 +95,7 @@ async def get_status(uuid: str) -> PlayerStatus:
     if isinstance(hypixel_raw, exceptions.NotFound):
         pass  # not found = no data
     elif isinstance(hypixel_raw, exceptions.UpstreamError):
-        raise
+        raise hypixel_raw
     elif isinstance(hypixel_raw, BaseException):
         raise exceptions.ServiceError()
     else:

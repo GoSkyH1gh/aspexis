@@ -1,4 +1,3 @@
-import requests
 import datetime
 from dotenv import load_dotenv
 import os
@@ -7,11 +6,17 @@ import exceptions
 from pydantic import BaseModel
 from typing import Optional, List
 import math
+import httpx
+import asyncio
 
 logger = logging.getLogger(__name__)
 
 load_dotenv()
 
+hypixel_api_key = os.getenv("hypixel_api_key")
+
+if not hypixel_api_key:
+    raise RuntimeError("Hypixel API Key not set in environment variables.")
 
 rank_map = {
     "VIP": "VIP",
@@ -129,14 +134,13 @@ class HypixelFullData(BaseModel):
     guild: Optional[HypixelGuild]
 
 
-def get_core_hypixel_data(uuid, hypixel_api_key=None) -> HypixelPlayer:
+async def get_core_hypixel_data(uuid, http_client: httpx.AsyncClient) -> HypixelPlayer:
     payload = {"uuid": uuid}
 
-    if hypixel_api_key is None:
-        hypixel_api_key = os.getenv("hypixel_api_key")
+    assert hypixel_api_key is not None, "Hypixel API key not found"
 
     try:
-        player_data_raw = requests.get(
+        player_data_raw = await http_client.get(
             url="https://api.hypixel.net/v2/player",
             params=payload,
             headers={"API-Key": hypixel_api_key},
@@ -147,22 +151,16 @@ def get_core_hypixel_data(uuid, hypixel_api_key=None) -> HypixelPlayer:
 
         player_data: dict = player_data_raw.json()
 
-    except requests.exceptions.HTTPError as e:
-        if e.response.status_code == 403:
+    except httpx.TimeoutException:
+        raise exceptions.UpstreamTimeoutError()
+
+    except httpx.HTTPError as e:
+        if player_data_raw.status_code == 403:
             logger.error(f"Invalid API key: {e}\nerror message: {player_data_raw.text}")
             raise exceptions.ServiceAPIKeyError()
         else:
             logger.error(f"HTTP error occurred: {e}")
             raise exceptions.UpstreamError()
-    except requests.exceptions.Timeout as e:
-        logger.error(f"Request timed out: {e}")
-        raise exceptions.UpstreamTimeoutError()
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Request exception occurred: {e}")
-        raise exceptions.UpstreamError()
-    except Exception as e:
-        logger.warning(f"something went wrong while getting Hypixel player data: {e}")
-        raise exceptions.ServiceError()
 
     if player_data.get("player") is None:
         raise exceptions.NotFound()
@@ -284,7 +282,9 @@ def calculate_bedwars_level(experience) -> int:
     return int(level)
 
 
-def get_guild_data(uuid: str = None, id: str = None) -> HypixelGuild:
+async def get_guild_data(
+    http_client: httpx.AsyncClient, uuid: str | None = None, id: str | None = None
+) -> HypixelGuild:
     try:
         if uuid is None and id is None:
             raise exceptions.InvalidUserUUID()
@@ -293,31 +293,27 @@ def get_guild_data(uuid: str = None, id: str = None) -> HypixelGuild:
         if id is not None:
             payload = {"id": id}
 
-        guild_data_raw = requests.get(
+        assert hypixel_api_key is not None, "Hypixel API key not found"
+
+        guild_data_raw = await http_client.get(
             url="https://api.hypixel.net/v2/guild",
             params=payload,
-            headers={"API-Key": os.getenv("hypixel_api_key")},
+            headers={"API-Key": hypixel_api_key},
             timeout=10,
         )
 
         guild_data_raw.raise_for_status()
 
-    except requests.exceptions.HTTPError as e:
-        if e.response.status_code == 403:
-            logger.error(f"Invalid API key: {e}")
+    except httpx.TimeoutException:
+        raise exceptions.UpstreamTimeoutError()
+
+    except httpx.HTTPError as e:
+        if guild_data_raw.status_code == 403:
+            logger.error(f"Invalid API key: {e}\nerror message: {guild_data_raw.text}")
             raise exceptions.ServiceAPIKeyError()
         else:
             logger.error(f"HTTP error occurred: {e}")
             raise exceptions.UpstreamError()
-    except requests.exceptions.Timeout as e:
-        logger.error(f"Request timed out: {e}")
-        raise exceptions.UpstreamTimeoutError()
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Request exception occurred: {e}")
-        raise exceptions.UpstreamError()
-    except Exception as e:
-        logger.warning(f"something went wrong while getting Hypixel guild data: {e}")
-        raise exceptions.ServiceError()
 
     guild_data: dict = guild_data_raw.json().get("guild")
 
@@ -338,10 +334,10 @@ def get_guild_data(uuid: str = None, id: str = None) -> HypixelGuild:
 
     guild_profile = HypixelGuild(
         source="hypixel_api",
-        name=guild_data.get("name"),
+        name=guild_data["name"],
         members=guild_members,
-        id=guild_data.get("_id"),
-        created=convert_unix_milliseconds_to_UTC(guild_data.get("created")),
+        id=guild_data["_id"],
+        created=convert_unix_milliseconds_to_UTC(guild_data["created"]),
         experience=guild_data.get("exp", 0),
         tag=guild_data.get("tag"),
         description=guild_data.get("description"),
@@ -365,12 +361,15 @@ def convert_unix_milliseconds_to_UTC(timestamp: int | None) -> str | None:
 
 
 if __name__ == "__main__":
-    uuid = "3ff2e63ad63045e0b96f57cd0eae708d"
-    # uuid = "8e70666aa2d144ec914d5172b7dcb289"
-    # uuid = "2c8b76a5fded4a8980b2f3ded61456e7" # aarcanist
-    # uuid = "e533388b2ebc4bb1a6705ba522d4e5d6"
-    hypixel_api_key = os.getenv("hypixel_api_key")
-    # print(calculate_bedwars_level(315820))
-    # data = get_core_hypixel_data(uuid)
-    data = get_guild_data(uuid)
-    print(data)
+
+    async def main():
+        uuid = "3ff2e63ad63045e0b96f57cd0eae708d"
+        # uuid = "8e70666aa2d144ec914d5172b7dcb289"
+        # uuid = "2c8b76a5fded4a8980b2f3ded61456e7" # aarcanist
+        # uuid = "e533388b2ebc4bb1a6705ba522d4e5d6"
+        # print(calculate_bedwars_level(315820))
+        # data = get_core_hypixel_data(uuid)
+        data = await get_guild_data(httpx.AsyncClient(), uuid)
+        print(data)
+
+    asyncio.run(main())

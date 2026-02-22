@@ -7,6 +7,7 @@ from fastapi import HTTPException
 from metrics_manager import add_value, get_engine
 from minecraft_manager import get_minecraft_data
 import exceptions
+from redis.asyncio import Redis
 
 load_dotenv()
 
@@ -31,7 +32,7 @@ class DonutPlayerStats(BaseModel):
 
 
 async def get_donut_stats(
-    username: str, http_client: httpx.AsyncClient
+    username: str, http_client: httpx.AsyncClient,
 ) -> DonutPlayerStats:
     """Returns a DonutPlayerStats object on success, raises NotFound on fail"""
     assert donut_api_key is not None, "Donut API key not found"
@@ -125,7 +126,7 @@ async def get_donut_status(username: str, http_client: httpx.AsyncClient) -> boo
 
 
 async def add_donut_stats_to_db(
-    data: DonutPlayerStats, username, session, http_client: httpx.AsyncClient
+    data: DonutPlayerStats, username, session, http_client: httpx.AsyncClient, redis: Redis
 ) -> None:
     if not isinstance(data, DonutPlayerStats):
         print("Couldn't add donut data to db because it's not DonutPlayerStats")
@@ -144,7 +145,7 @@ async def add_donut_stats_to_db(
     }
 
     try:
-        mojang_data = await get_minecraft_data(username, session, http_client)
+        mojang_data = await get_minecraft_data(username, session, http_client, redis)
         uuid = mojang_data.uuid
     except HTTPException:
         print(
@@ -169,5 +170,5 @@ async def add_donut_stats_to_db(
 
 
 if __name__ == "__main__":
-    data = asyncio.run(get_donut_stats("2b3t", httpx.AsyncClient()))
+    data = asyncio.run(get_donut_stats("2b3t", httpx.AsyncClient(), Redis()))
     print(data)
