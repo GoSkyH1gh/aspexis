@@ -9,167 +9,138 @@ from hypixel_api import (
 )
 from utils import check_valid_uuid
 import exceptions
-from sqlalchemy import text
 from sqlalchemy.orm import Session
-import time
 from metrics_manager import get_engine
 from typing import Tuple, Optional, List
 from minecraft_manager import bulk_get_usernames_cache, get_minecraft_data
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from db import SessionLocal
+import asyncio
+import httpx
+from redis.asyncio import Redis
 from pydantic import BaseModel, Field
 from metrics_manager import add_value
+import json
 
 # in seconds
-HYPIXEL_TTL = 180
+HYPIXEL_TTL = 60 * 3
 
 
-def get_hypixel_data(uuid, session: Session) -> HypixelFullData:
+HYPIXEL_PLAYER_KEY = "aspexis:hypixel:player:"
+HYPIXEL_GUILD_KEY = "aspexis:hypixel:guild:"
+HYPIXEL_PLAYER_GUILD_KEY = "aspexis:hypixel:player_guild:"
+
+
+async def get_hypixel_player_cache(
+    uuid: str, redis: Redis
+) -> Tuple[HypixelPlayer, Optional[str]] | None:
+    data = await redis.get(f"{HYPIXEL_PLAYER_KEY}{uuid}")
+    if data is not None:
+        try:
+            parsed_data = json.loads(data)
+            player_data = HypixelPlayer(source="cache", **parsed_data.get("data", {}))
+            guild_id = parsed_data.get("guild_id")
+            return player_data, guild_id
+        except Exception:
+            return None
+    return None
+
+
+async def get_hypixel_data(
+    uuid: str, http_client: httpx.AsyncClient, redis: Redis
+) -> HypixelFullData:
     if not check_valid_uuid(uuid):
         raise exceptions.InvalidUserUUID()
 
     player_data = None
     guild_data = None
     guild_id = None
+    hypixel_cache_valid = False
 
-    hypixel_cache_valid = check_hypixel_cache(uuid, session)
-    if hypixel_cache_valid:
-        try:
-            player_data, guild_id = get_hypixel_cache(uuid, session)
-        except RuntimeError:
-            print("Failed getting data from hypixel cache, getting live result")
+    player_cache = await get_hypixel_player_cache(uuid, redis)
+    if player_cache is not None:
+        player_data, guild_id = player_cache
+        hypixel_cache_valid = True
+    else:
+        print("Failed getting data from hypixel cache, getting live result")
+
+    if guild_id is None:
+        cached_guild_id = await redis.get(f"{HYPIXEL_PLAYER_GUILD_KEY}{uuid}")
+        if cached_guild_id:
+            guild_id = cached_guild_id.decode("utf-8") if isinstance(cached_guild_id, bytes) else str(cached_guild_id)
 
     if player_data is None:
-        player_data = get_core_hypixel_data(uuid)
+        player_data = await get_core_hypixel_data(uuid, http_client)
 
     if guild_id is not None:
-        try:
-            guild_data = get_hypixel_guild_cache(guild_id, session)
-        except exceptions.InvalidCache:
-            guild_data = None
+        guild_data = await get_hypixel_guild_cache(guild_id, redis)
 
-    if (
-        hypixel_cache_valid and guild_id == None
-    ):  # handles if a cached player has no guild
-        guild_data = None
-    elif guild_data is None or guild_data == False:
-        try:
-            guild_data = get_guild_data(uuid)
-        except exceptions.NotFound:
-            guild_data = None
+    if guild_data is None:
+        if hypixel_cache_valid and guild_id is None:
+            # Player is definitively known to be guildless from valid cache
+            pass
+        else:
+            # Cache expired OR we know they might have a guild, need to fetch from API
+            try:
+                guild_data = await get_guild_data(http_client, uuid)
+            except exceptions.NotFound:
+                guild_data = None
 
     hypixel_data = HypixelFullData(player=player_data, guild=guild_data)
+
     # caching
     if hypixel_data.player.source == "hypixel_api":
-        if hypixel_data.guild is not None:
-            add_to_hypixel_cache(
-                uuid, hypixel_data.player, hypixel_data.guild.id, session
-            )
-        else:
-            add_to_hypixel_cache(uuid, hypixel_data.player, None, session)
-    if hypixel_data.guild is not None:
-        if hypixel_data.guild.source == "hypixel_api" and hypixel_data.guild.id:
-            add_to_hypixel_guild_cache(
-                hypixel_data.guild.id, hypixel_data.guild, session
-            )
+        await set_hypixel_player_cache(
+            uuid,
+            hypixel_data.player,
+            hypixel_data.guild.id if hypixel_data.guild is not None else None,
+            redis,
+        )
+
+    if (
+        hypixel_data.guild is not None
+        and hypixel_data.guild.id
+        and hypixel_data.guild.source == "hypixel_api"
+    ):
+        await set_hypixel_guild_cache(hypixel_data.guild.id, hypixel_data.guild, redis)
 
     return hypixel_data
 
 
-def check_hypixel_cache(uuid, session: Session) -> bool:
-    current_time = time.time()
-    cache_time = session.execute(
-        text(
-            "SELECT extract(epoch from timestamp) as timestamp FROM hypixel_cache WHERE uuid = :uuid;"
-        ),
-        {"uuid": uuid},
-    ).fetchone()
-    if cache_time is None:
-        return False
-
-    epoch_cache_time = int(cache_time.timestamp)
-    if current_time - epoch_cache_time < HYPIXEL_TTL:
-        return True
-    else:
-        return False
-
-
-def get_hypixel_cache(uuid, session: Session) -> Tuple[HypixelPlayer, Optional[str]]:
-    cache_data = session.execute(
-        text("SELECT data, guild_id FROM hypixel_cache WHERE uuid = :uuid;"),
-        {"uuid": uuid},
-    ).fetchone()
-
-    try:
-        hypixel_player = HypixelPlayer(source="cache", **cache_data.data)
-        guild_id: str = cache_data.guild_id
-        return hypixel_player, guild_id
-    except Exception:
-        raise RuntimeError()
-
-
-def get_hypixel_guild_cache(id, session: Session) -> HypixelGuild:
-    cache_data = session.execute(
-        text(
-            "SELECT data, extract(epoch from timestamp) as timestamp FROM hypixel_guild_cache WHERE id = :id"
-        ),
-        {"id": id},
-    ).fetchone()
-
-    if cache_data.data is None:
-        print(f"no cache data found for guild {id}")
-        raise exceptions.InvalidCache()
-
-    epoch_cache_time = int(cache_data.timestamp)
-    current_time = time.time()
-    if current_time - epoch_cache_time < HYPIXEL_TTL:
-        try:
-            return HypixelGuild(source="cache", **cache_data.data)
-        except Exception as e:
-            print(f"Coudn't validate HypixelGuild from cache: {e}")
-
-    raise exceptions.InvalidCache()
-
-
-def add_to_hypixel_cache(
-    uuid: str, data: HypixelPlayer, guild_id: str, session: Session
+async def set_hypixel_player_cache(
+    uuid: str, data: HypixelPlayer, guild_id: Optional[str], redis: Redis
 ) -> None:
-    session.execute(
-        text(
-            """
-            INSERT INTO hypixel_cache (uuid, data, timestamp, guild_id) 
-            VALUES (:uuid, :data, NOW(), :guild_id)
-            ON CONFLICT (uuid)
-            DO UPDATE SET 
-                data = EXCLUDED.data,
-                timestamp = NOW(),
-                guild_id = EXCLUDED.guild_id
-            """
-        ),
-        {
-            "uuid": uuid,
-            "data": data.model_dump_json(exclude={"source"}),
-            "guild_id": guild_id,
-        },
-    )
-    session.commit()
+    cache_dict = {"data": data.model_dump(exclude={"source"}), "guild_id": guild_id}
+    if guild_id is not None:
+        pipe = redis.pipeline()
+        pipe.set(f"{HYPIXEL_PLAYER_KEY}{uuid}", json.dumps(cache_dict), ex=HYPIXEL_TTL)
+        pipe.set(f"{HYPIXEL_PLAYER_GUILD_KEY}{uuid}", guild_id, ex=HYPIXEL_TTL)
+        await pipe.execute()
+    else:
+        await redis.set(
+            f"{HYPIXEL_PLAYER_KEY}{uuid}", json.dumps(cache_dict), ex=HYPIXEL_TTL
+        )
 
 
-def add_to_hypixel_guild_cache(id: str, data: HypixelGuild, session: Session) -> None:
-    session.execute(
-        text(
-            """
-            INSERT INTO hypixel_guild_cache (id, data, timestamp) 
-            VALUES (:id, :data, NOW())
-            ON CONFLICT (id)
-            DO UPDATE SET 
-                data = EXCLUDED.data,
-                timestamp = NOW()
-            """
-        ),
-        {"id": id, "data": data.model_dump_json(exclude={"source"})},
-    )
-    session.commit()
+async def get_hypixel_guild_cache(id: str, redis: Redis) -> HypixelGuild | None:
+    data = await redis.get(f"{HYPIXEL_GUILD_KEY}{id}")
+    if data is not None:
+        try:
+            parsed_data = json.loads(data)
+            return HypixelGuild(source="cache", **parsed_data.get("data", {}))
+        except Exception as e:
+            print(f"Couldn't validate HypixelGuild from cache: {e}")
+            return None
+
+    print(f"no cache data found for guild {id}")
+    return None
+
+
+async def set_hypixel_guild_cache(id: str, data: HypixelGuild, redis: Redis) -> None:
+    cache_dict = {"data": data.model_dump(exclude={"source"})}
+    pipe = redis.pipeline()
+    pipe.set(f"{HYPIXEL_GUILD_KEY}{id}", json.dumps(cache_dict), ex=HYPIXEL_TTL)
+    for member in data.members:
+        pipe.set(f"{HYPIXEL_PLAYER_GUILD_KEY}{member.uuid}", id, ex=HYPIXEL_TTL)
+    await pipe.execute()
 
 
 # params for fastapi
@@ -179,22 +150,27 @@ class HypixelGuildMemberParams(BaseModel):
 
 
 async def get_full_guild_members(
-    id: str, session: Session, amount_to_load: int, offset: int = 0
+    id: str,
+    session: Session,
+    amount_to_load: int,
+    http_client: httpx.AsyncClient,
+    redis: Redis,
+    offset: int = 0,
 ) -> List[HypixelGuildMemberFull]:
-    guild_data = None
-    try:
-        guild_data = get_hypixel_guild_cache(
-            id, session
-        )  # TODO investigate why this isnt getting activated consistently
+    guild_data = await get_hypixel_guild_cache(id, redis)
+    if guild_data is not None:
         print("source: cache")
-    except exceptions.InvalidCache:
+    else:
         print("source: hypixel api")
-        guild_data = get_guild_data(id=id)
+        guild_data = await get_guild_data(http_client, id=id)
+        if guild_data is not None:
+            await set_hypixel_guild_cache(id, guild_data, redis)
+
     if guild_data is None:
         raise exceptions.ServiceError()
 
     resolved_uuids, unsolved_uuids = await bulk_get_usernames_cache(
-        [member.uuid for member in guild_data.members], session
+        [member.uuid for member in guild_data.members], redis
     )
     print(f"found {len(resolved_uuids)} in cache, {len(unsolved_uuids)} left")
 
@@ -202,40 +178,37 @@ async def get_full_guild_members(
         f"fetching {len(guild_data.members[offset : offset + amount_to_load])} members out of {len(guild_data.members)}"
     )
 
-    final_members = []
-
-    with ThreadPoolExecutor(max_workers=4) as executor:
-        futures = []
-        for member in guild_data.members[offset : offset + amount_to_load]:
-            futures.append(
-                executor.submit(get_member, member, unsolved_uuids, resolved_uuids)
+    tasks = []
+    for member in guild_data.members[offset : offset + amount_to_load]:
+        tasks.append(
+            get_member(
+                member, unsolved_uuids, resolved_uuids, session, http_client, redis
             )
+        )
 
-        for future in as_completed(futures):
-            data = future.result()
-            if isinstance(data, HypixelGuildMemberFull):
-                final_members.append(data)
-
-    return final_members
+    results = await asyncio.gather(*tasks)
+    return [res for res in results if isinstance(res, HypixelGuildMemberFull)]
 
 
-def get_member(
+async def get_member(
     member: HypixelGuildMember,
     unsolved_uuids: list,
     resolved_uuids: list,
+    session: Session,
+    http_client: httpx.AsyncClient,
+    redis: Redis,
 ):
     if member.uuid in unsolved_uuids:
-        with SessionLocal() as thread_session:
-            data = get_minecraft_data(
-                member.uuid, thread_session
-            )  # this fetches live data
-            return HypixelGuildMemberFull(
-                username=data.username,
-                uuid=data.uuid,
-                skin_showcase_b64=data.skin_showcase_b64,
-                rank=member.rank,
-                joined=member.joined,
-            )
+        data = await get_minecraft_data(
+            member.uuid, session, http_client, redis
+        )  # this fetches live data
+        return HypixelGuildMemberFull(
+            username=data.username,
+            uuid=data.uuid,
+            skin_showcase_b64=data.skin_showcase_b64,
+            rank=member.rank,
+            joined=member.joined,
+        )
     else:
         for resolved_member in resolved_uuids:
             if resolved_member.get("uuid") == member.uuid:
@@ -264,5 +237,7 @@ def add_hypixel_stats_to_db(hypixel_data: HypixelFullData):
 
 if __name__ == "__main__":
     db_engine = get_engine()
-    hypixel_data = get_hypixel_data("3ff2e63ad63045e0b96f57cd0eae708d", db_engine)
+    hypixel_data = get_hypixel_data(
+        "3ff2e63ad63045e0b96f57cd0eae708d", httpx.AsyncClient(), Redis()
+    )
     print(hypixel_data)

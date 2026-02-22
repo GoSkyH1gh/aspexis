@@ -193,7 +193,7 @@ async def get_profile(
     identifier,
     session: Session = Depends(get_db),
     http_client: httpx.AsyncClient = Depends(get_client),
-    redis: Redis = Depends(get_redis)
+    redis: Redis = Depends(get_redis),
 ) -> MojangData:
     return await get_minecraft_data(identifier, session, http_client, redis)
 
@@ -224,14 +224,15 @@ async def get_capes(
     description="Fetches comprehensive Hypixel player statistics and overall progress.",
 )
 @limiter.limit("60/minute")
-def get_hypixel(
+async def get_hypixel(
     request: Request,
     uuid: str,
     background_tasks: BackgroundTasks,
-    session: Session = Depends(get_db),
+    http_client: httpx.AsyncClient = Depends(get_client),
+    redis: Redis = Depends(get_redis),
 ) -> HypixelFullData:
     uuid = normalize_uuid(uuid)
-    data = get_hypixel_data(uuid, session)
+    data = await get_hypixel_data(uuid, http_client, redis)
     background_tasks.add_task(add_hypixel_stats_to_db, data)
     return data
 
@@ -244,12 +245,21 @@ def get_hypixel(
     name="Get Hypixel Guild Members",
     description="Retrieves a list of members for a specific Hypixel guild with pagination.",
 )
-def get_guild(
+async def get_guild(
     id,
     query_params: Annotated[HypixelGuildMemberParams, Query()],
     session: Session = Depends(get_db),
+    http_client: httpx.AsyncClient = Depends(get_client),
+    redis: Redis = Depends(get_redis),
 ) -> List[HypixelGuildMemberFull]:
-    return get_full_guild_members(id, session, query_params.limit, query_params.offset)
+    return await get_full_guild_members(
+        id,
+        session,
+        query_params.limit,
+        http_client,
+        redis,
+        query_params.offset,
+    )
 
 
 @app.get(
@@ -350,10 +360,11 @@ async def get_donut(
     background_tasks: BackgroundTasks,
     session: Session = Depends(get_db),
     http_client: httpx.AsyncClient = Depends(get_client),
+    redis: Redis = Depends(get_redis),
 ) -> DonutPlayerStats:
     player_data = await get_donut_stats(username, http_client)
     background_tasks.add_task(
-        add_donut_stats_to_db, player_data, username, session, http_client
+        add_donut_stats_to_db, player_data, username, session, http_client, redis
     )
     return player_data
 

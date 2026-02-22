@@ -1,8 +1,5 @@
 from minecraft_api import GetMojangAPIData, MojangData
 from sqlalchemy.orm import Session
-from sqlalchemy import text, bindparam
-from typing import Tuple, List, Dict
-import exceptions
 import time
 import httpx
 from utils import normalize_uuid, is_valid_uuid
