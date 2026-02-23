@@ -115,6 +115,17 @@ class ContentProgress(BaseModel):
     list: dict[str, int]
 
 
+class DungeonCompletions(BaseModel):
+    name: str
+    normal_completions: int | None
+    corrupted_completions: int | None
+
+
+class DungeonProgress(BaseModel):
+    total: int | None
+    list: list[DungeonCompletions]
+
+
 class StorylineQuest(BaseModel):
     name: str
     completed: bool
@@ -166,7 +177,7 @@ class WynncraftCharacterContent(BaseModel):
     lootruns: int | None
     world_events: int | None
     wars: int | None
-    dungeons: ContentProgress
+    dungeons: DungeonProgress
     raids: ContentProgress
     storylines: list[Storyline] | None
 
@@ -281,6 +292,34 @@ def get_storylines(player_quests: list[str]) -> list[Storyline]:
     return storylines
 
 
+def normalize_dungeons(raw_dungeons: dict[str, int]) -> list[DungeonCompletions]:
+    grouped: dict[str, dict[str, int]] = {}
+
+    for name, count in raw_dungeons.items():
+        is_corrupted = name.startswith("Corrupted ")
+        base_name = name.replace("Corrupted ", "") if is_corrupted else name
+
+        if base_name not in grouped:
+            grouped[base_name] = {
+                "normal": 0,
+                "corrupted": 0,
+            }
+
+        if is_corrupted:
+            grouped[base_name]["corrupted"] = count
+        else:
+            grouped[base_name]["normal"] = count
+
+    return [
+        DungeonCompletions(
+            name=base_name,
+            normal_completions=data["normal"],
+            corrupted_completions=data["corrupted"],
+        )
+        for base_name, data in grouped.items()
+    ]
+
+
 def process_characters(
     characters: dict[str, dict],
     restrictions: PlayerRestrictions,
@@ -330,11 +369,13 @@ def process_characters(
             )
 
         if "dungeons" in removed_stats:
-            dungeons = ContentProgress(total=None, list={})
+            dungeons = DungeonProgress(total=None, list=[])
         else:
-            dungeons = ContentProgress(
-                list=selected_character.get("dungeons", {}).get("list", {}),
-                total=selected_character.get("dungeons", {}).get("total") or 0,
+            dungeons = DungeonProgress(
+                total=len(selected_character.get("dungeons", {}).get("list", {})),
+                list=normalize_dungeons(
+                    selected_character.get("dungeons", {}).get("list", {})
+                ),
             )
 
         quests_completed = (

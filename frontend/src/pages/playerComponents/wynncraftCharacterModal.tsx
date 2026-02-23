@@ -5,12 +5,11 @@ import {
   WynncraftCharacterSkillPoints,
   Storyline,
 } from "../../client";
-import { motion } from "motion/react";
+import { color, motion } from "motion/react";
 import { toProperCase, formatValue } from "../../utils/utils";
 import { Icon } from "@iconify/react";
 import HorizontalInfoCard from "./horizontalInfoCard";
 import WynncraftAbilityTree from "./wynncraftAbilityTree";
-import InfoCard from "./infoCard";
 
 const modesMap = {
   ironman: "https://cdn.wynncraft.com/nextgen/badges/ironman.svg",
@@ -38,6 +37,18 @@ const skillPointSkills = [
   "defense",
   "agility",
 ];
+
+const getDungeonUrl = (dungeon: string) => {
+  const uriComponent = dungeon
+    .replace("Corrupted ", "")
+    .replace(" ", "_")
+    .replace("-", "_")
+    .replace("'s", "")
+    .toLowerCase();
+  return `https://cdn.wynncraft.com/nextgen/dung/${encodeURIComponent(uriComponent)}.webp`;
+};
+const getRaidUrl = (raid: string) =>
+  `https://cdn.wynncraft.com/nextgen/raids/${encodeURIComponent(raid)}.webp`;
 
 const getSkillPointUrl = (skill: string) =>
   `https://cdn.wynncraft.com/nextgen/skill/${encodeURIComponent(skill)}_book.svg`;
@@ -302,6 +313,90 @@ function CharacterDetails({
               />
             ))}
           </div>
+        </>
+      )}
+      {Object.keys(character.content.raids.list).length > 0 && (
+        <>
+          <h3>Raids</h3>
+          <ul className="horizontal-card-list wynn-center-list">
+            {Object.entries(character.content.raids.list).map(
+              ([raidName, raidCompletions]) => (
+                <li className="wynn-square-card" key={raidName}>
+                  <img
+                    src={getRaidUrl(raidName)}
+                    alt={raidName}
+                    className="wynn-square-img"
+                  />
+                  <div>
+                    <div>{raidName}</div>
+                  </div>
+                  <div className="wynn-dungeon-list">
+                    <div>{raidCompletions}</div>
+                  </div>
+                </li>
+              ),
+            )}
+          </ul>
+        </>
+      )}
+      {Object.keys(character.content.dungeons.list).length > 0 && (
+        <>
+          <h3>Dungeons</h3>
+          <ul className="horizontal-card-list wynn-center-list">
+            {character.content.dungeons.list.map((dungeon) => (
+              <li className="wynn-square-card" key={dungeon.name}>
+                <img
+                  src={getDungeonUrl(dungeon.name)}
+                  alt={dungeon.name}
+                  className="wynn-square-img"
+                />
+                <div>
+                  <span className="wynn-em-text">{dungeon.name}</span>
+                </div>
+                <div className="wynn-dungeon-list">
+                  {dungeon.normal_completions &&
+                  dungeon.normal_completions > 0 ? (
+                    <Tooltip.Root delayDuration={50}>
+                      <Tooltip.Trigger asChild>
+                        <div className="wynn-dungeon-key">
+                          <Icon icon={"material-symbols:vpn-key"} />
+                          {dungeon.normal_completions}
+                        </div>
+                      </Tooltip.Trigger>
+                      <Tooltip.Portal>
+                        <Tooltip.Content className="TooltipContent">
+                          Normal Runs
+                        </Tooltip.Content>
+                      </Tooltip.Portal>
+                    </Tooltip.Root>
+                  ) : (
+                    <></>
+                  )}
+                  {dungeon.corrupted_completions &&
+                  dungeon.corrupted_completions > 0 ? (
+                    <Tooltip.Root delayDuration={50}>
+                      <Tooltip.Trigger asChild>
+                        <div className="wynn-dungeon-key">
+                          <Icon
+                            icon={"material-symbols:vpn-key"}
+                            color="#888888"
+                          />
+                          {dungeon.corrupted_completions}
+                        </div>
+                      </Tooltip.Trigger>
+                      <Tooltip.Portal>
+                        <Tooltip.Content className="TooltipContent">
+                          Corrupted Runs
+                        </Tooltip.Content>
+                      </Tooltip.Portal>
+                    </Tooltip.Root>
+                  ) : (
+                    <></>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
         </>
       )}
       {character.professions && (
