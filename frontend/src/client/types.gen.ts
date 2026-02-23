@@ -254,6 +254,38 @@ export type DonutPlayerStats = {
 };
 
 /**
+ * DungeonCompletions
+ */
+export type DungeonCompletions = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Normal Completions
+     */
+    normal_completions: number | null;
+    /**
+     * Corrupted Completions
+     */
+    corrupted_completions: number | null;
+};
+
+/**
+ * DungeonProgress
+ */
+export type DungeonProgress = {
+    /**
+     * Total
+     */
+    total: number | null;
+    /**
+     * List
+     */
+    list: Array<DungeonCompletions>;
+};
+
+/**
  * ErrorResponse
  */
 export type ErrorResponse = {
@@ -808,7 +840,7 @@ export type WynncraftCharacterContent = {
      * Wars
      */
     wars: number | null;
-    dungeons: ContentProgress;
+    dungeons: DungeonProgress;
     raids: ContentProgress;
     /**
      * Storylines
@@ -1084,31 +1116,39 @@ export type HealthCheckHealthzGetResponses = {
     200: unknown;
 };
 
-export type GetProfileV1PlayersMojangUsernameGetData = {
+export type GetMojangProfileV1PlayersMojangIdentifierGetData = {
     body?: never;
     path: {
         /**
-         * Username
+         * Identifier
          */
-        username: unknown;
+        identifier: unknown;
     };
     query?: never;
-    url: '/v1/players/mojang/{username}';
+    url: '/v1/players/mojang/{identifier}';
 };
 
-export type GetProfileV1PlayersMojangUsernameGetErrors = {
+export type GetMojangProfileV1PlayersMojangIdentifierGetErrors = {
     /**
      * Bad Request
      */
     400: ErrorResponse;
     /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
      * Not Found
      */
     404: ErrorResponse;
     /**
-     * Validation Error
+     * Unprocessable Entity
      */
-    422: HttpValidationError;
+    422: ErrorResponse;
+    /**
+     * Too Many Requests
+     */
+    429: ErrorResponse;
     /**
      * Internal Server Error
      */
@@ -1118,23 +1158,23 @@ export type GetProfileV1PlayersMojangUsernameGetErrors = {
      */
     502: ErrorResponse;
     /**
-     * Upstream Timeout Error
+     * Upstream Timeout
      */
     504: ErrorResponse;
 };
 
-export type GetProfileV1PlayersMojangUsernameGetError = GetProfileV1PlayersMojangUsernameGetErrors[keyof GetProfileV1PlayersMojangUsernameGetErrors];
+export type GetMojangProfileV1PlayersMojangIdentifierGetError = GetMojangProfileV1PlayersMojangIdentifierGetErrors[keyof GetMojangProfileV1PlayersMojangIdentifierGetErrors];
 
-export type GetProfileV1PlayersMojangUsernameGetResponses = {
+export type GetMojangProfileV1PlayersMojangIdentifierGetResponses = {
     /**
      * Successful Response
      */
     200: MojangData;
 };
 
-export type GetProfileV1PlayersMojangUsernameGetResponse = GetProfileV1PlayersMojangUsernameGetResponses[keyof GetProfileV1PlayersMojangUsernameGetResponses];
+export type GetMojangProfileV1PlayersMojangIdentifierGetResponse = GetMojangProfileV1PlayersMojangIdentifierGetResponses[keyof GetMojangProfileV1PlayersMojangIdentifierGetResponses];
 
-export type GetCapesV1PlayersCapesUuidGetData = {
+export type GetPlayerCapesV1PlayersCapesUuidGetData = {
     body?: never;
     path: {
         /**
@@ -1146,50 +1186,27 @@ export type GetCapesV1PlayersCapesUuidGetData = {
     url: '/v1/players/capes/{uuid}';
 };
 
-export type GetCapesV1PlayersCapesUuidGetErrors = {
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-};
-
-export type GetCapesV1PlayersCapesUuidGetError = GetCapesV1PlayersCapesUuidGetErrors[keyof GetCapesV1PlayersCapesUuidGetErrors];
-
-export type GetCapesV1PlayersCapesUuidGetResponses = {
-    /**
-     * Response Get Capes V1 Players Capes  Uuid  Get
-     * Successful Response
-     */
-    200: Array<UserCapeData>;
-};
-
-export type GetCapesV1PlayersCapesUuidGetResponse = GetCapesV1PlayersCapesUuidGetResponses[keyof GetCapesV1PlayersCapesUuidGetResponses];
-
-export type GetHypixelV1PlayersHypixelUuidGetData = {
-    body?: never;
-    path: {
-        /**
-         * Uuid
-         */
-        uuid: unknown;
-    };
-    query?: never;
-    url: '/v1/players/hypixel/{uuid}';
-};
-
-export type GetHypixelV1PlayersHypixelUuidGetErrors = {
+export type GetPlayerCapesV1PlayersCapesUuidGetErrors = {
     /**
      * Bad Request
      */
     400: ErrorResponse;
     /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
      * Not Found
      */
     404: ErrorResponse;
     /**
-     * Validation Error
+     * Unprocessable Entity
      */
-    422: HttpValidationError;
+    422: ErrorResponse;
+    /**
+     * Too Many Requests
+     */
+    429: ErrorResponse;
     /**
      * Internal Server Error
      */
@@ -1199,23 +1216,82 @@ export type GetHypixelV1PlayersHypixelUuidGetErrors = {
      */
     502: ErrorResponse;
     /**
-     * Upstream Timeout Error
+     * Upstream Timeout
      */
     504: ErrorResponse;
 };
 
-export type GetHypixelV1PlayersHypixelUuidGetError = GetHypixelV1PlayersHypixelUuidGetErrors[keyof GetHypixelV1PlayersHypixelUuidGetErrors];
+export type GetPlayerCapesV1PlayersCapesUuidGetError = GetPlayerCapesV1PlayersCapesUuidGetErrors[keyof GetPlayerCapesV1PlayersCapesUuidGetErrors];
 
-export type GetHypixelV1PlayersHypixelUuidGetResponses = {
+export type GetPlayerCapesV1PlayersCapesUuidGetResponses = {
+    /**
+     * Response Get Player Capes V1 Players Capes  Uuid  Get
+     * Successful Response
+     */
+    200: Array<UserCapeData>;
+};
+
+export type GetPlayerCapesV1PlayersCapesUuidGetResponse = GetPlayerCapesV1PlayersCapesUuidGetResponses[keyof GetPlayerCapesV1PlayersCapesUuidGetResponses];
+
+export type GetHypixelStatsV1PlayersHypixelUuidGetData = {
+    body?: never;
+    path: {
+        /**
+         * Uuid
+         */
+        uuid: string;
+    };
+    query?: never;
+    url: '/v1/players/hypixel/{uuid}';
+};
+
+export type GetHypixelStatsV1PlayersHypixelUuidGetErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
+     * Unprocessable Entity
+     */
+    422: ErrorResponse;
+    /**
+     * Too Many Requests
+     */
+    429: ErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
+    /**
+     * Upstream Error
+     */
+    502: ErrorResponse;
+    /**
+     * Upstream Timeout
+     */
+    504: ErrorResponse;
+};
+
+export type GetHypixelStatsV1PlayersHypixelUuidGetError = GetHypixelStatsV1PlayersHypixelUuidGetErrors[keyof GetHypixelStatsV1PlayersHypixelUuidGetErrors];
+
+export type GetHypixelStatsV1PlayersHypixelUuidGetResponses = {
     /**
      * Successful Response
      */
     200: HypixelFullData;
 };
 
-export type GetHypixelV1PlayersHypixelUuidGetResponse = GetHypixelV1PlayersHypixelUuidGetResponses[keyof GetHypixelV1PlayersHypixelUuidGetResponses];
+export type GetHypixelStatsV1PlayersHypixelUuidGetResponse = GetHypixelStatsV1PlayersHypixelUuidGetResponses[keyof GetHypixelStatsV1PlayersHypixelUuidGetResponses];
 
-export type GetGuildV1HypixelGuildsIdGetData = {
+export type GetHypixelGuildMembersV1HypixelGuildsIdGetData = {
     body?: never;
     path: {
         /**
@@ -1236,56 +1312,112 @@ export type GetGuildV1HypixelGuildsIdGetData = {
     url: '/v1/hypixel/guilds/{id}';
 };
 
-export type GetGuildV1HypixelGuildsIdGetErrors = {
+export type GetHypixelGuildMembersV1HypixelGuildsIdGetErrors = {
     /**
-     * Validation Error
+     * Bad Request
      */
-    422: HttpValidationError;
+    400: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
+     * Unprocessable Entity
+     */
+    422: ErrorResponse;
+    /**
+     * Too Many Requests
+     */
+    429: ErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
+    /**
+     * Upstream Error
+     */
+    502: ErrorResponse;
+    /**
+     * Upstream Timeout
+     */
+    504: ErrorResponse;
 };
 
-export type GetGuildV1HypixelGuildsIdGetError = GetGuildV1HypixelGuildsIdGetErrors[keyof GetGuildV1HypixelGuildsIdGetErrors];
+export type GetHypixelGuildMembersV1HypixelGuildsIdGetError = GetHypixelGuildMembersV1HypixelGuildsIdGetErrors[keyof GetHypixelGuildMembersV1HypixelGuildsIdGetErrors];
 
-export type GetGuildV1HypixelGuildsIdGetResponses = {
+export type GetHypixelGuildMembersV1HypixelGuildsIdGetResponses = {
     /**
-     * Response Get Guild V1 Hypixel Guilds  Id  Get
+     * Response Get Hypixel Guild Members V1 Hypixel Guilds  Id  Get
      * Successful Response
      */
     200: Array<HypixelGuildMemberFull>;
 };
 
-export type GetGuildV1HypixelGuildsIdGetResponse = GetGuildV1HypixelGuildsIdGetResponses[keyof GetGuildV1HypixelGuildsIdGetResponses];
+export type GetHypixelGuildMembersV1HypixelGuildsIdGetResponse = GetHypixelGuildMembersV1HypixelGuildsIdGetResponses[keyof GetHypixelGuildMembersV1HypixelGuildsIdGetResponses];
 
-export type GetPlayerStatusV1PlayersStatusUuidGetData = {
+export type GetPlayerOnlineStatusV1PlayersStatusUuidGetData = {
     body?: never;
     path: {
         /**
          * Uuid
          */
-        uuid: unknown;
+        uuid: string;
     };
     query?: never;
     url: '/v1/players/status/{uuid}';
 };
 
-export type GetPlayerStatusV1PlayersStatusUuidGetErrors = {
+export type GetPlayerOnlineStatusV1PlayersStatusUuidGetErrors = {
     /**
-     * Validation Error
+     * Bad Request
      */
-    422: HttpValidationError;
+    400: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
+     * Unprocessable Entity
+     */
+    422: ErrorResponse;
+    /**
+     * Too Many Requests
+     */
+    429: ErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
+    /**
+     * Upstream Error
+     */
+    502: ErrorResponse;
+    /**
+     * Upstream Timeout
+     */
+    504: ErrorResponse;
 };
 
-export type GetPlayerStatusV1PlayersStatusUuidGetError = GetPlayerStatusV1PlayersStatusUuidGetErrors[keyof GetPlayerStatusV1PlayersStatusUuidGetErrors];
+export type GetPlayerOnlineStatusV1PlayersStatusUuidGetError = GetPlayerOnlineStatusV1PlayersStatusUuidGetErrors[keyof GetPlayerOnlineStatusV1PlayersStatusUuidGetErrors];
 
-export type GetPlayerStatusV1PlayersStatusUuidGetResponses = {
+export type GetPlayerOnlineStatusV1PlayersStatusUuidGetResponses = {
     /**
      * Successful Response
      */
     200: PlayerStatus;
 };
 
-export type GetPlayerStatusV1PlayersStatusUuidGetResponse = GetPlayerStatusV1PlayersStatusUuidGetResponses[keyof GetPlayerStatusV1PlayersStatusUuidGetResponses];
+export type GetPlayerOnlineStatusV1PlayersStatusUuidGetResponse = GetPlayerOnlineStatusV1PlayersStatusUuidGetResponses[keyof GetPlayerOnlineStatusV1PlayersStatusUuidGetResponses];
 
-export type GetWynncraftV1PlayersWynncraftUuidGetData = {
+export type GetWynncraftStatsV1PlayersWynncraftUuidGetData = {
     body?: never;
     path: {
         /**
@@ -1297,29 +1429,53 @@ export type GetWynncraftV1PlayersWynncraftUuidGetData = {
     url: '/v1/players/wynncraft/{uuid}';
 };
 
-export type GetWynncraftV1PlayersWynncraftUuidGetErrors = {
+export type GetWynncraftStatsV1PlayersWynncraftUuidGetErrors = {
     /**
-     * Not found
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
      */
     404: ErrorResponse;
     /**
-     * Validation Error
+     * Unprocessable Entity
      */
-    422: HttpValidationError;
+    422: ErrorResponse;
+    /**
+     * Too Many Requests
+     */
+    429: ErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
+    /**
+     * Upstream Error
+     */
+    502: ErrorResponse;
+    /**
+     * Upstream Timeout
+     */
+    504: ErrorResponse;
 };
 
-export type GetWynncraftV1PlayersWynncraftUuidGetError = GetWynncraftV1PlayersWynncraftUuidGetErrors[keyof GetWynncraftV1PlayersWynncraftUuidGetErrors];
+export type GetWynncraftStatsV1PlayersWynncraftUuidGetError = GetWynncraftStatsV1PlayersWynncraftUuidGetErrors[keyof GetWynncraftStatsV1PlayersWynncraftUuidGetErrors];
 
-export type GetWynncraftV1PlayersWynncraftUuidGetResponses = {
+export type GetWynncraftStatsV1PlayersWynncraftUuidGetResponses = {
     /**
      * Successful Response
      */
     200: WynncraftPlayerSummary;
 };
 
-export type GetWynncraftV1PlayersWynncraftUuidGetResponse = GetWynncraftV1PlayersWynncraftUuidGetResponses[keyof GetWynncraftV1PlayersWynncraftUuidGetResponses];
+export type GetWynncraftStatsV1PlayersWynncraftUuidGetResponse = GetWynncraftStatsV1PlayersWynncraftUuidGetResponses[keyof GetWynncraftStatsV1PlayersWynncraftUuidGetResponses];
 
-export type GetWynncraftGuildV1WynncraftGuildsPrefixGetData = {
+export type GetWynncraftGuildDataV1WynncraftGuildsPrefixGetData = {
     body?: never;
     path: {
         /**
@@ -1331,23 +1487,51 @@ export type GetWynncraftGuildV1WynncraftGuildsPrefixGetData = {
     url: '/v1/wynncraft/guilds/{prefix}';
 };
 
-export type GetWynncraftGuildV1WynncraftGuildsPrefixGetErrors = {
+export type GetWynncraftGuildDataV1WynncraftGuildsPrefixGetErrors = {
     /**
-     * Validation Error
+     * Bad Request
      */
-    422: HttpValidationError;
+    400: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
+     * Unprocessable Entity
+     */
+    422: ErrorResponse;
+    /**
+     * Too Many Requests
+     */
+    429: ErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
+    /**
+     * Upstream Error
+     */
+    502: ErrorResponse;
+    /**
+     * Upstream Timeout
+     */
+    504: ErrorResponse;
 };
 
-export type GetWynncraftGuildV1WynncraftGuildsPrefixGetError = GetWynncraftGuildV1WynncraftGuildsPrefixGetErrors[keyof GetWynncraftGuildV1WynncraftGuildsPrefixGetErrors];
+export type GetWynncraftGuildDataV1WynncraftGuildsPrefixGetError = GetWynncraftGuildDataV1WynncraftGuildsPrefixGetErrors[keyof GetWynncraftGuildDataV1WynncraftGuildsPrefixGetErrors];
 
-export type GetWynncraftGuildV1WynncraftGuildsPrefixGetResponses = {
+export type GetWynncraftGuildDataV1WynncraftGuildsPrefixGetResponses = {
     /**
      * Successful Response
      */
     200: WynncraftGuildInfo;
 };
 
-export type GetWynncraftGuildV1WynncraftGuildsPrefixGetResponse = GetWynncraftGuildV1WynncraftGuildsPrefixGetResponses[keyof GetWynncraftGuildV1WynncraftGuildsPrefixGetResponses];
+export type GetWynncraftGuildDataV1WynncraftGuildsPrefixGetResponse = GetWynncraftGuildDataV1WynncraftGuildsPrefixGetResponses[keyof GetWynncraftGuildDataV1WynncraftGuildsPrefixGetResponses];
 
 export type GetWynncraftCharacterAbilityTreeV1PlayersWynncraftUuidCharactersCharacterUuidAbilityTreeGetData = {
     body?: never;
@@ -1372,13 +1556,37 @@ export type GetWynncraftCharacterAbilityTreeV1PlayersWynncraftUuidCharactersChar
 
 export type GetWynncraftCharacterAbilityTreeV1PlayersWynncraftUuidCharactersCharacterUuidAbilityTreeGetErrors = {
     /**
-     * Ability tree is private
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Forbidden
      */
     403: ErrorResponse;
     /**
-     * Invalid class
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
+     * Unprocessable Entity
      */
     422: ErrorResponse;
+    /**
+     * Too Many Requests
+     */
+    429: ErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
+    /**
+     * Upstream Error
+     */
+    502: ErrorResponse;
+    /**
+     * Upstream Timeout
+     */
+    504: ErrorResponse;
 };
 
 export type GetWynncraftCharacterAbilityTreeV1PlayersWynncraftUuidCharactersCharacterUuidAbilityTreeGetError = GetWynncraftCharacterAbilityTreeV1PlayersWynncraftUuidCharactersCharacterUuidAbilityTreeGetErrors[keyof GetWynncraftCharacterAbilityTreeV1PlayersWynncraftUuidCharactersCharacterUuidAbilityTreeGetErrors];
@@ -1393,37 +1601,65 @@ export type GetWynncraftCharacterAbilityTreeV1PlayersWynncraftUuidCharactersChar
 
 export type GetWynncraftCharacterAbilityTreeV1PlayersWynncraftUuidCharactersCharacterUuidAbilityTreeGetResponse = GetWynncraftCharacterAbilityTreeV1PlayersWynncraftUuidCharactersCharacterUuidAbilityTreeGetResponses[keyof GetWynncraftCharacterAbilityTreeV1PlayersWynncraftUuidCharactersCharacterUuidAbilityTreeGetResponses];
 
-export type GetDonutV1PlayersDonutsmpUsernameGetData = {
+export type GetDonutSmpStatsV1PlayersDonutsmpUsernameGetData = {
     body?: never;
     path: {
         /**
          * Username
          */
-        username: unknown;
+        username: string;
     };
     query?: never;
     url: '/v1/players/donutsmp/{username}';
 };
 
-export type GetDonutV1PlayersDonutsmpUsernameGetErrors = {
+export type GetDonutSmpStatsV1PlayersDonutsmpUsernameGetErrors = {
     /**
-     * Validation Error
+     * Bad Request
      */
-    422: HttpValidationError;
+    400: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
+     * Unprocessable Entity
+     */
+    422: ErrorResponse;
+    /**
+     * Too Many Requests
+     */
+    429: ErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
+    /**
+     * Upstream Error
+     */
+    502: ErrorResponse;
+    /**
+     * Upstream Timeout
+     */
+    504: ErrorResponse;
 };
 
-export type GetDonutV1PlayersDonutsmpUsernameGetError = GetDonutV1PlayersDonutsmpUsernameGetErrors[keyof GetDonutV1PlayersDonutsmpUsernameGetErrors];
+export type GetDonutSmpStatsV1PlayersDonutsmpUsernameGetError = GetDonutSmpStatsV1PlayersDonutsmpUsernameGetErrors[keyof GetDonutSmpStatsV1PlayersDonutsmpUsernameGetErrors];
 
-export type GetDonutV1PlayersDonutsmpUsernameGetResponses = {
+export type GetDonutSmpStatsV1PlayersDonutsmpUsernameGetResponses = {
     /**
      * Successful Response
      */
     200: DonutPlayerStats;
 };
 
-export type GetDonutV1PlayersDonutsmpUsernameGetResponse = GetDonutV1PlayersDonutsmpUsernameGetResponses[keyof GetDonutV1PlayersDonutsmpUsernameGetResponses];
+export type GetDonutSmpStatsV1PlayersDonutsmpUsernameGetResponse = GetDonutSmpStatsV1PlayersDonutsmpUsernameGetResponses[keyof GetDonutSmpStatsV1PlayersDonutsmpUsernameGetResponses];
 
-export type GetMccIslandV1PlayersMccislandUuidGetData = {
+export type GetMccIslandStatsV1PlayersMccislandUuidGetData = {
     body?: never;
     path: {
         /**
@@ -1435,25 +1671,53 @@ export type GetMccIslandV1PlayersMccislandUuidGetData = {
     url: '/v1/players/mccisland/{uuid}';
 };
 
-export type GetMccIslandV1PlayersMccislandUuidGetErrors = {
+export type GetMccIslandStatsV1PlayersMccislandUuidGetErrors = {
     /**
-     * Validation Error
+     * Bad Request
      */
-    422: HttpValidationError;
+    400: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
+     * Unprocessable Entity
+     */
+    422: ErrorResponse;
+    /**
+     * Too Many Requests
+     */
+    429: ErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
+    /**
+     * Upstream Error
+     */
+    502: ErrorResponse;
+    /**
+     * Upstream Timeout
+     */
+    504: ErrorResponse;
 };
 
-export type GetMccIslandV1PlayersMccislandUuidGetError = GetMccIslandV1PlayersMccislandUuidGetErrors[keyof GetMccIslandV1PlayersMccislandUuidGetErrors];
+export type GetMccIslandStatsV1PlayersMccislandUuidGetError = GetMccIslandStatsV1PlayersMccislandUuidGetErrors[keyof GetMccIslandStatsV1PlayersMccislandUuidGetErrors];
 
-export type GetMccIslandV1PlayersMccislandUuidGetResponses = {
+export type GetMccIslandStatsV1PlayersMccislandUuidGetResponses = {
     /**
      * Successful Response
      */
     200: McciPlayer;
 };
 
-export type GetMccIslandV1PlayersMccislandUuidGetResponse = GetMccIslandV1PlayersMccislandUuidGetResponses[keyof GetMccIslandV1PlayersMccislandUuidGetResponses];
+export type GetMccIslandStatsV1PlayersMccislandUuidGetResponse = GetMccIslandStatsV1PlayersMccislandUuidGetResponses[keyof GetMccIslandStatsV1PlayersMccislandUuidGetResponses];
 
-export type GetMetricV1MetricsMetricKeyDistributionPlayerUuidGetData = {
+export type GetMetricDistributionV1MetricsMetricKeyDistributionPlayerUuidGetData = {
     body?: never;
     path: {
         /**
@@ -1469,25 +1733,53 @@ export type GetMetricV1MetricsMetricKeyDistributionPlayerUuidGetData = {
     url: '/v1/metrics/{metric_key}/distribution/{player_uuid}';
 };
 
-export type GetMetricV1MetricsMetricKeyDistributionPlayerUuidGetErrors = {
+export type GetMetricDistributionV1MetricsMetricKeyDistributionPlayerUuidGetErrors = {
     /**
-     * Validation Error
+     * Bad Request
      */
-    422: HttpValidationError;
+    400: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
+     * Unprocessable Entity
+     */
+    422: ErrorResponse;
+    /**
+     * Too Many Requests
+     */
+    429: ErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
+    /**
+     * Upstream Error
+     */
+    502: ErrorResponse;
+    /**
+     * Upstream Timeout
+     */
+    504: ErrorResponse;
 };
 
-export type GetMetricV1MetricsMetricKeyDistributionPlayerUuidGetError = GetMetricV1MetricsMetricKeyDistributionPlayerUuidGetErrors[keyof GetMetricV1MetricsMetricKeyDistributionPlayerUuidGetErrors];
+export type GetMetricDistributionV1MetricsMetricKeyDistributionPlayerUuidGetError = GetMetricDistributionV1MetricsMetricKeyDistributionPlayerUuidGetErrors[keyof GetMetricDistributionV1MetricsMetricKeyDistributionPlayerUuidGetErrors];
 
-export type GetMetricV1MetricsMetricKeyDistributionPlayerUuidGetResponses = {
+export type GetMetricDistributionV1MetricsMetricKeyDistributionPlayerUuidGetResponses = {
     /**
      * Successful Response
      */
     200: HistogramData;
 };
 
-export type GetMetricV1MetricsMetricKeyDistributionPlayerUuidGetResponse = GetMetricV1MetricsMetricKeyDistributionPlayerUuidGetResponses[keyof GetMetricV1MetricsMetricKeyDistributionPlayerUuidGetResponses];
+export type GetMetricDistributionV1MetricsMetricKeyDistributionPlayerUuidGetResponse = GetMetricDistributionV1MetricsMetricKeyDistributionPlayerUuidGetResponses[keyof GetMetricDistributionV1MetricsMetricKeyDistributionPlayerUuidGetResponses];
 
-export type TrackPlayerV1TrackerUuidStatusGetData = {
+export type TrackPlayerOnlineStatusV1TrackerUuidStatusGetData = {
     body?: never;
     path: {
         /**
@@ -1499,16 +1791,16 @@ export type TrackPlayerV1TrackerUuidStatusGetData = {
     url: '/v1/tracker/{uuid}/status';
 };
 
-export type TrackPlayerV1TrackerUuidStatusGetErrors = {
+export type TrackPlayerOnlineStatusV1TrackerUuidStatusGetErrors = {
     /**
      * Validation Error
      */
     422: HttpValidationError;
 };
 
-export type TrackPlayerV1TrackerUuidStatusGetError = TrackPlayerV1TrackerUuidStatusGetErrors[keyof TrackPlayerV1TrackerUuidStatusGetErrors];
+export type TrackPlayerOnlineStatusV1TrackerUuidStatusGetError = TrackPlayerOnlineStatusV1TrackerUuidStatusGetErrors[keyof TrackPlayerOnlineStatusV1TrackerUuidStatusGetErrors];
 
-export type TrackPlayerV1TrackerUuidStatusGetResponses = {
+export type TrackPlayerOnlineStatusV1TrackerUuidStatusGetResponses = {
     /**
      * Successful Response
      */
