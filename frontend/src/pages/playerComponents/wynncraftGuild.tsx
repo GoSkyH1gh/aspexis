@@ -25,7 +25,7 @@ function WynncraftGuild({
         >
           <div className="guild-member-flex-container">
             <img
-              src={`https://vzge.me/face/128/${member.uuid}.png`}
+              src={`https://minotar.net/helm/${member.uuid}/128.png`}
               className="guild-member-image"
               height="80"
               width="80"

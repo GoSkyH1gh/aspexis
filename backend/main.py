@@ -20,7 +20,7 @@ from db import get_db
 from exceptions import ErrorResponse
 from player_tracker import subscribe, unsubscribe
 import asyncio
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from hypixel_manager import (
     get_hypixel_data,
     HypixelFullData,
@@ -191,7 +191,7 @@ def health_check():
 async def get_profile(
     request: Request,
     identifier,
-    session: Session = Depends(get_db),
+    session: AsyncSession = Depends(get_db),
     http_client: httpx.AsyncClient = Depends(get_client),
     redis: Redis = Depends(get_redis),
 ) -> MojangData:
@@ -248,7 +248,7 @@ async def get_hypixel(
 async def get_guild(
     id,
     query_params: Annotated[HypixelGuildMemberParams, Query()],
-    session: Session = Depends(get_db),
+    session: AsyncSession = Depends(get_db),
     http_client: httpx.AsyncClient = Depends(get_client),
     redis: Redis = Depends(get_redis),
 ) -> List[HypixelGuildMemberFull]:
@@ -358,7 +358,7 @@ async def get_wynncraft_character_ability_tree(
 async def get_donut(
     username: str,
     background_tasks: BackgroundTasks,
-    session: Session = Depends(get_db),
+    session: AsyncSession = Depends(get_db),
     http_client: httpx.AsyncClient = Depends(get_client),
     redis: Redis = Depends(get_redis),
 ) -> DonutPlayerStats:
@@ -395,9 +395,9 @@ async def get_mcc_island(
     name="Get Metric Distribution",
     description="Retrieves statistical distribution data for a specific player metric.",
 )
-def get_metric(metric_key: str, player_uuid: str) -> HistogramData:
+async def get_metric(metric_key: str, player_uuid: str) -> HistogramData:
     player_uuid = normalize_uuid(player_uuid)
-    return get_stats(metric_key, player_uuid)
+    return await get_stats(metric_key, player_uuid)
 
 
 # player tracker

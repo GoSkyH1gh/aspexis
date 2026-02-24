@@ -2,7 +2,8 @@ import requests
 from utils import dashify_uuid, undashify_uuid
 from pydantic import BaseModel
 from fastapi import HTTPException
-from metrics_manager import add_value, get_engine
+from metrics_manager import add_value
+from db import engine
 from dotenv import load_dotenv
 import os
 from exceptions import NotFound
@@ -608,7 +609,7 @@ def get_guild_list():
         return []
 
 
-def add_wynncraft_stats_to_db(data: WynncraftPlayerSummary) -> None:
+async def add_wynncraft_stats_to_db(data: WynncraftPlayerSummary) -> None:
     if data.restrictions.main_access or not data.player_stats:
         return
     # this is a dictionary with the corresponding id in the database for the metric
@@ -620,11 +621,10 @@ def add_wynncraft_stats_to_db(data: WynncraftPlayerSummary) -> None:
         11: data.player_stats.raids_completed,
         6: data.player_stats.playtime_hours,
     }
-    engine = get_engine()
-    with engine.begin() as conn:
+    async with engine.begin() as conn:
         for stat in stats_to_add:
             if stats_to_add.get(stat, None) is not None:
-                add_value(conn, data.uuid, stat, stats_to_add[stat])
+                await add_value(conn, data.uuid, stat, stats_to_add[stat])
 
 
 if __name__ == "__main__":
