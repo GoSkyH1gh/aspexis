@@ -44,6 +44,8 @@ function DistributionChartWrapper({
         playerValue={metricData.player_value}
         percentile={metricData.percentile}
         sampleSize={metricData.sample_size}
+        topPlayers={metricData.top_players as any}
+        playerRank={metricData.player_rank}
       />
     </Suspense>
   );

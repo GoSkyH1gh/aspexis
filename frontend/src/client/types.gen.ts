@@ -349,6 +349,16 @@ export type HistogramData = {
      * Percentile
      */
     percentile: number;
+    /**
+     * Top Players
+     */
+    top_players: Array<{
+        [key: string]: unknown;
+    }>;
+    /**
+     * Player Rank
+     */
+    player_rank: number;
 };
 
 /**
@@ -1124,7 +1134,12 @@ export type GetMojangProfileV1PlayersMojangIdentifierGetData = {
          */
         identifier: unknown;
     };
-    query?: never;
+    query?: {
+        /**
+         * Allow Stale
+         */
+        allow_stale?: boolean;
+    };
     url: '/v1/players/mojang/{identifier}';
 };
 
