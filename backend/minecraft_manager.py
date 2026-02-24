@@ -1,5 +1,4 @@
 from minecraft_api import GetMojangAPIData, MojangData
-from sqlalchemy.ext.asyncio import AsyncSession
 import time
 import httpx
 from utils import normalize_uuid, is_valid_uuid
@@ -16,7 +15,9 @@ MINECRAFT_DATA_KEY = "aspexis:minecraft:data:"
 MINECRAFT_USERNAME_KEY = "aspexis:minecraft:username:"
 
 
-async def get_minecraft_cache(search_term: str, redis: Redis) -> MojangData | None:
+async def get_minecraft_cache(
+    search_term: str, redis: Redis, allow_stale: bool = False
+) -> MojangData | None:
     """Gets cache data for one search term with the default TTL"""
 
     if not is_valid_uuid(search_term):
@@ -31,7 +32,7 @@ async def get_minecraft_cache(search_term: str, redis: Redis) -> MojangData | No
     if data is not None:
         data = json.loads(data)
         timestamp = data.get("timestamp", 0)
-        if time.time() - timestamp < MINECRAFT_TTL:
+        if allow_stale or (time.time() - timestamp < MINECRAFT_TTL):
             return MojangData(source="cache", **data["data"])
 
     return None
@@ -98,10 +99,13 @@ async def bulk_get_usernames_cache(
 
 
 async def get_minecraft_data(
-    search_term: str, session: AsyncSession, http_client: httpx.AsyncClient, redis: Redis
+    search_term: str,
+    http_client: httpx.AsyncClient,
+    redis: Redis,
+    allow_stale: bool = False,
 ) -> MojangData:
 
-    data = await get_minecraft_cache(search_term, redis)
+    data = await get_minecraft_cache(search_term, redis, allow_stale=allow_stale)
 
     if data is None:
         if len(search_term) <= 20:
@@ -110,7 +114,6 @@ async def get_minecraft_data(
             search_term = normalize_uuid(search_term)
             mojang_instance = GetMojangAPIData(http_client, None, search_term)
         data = await mojang_instance.get_data()
+        await set_minecraft_cache(data, redis)
 
-    await set_minecraft_cache(data, redis)
-    # await asyncio.to_thread(add_to_minecraft_cache, data.uuid, data, session)
     return data
