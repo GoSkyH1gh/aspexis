@@ -334,7 +334,7 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 0, list: {} },
+        dungeons: { total: 0, list: [] },
         raids: { total: 0, list: {} },
         storylines: [
           {
@@ -491,7 +491,12 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 1, list: { Spider: 1 } },
+        dungeons: {
+          total: 1,
+          list: [
+            { name: "Spider", normal_completions: 1, corrupted_completions: 0 },
+          ],
+        },
         raids: { total: 0, list: {} },
         storylines: [
           {
@@ -648,7 +653,7 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 0, list: {} },
+        dungeons: { total: 0, list: [] },
         raids: { total: 0, list: {} },
         storylines: [
           {
@@ -805,7 +810,12 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 1, list: { Spider: 1 } },
+        dungeons: {
+          total: 1,
+          list: [
+            { name: "Spider", normal_completions: 1, corrupted_completions: 0 },
+          ],
+        },
         raids: { total: 0, list: {} },
         storylines: [
           {
@@ -962,7 +972,17 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 3, list: { Skeleton: 1, Spider: 2 } },
+        dungeons: {
+          total: 2,
+          list: [
+            {
+              name: "Skeleton",
+              normal_completions: 1,
+              corrupted_completions: 0,
+            },
+            { name: "Spider", normal_completions: 2, corrupted_completions: 0 },
+          ],
+        },
         raids: { total: 0, list: {} },
         storylines: [
           {
@@ -1119,7 +1139,7 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 0, list: {} },
+        dungeons: { total: 0, list: [] },
         raids: { total: 0, list: {} },
         storylines: [
           {
@@ -1276,7 +1296,7 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 0, list: {} },
+        dungeons: { total: 0, list: [] },
         raids: { total: 0, list: {} },
         storylines: [
           {
@@ -1433,7 +1453,7 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 0, list: {} },
+        dungeons: { total: 0, list: [] },
         raids: { total: 0, list: {} },
         storylines: [
           {
@@ -1590,7 +1610,16 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 1, list: { Skeleton: 1 } },
+        dungeons: {
+          total: 1,
+          list: [
+            {
+              name: "Skeleton",
+              normal_completions: 1,
+              corrupted_completions: 0,
+            },
+          ],
+        },
         raids: { total: 0, list: {} },
         storylines: [
           {
@@ -1747,7 +1776,7 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 0, list: {} },
+        dungeons: { total: 0, list: [] },
         raids: { total: 0, list: {} },
         storylines: [
           {
