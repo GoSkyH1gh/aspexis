@@ -59,140 +59,94 @@ async def create_stat() -> None:
 
 async def get_stats(metric_key, player_uuid) -> HistogramData:
     async with engine.begin() as conn:
+        # QUERY 1: Fetch metric details and player value
         result = await conn.execute(
             text(
                 """
-            SELECT id, unit, higher_is_better
-            FROM metrics
-            WHERE key = :metric_key;
-            """
+                SELECT m.id, m.unit, m.higher_is_better, v.value AS player_value
+                FROM metrics m
+                LEFT JOIN metric_values v ON m.id = v.metric_id AND v.player_uuid = :player_uuid
+                WHERE m.key = :metric_key;
+                """
             ),
-            {"metric_key": metric_key},
+            {"metric_key": metric_key, "player_uuid": player_uuid},
         )
-        metric_row = result.fetchone()
-        metric_id = metric_row.id
-        unit = metric_row.unit
-        higher_is_better = metric_row.higher_is_better
-
-        try:
-            result = await conn.execute(
-                text(
-                    """
-                    SELECT value
-                    FROM metric_values
-                    WHERE metric_id = :metric_id
-                    AND player_uuid = :player_uuid
-                    """
-                ),
-                {"metric_id": metric_id, "player_uuid": player_uuid},
-            )
-            player_value = result.fetchone()[0]
-            # print(player_value)
-        except TypeError:
+        row = result.fetchone()
+        
+        if not row:
+            raise HTTPException(404, "Metric not found")
+        if row.player_value is None:
             raise HTTPException(404, "Player not found in database")
+            
+        metric_id = row.id
+        unit = row.unit
+        higher_is_better = row.higher_is_better
+        player_value = float(row.player_value)
 
+        # QUERY 2: Fetch all aggregates efficiently
         result = await conn.execute(
             text(
                 """
-                SELECT MIN(value) AS min_value,
+                SELECT 
+                    MIN(value) AS min_value,
                     MAX(value) AS max_value,
-                    COUNT(*) AS sample_size
+                    COUNT(*) AS sample_size,
+                    100.0 * COUNT(*) FILTER (WHERE value <= :pv) / NULLIF(COUNT(*), 0) AS pct,
+                    COUNT(*) FILTER (WHERE value > :pv) + 1 AS custom_rank_desc,
+                    COUNT(*) FILTER (WHERE value < :pv) + 1 AS custom_rank_asc,
+                    MIN(log10(value + 1)) AS log_mn,
+                    MAX(log10(value + 1)) AS log_mx
                 FROM metric_values 
                 WHERE metric_id = :metric_id
                 """
             ),
-            {"metric_id": metric_id},
+            {"metric_id": metric_id, "pv": player_value},
         )
         bounds = result.fetchone()
-        # print(bounds)
+        min_value = float(bounds.min_value) if bounds.min_value is not None else 0.0
+        max_value = float(bounds.max_value) if bounds.max_value is not None else 0.0
+        sample_size = bounds.sample_size or 0
+        percentile = float(bounds.pct) if bounds.pct is not None else 0.0
+        player_rank = bounds.custom_rank_desc if higher_is_better else bounds.custom_rank_asc
+        log_mn = bounds.log_mn
+        log_mx = bounds.log_mx
 
-        min_value = bounds.min_value
-        max_value = bounds.max_value
-        sample_size = bounds.sample_size
+        # Calculate bucket edges locally in Python
+        bucket_edges = []
+        if log_mn is not None and log_mx is not None:
+            bucket_edges = [
+                float(10 ** (log_mn + (log_mx - log_mn) * (i / BUCKET_COUNT)) - 1)
+                for i in range(BUCKET_COUNT + 1)
+            ]
 
-        result = await conn.execute(
-            text(
-                """
-                WITH bounds AS (
-                SELECT MIN(log10(value + 1)) AS mn,
-                        MAX(log10(value + 1)) AS mx
-                FROM metric_values
-                WHERE metric_id = :metric_id
+        # QUERY 3: Calculate the histogram based on bounds
+        buckets = []
+        if log_mn is not None and log_mx is not None:
+            result = await conn.execute(
+                text(
+                    """
+                    WITH hist AS (
+                        SELECT LEAST(width_bucket(log10(value + 1), :log_mn, :log_mx + 1e-9, :bucket_count), :bucket_count) AS bucket,
+                               COUNT(*) AS c
+                        FROM metric_values
+                        WHERE metric_id = :metric_id
+                        GROUP BY bucket
+                    ),
+                    series AS (
+                        SELECT generate_series(1, :bucket_count) AS bucket
+                    )
+                    SELECT s.bucket, COALESCE(h.c, 0) AS count
+                    FROM series s
+                    LEFT JOIN hist h ON h.bucket = s.bucket
+                    ORDER BY s.bucket;
+                    """
                 ),
-                hist AS (
-                SELECT LEAST(width_bucket(log10(value + 1), b.mn, b.mx + 1e-9, :bucket_count), :bucket_count) AS bucket,
-                        COUNT(*) AS c
-                FROM metric_values v
-                CROSS JOIN bounds b
-                WHERE v.metric_id = :metric_id
-                GROUP BY bucket
-                ),
-                series AS (
-                SELECT generate_series(1, :bucket_count) AS bucket
-                )
-                SELECT s.bucket, COALESCE(h.c, 0) AS count
-                FROM series s
-                LEFT JOIN hist h ON h.bucket = s.bucket
-                ORDER BY s.bucket;
-                """
-            ),
-            {"bucket_count": BUCKET_COUNT, "metric_id": metric_id},
-        )
-        buckets_row = result.fetchall()
+                {"bucket_count": BUCKET_COUNT, "metric_id": metric_id, "log_mn": log_mn, "log_mx": log_mx},
+            )
+            buckets_row = result.fetchall()
+            buckets = [float(item[1]) for item in buckets_row]
 
-        buckets = [float(item[1]) for item in buckets_row]
-
-        # print(buckets)
-        result = await conn.execute(
-            text(
-                """
-                WITH bounds AS (
-                SELECT MIN(log10(value + 1)) AS mn,
-                        MAX(log10(value + 1)) AS mx
-                FROM metric_values
-                WHERE metric_id = :metric_id
-                )
-                SELECT power(10, mn + (mx - mn) * (i::float / :bucket_count)) - 1 AS bucket_edge
-                FROM bounds, generate_series(0, :bucket_count) AS i;
-                """
-            ),
-            {"bucket_count": BUCKET_COUNT, "metric_id": metric_id},
-        )
-        bucket_edges_row = result.fetchall()
-        bucket_edges = [float(item[0]) for item in bucket_edges_row]
-        # print(bucket_edges)
-
-        result = await conn.execute(
-            text(
-                """
-                SELECT
-                100.0 * COUNT(*) FILTER (WHERE value <= :pv) / COUNT(*) AS pct
-                FROM metric_values
-                WHERE metric_id = :metric_id
-            """
-            ),
-            {"pv": player_value, "metric_id": metric_id},
-        )
-        percentile_row = result.fetchone()
-
-        percentile = percentile_row.pct
-
-        # Calculate exact rank
-        rank_operator = ">" if higher_is_better else "<"
-        result = await conn.execute(
-            text(
-                f"""
-                SELECT COUNT(*) + 1 AS custom_rank
-                FROM metric_values
-                WHERE metric_id = :metric_id AND value {rank_operator} :player_value
-                """
-            ),
-            {"metric_id": metric_id, "player_value": player_value},
-        )
-        rank_row = result.fetchone()
-        player_rank = rank_row.custom_rank
-
-        # Get top 5 players
+        # QUERY 4: Fetch top players
         order_direction = "DESC" if higher_is_better else "ASC"
         result = await conn.execute(
             text(
@@ -207,24 +161,22 @@ async def get_stats(metric_key, player_uuid) -> HistogramData:
             {"metric_id": metric_id},
         )
         top_players_rows = result.fetchall()
-        top_players = [{"uuid": row.player_uuid, "value": float(row.value)} for row in top_players_rows]
+        top_players = [{"uuid": top_row.player_uuid, "value": float(top_row.value)} for top_row in top_players_rows]
 
-        # print(percentile)
         histogram_data = HistogramData(
             metric_key=metric_key,
             unit=unit,
             higher_is_better=higher_is_better,
             sample_size=sample_size,
-            min_value=float(min_value),
-            max_value=float(max_value),
+            min_value=min_value,
+            max_value=max_value,
             buckets=bucket_edges,
             counts=buckets,
-            percentile=float(percentile),
-            player_value=float(player_value),
+            percentile=percentile,
+            player_value=player_value,
             top_players=top_players,
             player_rank=player_rank,
         )
-        # print(histogram_data)
         return histogram_data
 
 
