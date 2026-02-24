@@ -183,9 +183,7 @@ async def get_full_guild_members(
     tasks = []
     for member in guild_data.members[offset : offset + amount_to_load]:
         tasks.append(
-            get_member(
-                member, unsolved_uuids, resolved_uuids, session, http_client, redis
-            )
+            get_member(member, unsolved_uuids, resolved_uuids, http_client, redis)
         )
 
     results = await asyncio.gather(*tasks)
@@ -196,13 +194,12 @@ async def get_member(
     member: HypixelGuildMember,
     unsolved_uuids: list,
     resolved_uuids: list,
-    session: AsyncSession,
     http_client: httpx.AsyncClient,
     redis: Redis,
 ):
     if member.uuid in unsolved_uuids:
         data = await get_minecraft_data(
-            member.uuid, session, http_client, redis
+            member.uuid, http_client, redis
         )  # this fetches live data
         return HypixelGuildMemberFull(
             username=data.username,

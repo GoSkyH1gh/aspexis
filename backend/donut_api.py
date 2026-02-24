@@ -150,7 +150,7 @@ async def add_donut_stats_to_db(
     }
 
     try:
-        mojang_data = await get_minecraft_data(username, session, http_client, redis)
+        mojang_data = await get_minecraft_data(username, http_client, redis)
         uuid = mojang_data.uuid
     except HTTPException:
         print(

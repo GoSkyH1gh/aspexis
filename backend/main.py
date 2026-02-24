@@ -191,11 +191,13 @@ def health_check():
 async def get_profile(
     request: Request,
     identifier,
-    session: AsyncSession = Depends(get_db),
+    allow_stale: bool = False,
     http_client: httpx.AsyncClient = Depends(get_client),
     redis: Redis = Depends(get_redis),
 ) -> MojangData:
-    return await get_minecraft_data(identifier, session, http_client, redis)
+    return await get_minecraft_data(
+        identifier, http_client, redis, allow_stale=allow_stale
+    )
 
 
 @app.get(
