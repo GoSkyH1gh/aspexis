@@ -799,8 +799,115 @@ button {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
   height: 100%;
+  width: 25px;
+}
+
+.distribution-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.distribution-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #bbb;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.distribution-tab[aria-selected="true"] {
+  border-bottom: 2px solid #a130f6;
+  color: #f4eae3;
+}
+
+.leaderboard-list {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  background-color: var(--color-surface-layer-2);
+  border-radius: 8px;
+  text-decoration: none;
+  color: #f4eae3;
+  transition: background-color 0.2s;
+  image-rendering: pixelated;
+}
+
+.leaderboard-item:hover {
+  background-color: var(--color-surface-layer-3);
+}
+
+.leaderboard-item.current-user {
+  background-color: var(--color-surface-layer-3);
+}
+
+.leaderboard-item-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.leaderboard-rank {
+  font-weight: 600;
+  min-width: 2.5rem;
+  text-align: right;
+  color: #bbb;
+  font-family: "Google Sans Code", monospace;
+  font-weight: 700;
+}
+
+.leaderboard-rank.top-rank {
+  color: var(--color-selected);
+}
+
+.leaderboard-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+}
+
+.leaderboard-avatar-placeholder {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background-color: #333;
+}
+
+.leaderboard-avatar-transparent {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.leaderboard-value {
+  font-family: "Google Sans Code", monospace;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.leaderboard-value.highlight {
+  color: var(--color-selected);
+}
+
+.leaderboard-separator {
+  background-color: var(--color-surface-layer-3);
+  height: 0.1rem;
+  margin: 0 10px;
+  border-radius: 5px;
 }
 
 .skin-options-container {

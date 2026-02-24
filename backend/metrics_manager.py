@@ -24,6 +24,8 @@ class HistogramData(BaseModel):
     buckets: List[float]
     counts: List[int]
     percentile: float
+    top_players: List[dict]
+    player_rank: int
 
 
 async def add_value(conn, uuid, id, value) -> None:
@@ -175,6 +177,38 @@ async def get_stats(metric_key, player_uuid) -> HistogramData:
 
         percentile = percentile_row.pct
 
+        # Calculate exact rank
+        rank_operator = ">" if higher_is_better else "<"
+        result = await conn.execute(
+            text(
+                f"""
+                SELECT COUNT(*) + 1 AS custom_rank
+                FROM metric_values
+                WHERE metric_id = :metric_id AND value {rank_operator} :player_value
+                """
+            ),
+            {"metric_id": metric_id, "player_value": player_value},
+        )
+        rank_row = result.fetchone()
+        player_rank = rank_row.custom_rank
+
+        # Get top 5 players
+        order_direction = "DESC" if higher_is_better else "ASC"
+        result = await conn.execute(
+            text(
+                f"""
+                SELECT player_uuid, value 
+                FROM metric_values 
+                WHERE metric_id = :metric_id 
+                ORDER BY value {order_direction} 
+                LIMIT 5
+                """
+            ),
+            {"metric_id": metric_id},
+        )
+        top_players_rows = result.fetchall()
+        top_players = [{"uuid": row.player_uuid, "value": float(row.value)} for row in top_players_rows]
+
         # print(percentile)
         histogram_data = HistogramData(
             metric_key=metric_key,
@@ -187,6 +221,8 @@ async def get_stats(metric_key, player_uuid) -> HistogramData:
             counts=buckets,
             percentile=float(percentile),
             player_value=float(player_value),
+            top_players=top_players,
+            player_rank=player_rank,
         )
         # print(histogram_data)
         return histogram_data

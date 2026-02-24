@@ -27,11 +27,15 @@ const capesUrl = `${baseUrl}/v1/players/capes/`;
 
 export async function fetchMojang(
   search_term: string | undefined,
+  allow_stale: boolean = false
 ): Promise<MojangData | null> {
   if (!search_term) {
     throw new InvalidArgumentsError();
   }
-  const response = await fetch(mojangUrl + encodeURIComponent(search_term));
+  const queryParam = allow_stale ? "?allow_stale=true" : "";
+  const response = await fetch(
+    mojangUrl + encodeURIComponent(search_term) + queryParam
+  );
 
   if (response.status === 404) {
     return null;
