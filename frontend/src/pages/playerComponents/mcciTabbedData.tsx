@@ -11,7 +11,7 @@ import { McciPlayer } from "../../client";
 function McciTabbedData({
   mcciData,
 }: {
-  mcciData: McciPlayer | null | undefined
+  mcciData: McciPlayer | null | undefined;
 }) {
   let navigator = useNavigate();
   if (!mcciData) {
@@ -28,7 +28,7 @@ function McciTabbedData({
       >
         <div className="guild-member-flex-container">
           <img
-            src={`https://vzge.me/face/128/${friend.uuid}.png`}
+            src={`https://minotar.net/helm/${friend.uuid}/128.png`}
             className="guild-member-image"
             height="80"
             width="80"
@@ -59,7 +59,10 @@ function McciTabbedData({
         <InfoCard
           label="Last Login"
           value={formatISOToDistance(mcciData.last_join)}
-          tooltip={mcciData.last_join && (formatISOTimestamp(mcciData.last_join)) || null}
+          tooltip={
+            (mcciData.last_join && formatISOTimestamp(mcciData.last_join)) ||
+            null
+          }
         />
         <InfoCard label="Rank" value={mcciData.rank ?? "No Rank"} />
         <InfoCard

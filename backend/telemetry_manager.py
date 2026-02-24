@@ -1,11 +1,9 @@
-from metrics_manager import get_engine, text
-from db import SessionLocal
+from sqlalchemy import text
+from db import AsyncSessionLocal, engine
 
-
-def init_telemetry_manager() -> None:
-    engine = get_engine()
-    with engine.begin() as conn:
-        conn.execute(
+async def init_telemetry_manager() -> None:
+    async with engine.begin() as conn:
+        await conn.execute(
             text(
                 """
             CREATE TABLE IF NOT EXISTS telemetry_events (
@@ -32,8 +30,8 @@ async def add_telemetry_event(
     properties: dict | None = None,
 
 ) -> None:
-    with SessionLocal() as session:
-        session.execute(
+    async with AsyncSessionLocal() as session:
+        await session.execute(
             text(
                 """
                 INSERT INTO telemetry_events (path, provider, status_code, latency_ms, cache_hit, properties)
@@ -49,7 +47,8 @@ async def add_telemetry_event(
                 "properties": properties,
             },
         )
-        session.commit()
+        await session.commit()
 
 if __name__ == "__main__":
-    init_telemetry_manager()
+    import asyncio
+    asyncio.run(init_telemetry_manager())

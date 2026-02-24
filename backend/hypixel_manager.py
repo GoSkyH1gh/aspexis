@@ -9,8 +9,8 @@ from hypixel_api import (
 )
 from utils import check_valid_uuid
 import exceptions
-from sqlalchemy.orm import Session
-from metrics_manager import get_engine
+from sqlalchemy.ext.asyncio import AsyncSession
+from db import engine
 from typing import Tuple, Optional, List
 from minecraft_manager import bulk_get_usernames_cache, get_minecraft_data
 import asyncio
@@ -59,13 +59,15 @@ async def get_hypixel_data(
     if player_cache is not None:
         player_data, guild_id = player_cache
         hypixel_cache_valid = True
-    else:
-        print("Failed getting data from hypixel cache, getting live result")
 
     if guild_id is None:
         cached_guild_id = await redis.get(f"{HYPIXEL_PLAYER_GUILD_KEY}{uuid}")
         if cached_guild_id:
-            guild_id = cached_guild_id.decode("utf-8") if isinstance(cached_guild_id, bytes) else str(cached_guild_id)
+            guild_id = (
+                cached_guild_id.decode("utf-8")
+                if isinstance(cached_guild_id, bytes)
+                else str(cached_guild_id)
+            )
 
     if player_data is None:
         player_data = await get_core_hypixel_data(uuid, http_client)
@@ -151,7 +153,7 @@ class HypixelGuildMemberParams(BaseModel):
 
 async def get_full_guild_members(
     id: str,
-    session: Session,
+    session: AsyncSession,
     amount_to_load: int,
     http_client: httpx.AsyncClient,
     redis: Redis,
@@ -194,7 +196,7 @@ async def get_member(
     member: HypixelGuildMember,
     unsolved_uuids: list,
     resolved_uuids: list,
-    session: Session,
+    session: AsyncSession,
     http_client: httpx.AsyncClient,
     redis: Redis,
 ):
@@ -217,7 +219,7 @@ async def get_member(
                 )
 
 
-def add_hypixel_stats_to_db(hypixel_data: HypixelFullData):
+async def add_hypixel_stats_to_db(hypixel_data: HypixelFullData):
     if not isinstance(hypixel_data, HypixelFullData):
         print("Invalid data type passed to add_hypixel_stats_to_db")
         return
@@ -228,15 +230,15 @@ def add_hypixel_stats_to_db(hypixel_data: HypixelFullData):
         23: hypixel_data.player.achievement_points,
     }
 
-    engine = get_engine()
-    with engine.begin() as conn:
+    async with engine.begin() as conn:
         for stat in stats_to_add:
             if stats_to_add.get(stat, None) is not None:
-                add_value(conn, hypixel_data.player.uuid, stat, stats_to_add[stat])
+                await add_value(
+                    conn, hypixel_data.player.uuid, stat, stats_to_add[stat]
+                )
 
 
 if __name__ == "__main__":
-    db_engine = get_engine()
     hypixel_data = get_hypixel_data(
         "3ff2e63ad63045e0b96f57cd0eae708d", httpx.AsyncClient(), Redis()
     )

@@ -4,7 +4,8 @@ from dotenv import load_dotenv
 import os
 from pydantic import BaseModel
 from fastapi import HTTPException
-from metrics_manager import add_value, get_engine
+from metrics_manager import add_value
+from db import engine
 from minecraft_manager import get_minecraft_data
 import exceptions
 from redis.asyncio import Redis
@@ -32,7 +33,8 @@ class DonutPlayerStats(BaseModel):
 
 
 async def get_donut_stats(
-    username: str, http_client: httpx.AsyncClient,
+    username: str,
+    http_client: httpx.AsyncClient,
 ) -> DonutPlayerStats:
     """Returns a DonutPlayerStats object on success, raises NotFound on fail"""
     assert donut_api_key is not None, "Donut API key not found"
@@ -46,8 +48,7 @@ async def get_donut_stats(
 
         online_status = await get_donut_status(username, http_client)
 
-    except Exception as e:
-        print(f"could not retrieve stats: {e}")
+    except Exception:
         raise exceptions.NotFound()
 
     stats_to_convert = {
@@ -126,7 +127,11 @@ async def get_donut_status(username: str, http_client: httpx.AsyncClient) -> boo
 
 
 async def add_donut_stats_to_db(
-    data: DonutPlayerStats, username, session, http_client: httpx.AsyncClient, redis: Redis
+    data: DonutPlayerStats,
+    username,
+    session,
+    http_client: httpx.AsyncClient,
+    redis: Redis,
 ) -> None:
     if not isinstance(data, DonutPlayerStats):
         print("Couldn't add donut data to db because it's not DonutPlayerStats")
@@ -159,16 +164,12 @@ async def add_donut_stats_to_db(
         )
         return
 
-    def write_to_db_sync():
-        engine = get_engine()
-        with engine.begin() as conn:
-            for stat in stats_to_add:
-                if stats_to_add.get(stat, None) is not None:
-                    add_value(conn, uuid, stat, stats_to_add[stat])
-
-    await asyncio.to_thread(write_to_db_sync)
+    async with engine.begin() as conn:
+        for stat in stats_to_add:
+            if stats_to_add.get(stat, None) is not None:
+                await add_value(conn, uuid, stat, stats_to_add[stat])
 
 
 if __name__ == "__main__":
-    data = asyncio.run(get_donut_stats("2b3t", httpx.AsyncClient(), Redis()))
+    data = asyncio.run(get_donut_stats("2b3t", httpx.AsyncClient()))
     print(data)

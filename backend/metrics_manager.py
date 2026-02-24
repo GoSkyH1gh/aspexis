@@ -1,10 +1,11 @@
 import os
 import re
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, text, Engine
+from sqlalchemy import text
 from pydantic import BaseModel
 from typing import Optional, List
 from fastapi import HTTPException
+from db import engine
 
 
 BUCKET_COUNT = 6
@@ -25,22 +26,8 @@ class HistogramData(BaseModel):
     percentile: float
 
 
-def get_engine() -> Engine:
-    # Use psycopg2 for sync PostgreSQL
-    db_url = os.getenv("DATABASE_URL").split("?")[0]
-    db_url = re.sub(r"^postgresql\+asyncpg:", "postgresql+psycopg2:", db_url)
-    db_url = re.sub(r"^postgresql:", "postgresql+psycopg2:", db_url)
-
-    engine = create_engine(
-        db_url,
-        connect_args={"sslmode": "require"},
-        echo=False,
-    )
-    return engine
-
-
-def add_value(conn, uuid, id, value) -> None:
-    conn.execute(
+async def add_value(conn, uuid, id, value) -> None:
+    await conn.execute(
         text(
             """
             INSERT INTO metric_values (player_uuid, metric_id, value)
@@ -53,10 +40,9 @@ def add_value(conn, uuid, id, value) -> None:
     )
 
 
-def create_stat() -> None:
-    engine = get_engine()
-    with engine.begin() as conn:
-        conn.execute(
+async def create_stat() -> None:
+    async with engine.begin() as conn:
+        await conn.execute(
             text(
                 "INSERT INTO metrics (key, label, source, unit) VALUES(:key, :label, :source, :unit)"
             ),
@@ -69,10 +55,9 @@ def create_stat() -> None:
         )
 
 
-def get_stats(metric_key, player_uuid) -> HistogramData:
-    engine = get_engine()
-    with engine.begin() as conn:
-        metric_row = conn.execute(
+async def get_stats(metric_key, player_uuid) -> HistogramData:
+    async with engine.begin() as conn:
+        result = await conn.execute(
             text(
                 """
             SELECT id, unit, higher_is_better
@@ -81,13 +66,14 @@ def get_stats(metric_key, player_uuid) -> HistogramData:
             """
             ),
             {"metric_key": metric_key},
-        ).fetchone()
+        )
+        metric_row = result.fetchone()
         metric_id = metric_row.id
         unit = metric_row.unit
         higher_is_better = metric_row.higher_is_better
 
         try:
-            player_value = conn.execute(
+            result = await conn.execute(
                 text(
                     """
                     SELECT value
@@ -97,12 +83,13 @@ def get_stats(metric_key, player_uuid) -> HistogramData:
                     """
                 ),
                 {"metric_id": metric_id, "player_uuid": player_uuid},
-            ).fetchone()[0]
+            )
+            player_value = result.fetchone()[0]
             # print(player_value)
         except TypeError:
             raise HTTPException(404, "Player not found in database")
 
-        bounds = conn.execute(
+        result = await conn.execute(
             text(
                 """
                 SELECT MIN(value) AS min_value,
@@ -113,14 +100,15 @@ def get_stats(metric_key, player_uuid) -> HistogramData:
                 """
             ),
             {"metric_id": metric_id},
-        ).fetchone()
+        )
+        bounds = result.fetchone()
         # print(bounds)
 
         min_value = bounds.min_value
         max_value = bounds.max_value
         sample_size = bounds.sample_size
 
-        buckets_row = conn.execute(
+        result = await conn.execute(
             text(
                 """
                 WITH bounds AS (
@@ -147,12 +135,13 @@ def get_stats(metric_key, player_uuid) -> HistogramData:
                 """
             ),
             {"bucket_count": BUCKET_COUNT, "metric_id": metric_id},
-        ).fetchall()
+        )
+        buckets_row = result.fetchall()
 
         buckets = [float(item[1]) for item in buckets_row]
 
         # print(buckets)
-        bucket_edges_row = conn.execute(
+        result = await conn.execute(
             text(
                 """
                 WITH bounds AS (
@@ -166,11 +155,12 @@ def get_stats(metric_key, player_uuid) -> HistogramData:
                 """
             ),
             {"bucket_count": BUCKET_COUNT, "metric_id": metric_id},
-        ).fetchall()
+        )
+        bucket_edges_row = result.fetchall()
         bucket_edges = [float(item[0]) for item in bucket_edges_row]
         # print(bucket_edges)
 
-        percentile_row = conn.execute(
+        result = await conn.execute(
             text(
                 """
                 SELECT
@@ -180,7 +170,8 @@ def get_stats(metric_key, player_uuid) -> HistogramData:
             """
             ),
             {"pv": player_value, "metric_id": metric_id},
-        ).fetchone()
+        )
+        percentile_row = result.fetchone()
 
         percentile = percentile_row.pct
 
@@ -202,5 +193,6 @@ def get_stats(metric_key, player_uuid) -> HistogramData:
 
 
 if __name__ == "__main__":
-    get_stats("wynncraft_hours_played", "1ed075fc5aa942e0a29f640326c1d80c")
-    # add_value("3ff2e63ad63045e0b96f57cd0eae708d", 7, 52)
+    import asyncio
+    asyncio.run(get_stats("wynncraft_hours_played", "1ed075fc5aa942e0a29f640326c1d80c"))
+    # asyncio.run(add_value("3ff2e63ad63045e0b96f57cd0eae708d", 7, 52))

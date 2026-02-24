@@ -1,5 +1,5 @@
 from minecraft_api import GetMojangAPIData, MojangData
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 import time
 import httpx
 from utils import normalize_uuid, is_valid_uuid
@@ -98,7 +98,7 @@ async def bulk_get_usernames_cache(
 
 
 async def get_minecraft_data(
-    search_term: str, session: Session, http_client: httpx.AsyncClient, redis: Redis
+    search_term: str, session: AsyncSession, http_client: httpx.AsyncClient, redis: Redis
 ) -> MojangData:
 
     data = await get_minecraft_cache(search_term, redis)
