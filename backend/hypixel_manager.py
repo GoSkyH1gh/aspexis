@@ -12,7 +12,12 @@ import exceptions
 from sqlalchemy.ext.asyncio import AsyncSession
 from db import engine
 from typing import Tuple, Optional, List
-from minecraft_manager import bulk_get_usernames_cache, get_minecraft_data
+from minecraft_manager import (
+    bulk_get_usernames_cache,
+    get_minecraft_data,
+    update_player_history,
+)
+from fastapi import BackgroundTasks
 import asyncio
 import httpx
 from redis.asyncio import Redis
@@ -158,6 +163,7 @@ async def get_full_guild_members(
     http_client: httpx.AsyncClient,
     redis: Redis,
     offset: int = 0,
+    background_tasks: BackgroundTasks | None = None,
 ) -> List[HypixelGuildMemberFull]:
     guild_data = await get_hypixel_guild_cache(id, redis)
     if guild_data is not None:
@@ -183,7 +189,15 @@ async def get_full_guild_members(
     tasks = []
     for member in guild_data.members[offset : offset + amount_to_load]:
         tasks.append(
-            get_member(member, unsolved_uuids, resolved_uuids, http_client, redis)
+            get_member(
+                member,
+                unsolved_uuids,
+                resolved_uuids,
+                http_client,
+                redis,
+                session,
+                background_tasks,
+            )
         )
 
     results = await asyncio.gather(*tasks)
@@ -196,11 +210,15 @@ async def get_member(
     resolved_uuids: list,
     http_client: httpx.AsyncClient,
     redis: Redis,
+    session: AsyncSession,
+    background_tasks: BackgroundTasks | None = None,
 ):
     if member.uuid in unsolved_uuids:
         data = await get_minecraft_data(
             member.uuid, http_client, redis
         )  # this fetches live data
+        if background_tasks and data.source != "cache":
+            background_tasks.add_task(update_player_history, data, session)
         return HypixelGuildMemberFull(
             username=data.username,
             uuid=data.uuid,

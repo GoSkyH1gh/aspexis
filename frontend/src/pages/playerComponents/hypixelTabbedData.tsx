@@ -1,7 +1,6 @@
 import InfoCard from "./infoCard";
 import {
   formatValue,
-  handleStatClick,
   formatISOToDistance,
 } from "../../utils/utils";
 import { Dialog } from "radix-ui";
@@ -18,6 +17,8 @@ import {
 } from "../../client";
 import DistributionChartWrapper from "./distributionChartWrapper";
 import { Icon } from "@iconify/react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchMetric } from "../../utils/queries";
 
 type HypixelDataProps = {
   hypixelData: HypixelFullData;
@@ -28,7 +29,27 @@ function HypixelTabbedData({
   hypixelData,
   hypixelGuildQuery,
 }: HypixelDataProps) {
-  const [metricData, setMetricData] = useState(null);
+  const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
+
+  const { data: metricDataRaw, isLoading, isError } = useQuery({
+    queryKey: ["metric", selectedMetric, hypixelData.player.uuid],
+    queryFn: () => fetchMetric(selectedMetric!, hypixelData.player.uuid),
+    enabled: !!selectedMetric,
+  });
+
+  let metricData: any = null;
+  if (selectedMetric) {
+    if (isLoading) {
+      metricData = "loading";
+    } else if (isError) {
+      metricData = "error";
+    } else if (metricDataRaw === null) {
+      metricData = "notFound";
+    } else if (metricDataRaw) {
+      metricData = "metricDataRaw" in metricDataRaw ? metricDataRaw.metricDataRaw : metricDataRaw;
+    }
+  }
+
   return (
     <>
       <ul className="info-card-list">
@@ -53,10 +74,8 @@ function HypixelTabbedData({
           label="Level"
           hasStats={true}
           onClick={() =>
-            handleStatClick(
-              "hypixel_level",
-              hypixelData.player.uuid,
-              setMetricData,
+            setSelectedMetric(
+              "hypixel_level"
             )
           }
           value={formatValue(hypixelData.player.network_level)}
@@ -67,10 +86,8 @@ function HypixelTabbedData({
           label="Karma"
           hasStats={true}
           onClick={() =>
-            handleStatClick(
-              "hypixel_karma",
-              hypixelData.player.uuid,
-              setMetricData,
+            setSelectedMetric(
+              "hypixel_karma"
             )
           }
           value={formatValue(hypixelData.player.karma)}
@@ -81,10 +98,8 @@ function HypixelTabbedData({
           label="Achievement Points"
           hasStats={true}
           onClick={() =>
-            handleStatClick(
-              "hypixel_achievement_points",
-              hypixelData.player.uuid,
-              setMetricData,
+            setSelectedMetric(
+              "hypixel_achievement_points"
             )
           }
           value={formatValue(hypixelData.player.achievement_points)}

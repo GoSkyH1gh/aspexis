@@ -212,3 +212,25 @@ export async function fetchCapes(
 
   return response.json();
 }
+
+export async function fetchMetric(
+  metric_key: string,
+  player_uuid: string,
+): Promise<any | null> {
+  if (!metric_key || !player_uuid) {
+    throw new InvalidArgumentsError();
+  }
+  const response = await fetch(
+    `${baseUrl}/v1/metrics/${encodeURIComponent(metric_key)}/distribution/${encodeURIComponent(player_uuid)}`
+  );
+
+  if (response.status === 404) {
+    return null;
+  }
+
+  if (!response.ok) {
+    throw new Error("Server error");
+  }
+
+  return response.json();
+}

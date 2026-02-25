@@ -1,11 +1,9 @@
-import os
-import re
 from dotenv import load_dotenv
 from sqlalchemy import text
 from pydantic import BaseModel
 from typing import Optional, List
-from fastapi import HTTPException
 from db import engine
+import exceptions
 
 
 BUCKET_COUNT = 6
@@ -74,9 +72,9 @@ async def get_stats(metric_key, player_uuid) -> HistogramData:
         row = result.fetchone()
         
         if not row:
-            raise HTTPException(404, "Metric not found")
+            raise exceptions.NotFound()
         if row.player_value is None:
-            raise HTTPException(404, "Player not found in database")
+            raise exceptions.NotFound()
             
         metric_id = row.id
         unit = row.unit
