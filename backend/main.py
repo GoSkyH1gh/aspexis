@@ -29,7 +29,7 @@ from hypixel_manager import (
     HypixelGuildMemberParams,
     add_hypixel_stats_to_db,
 )
-from minecraft_manager import get_minecraft_data
+from minecraft_manager import get_minecraft_data, update_player_history
 from typing import List, Annotated, Literal, Any
 import time
 from telemetry_manager import add_telemetry_event
@@ -191,13 +191,18 @@ def health_check():
 async def get_profile(
     request: Request,
     identifier,
+    background_tasks: BackgroundTasks,
     allow_stale: bool = False,
     http_client: httpx.AsyncClient = Depends(get_client),
     redis: Redis = Depends(get_redis),
+    session: AsyncSession = Depends(get_db),
 ) -> MojangData:
-    return await get_minecraft_data(
+    data = await get_minecraft_data(
         identifier, http_client, redis, allow_stale=allow_stale
     )
+    if data.source != "cache":
+        background_tasks.add_task(update_player_history, data, session)
+    return data
 
 
 @app.get(
@@ -250,6 +255,7 @@ async def get_hypixel(
 async def get_guild(
     id,
     query_params: Annotated[HypixelGuildMemberParams, Query()],
+    background_tasks: BackgroundTasks,
     session: AsyncSession = Depends(get_db),
     http_client: httpx.AsyncClient = Depends(get_client),
     redis: Redis = Depends(get_redis),
@@ -261,6 +267,7 @@ async def get_guild(
         http_client,
         redis,
         query_params.offset,
+        background_tasks,
     )
 
 

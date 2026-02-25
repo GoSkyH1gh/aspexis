@@ -1,8 +1,10 @@
 import InfoCard from "./infoCard";
-import { formatValue, handleStatClick } from "../../utils/utils";
+import { formatValue } from "../../utils/utils";
 import { useState } from "react";
 import DistributionChartWrapper from "./distributionChartWrapper";
 import { DonutPlayerStats } from "../../client";
+import { useQuery } from "@tanstack/react-query";
+import { fetchMetric } from "../../utils/queries";
 
 type DonutProps = {
   donutData: DonutPlayerStats | null | undefined
@@ -10,7 +12,26 @@ type DonutProps = {
 };
 
 function DonutTabbedData({ donutData, uuid }: DonutProps) {
-  const [metricData, setMetricData] = useState(null);
+  const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
+
+  const { data: metricDataRaw, isLoading, isError } = useQuery({
+    queryKey: ["metric", selectedMetric, uuid],
+    queryFn: () => fetchMetric(selectedMetric!, uuid),
+    enabled: !!selectedMetric,
+  });
+
+  let metricData: any = null;
+  if (selectedMetric) {
+    if (isLoading) {
+      metricData = "loading";
+    } else if (isError) {
+      metricData = "error";
+    } else if (metricDataRaw === null) {
+      metricData = "notFound";
+    } else if (metricDataRaw) {
+      metricData = "metricDataRaw" in metricDataRaw ? metricDataRaw.metricDataRaw : metricDataRaw;
+    }
+  }
 
   if (!donutData) {
     return <p>No DonutSMP data to show</p>;
@@ -23,8 +44,9 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           hasStats={true}
           value={donutData.playtime_hours + " hours"}
           onClick={() =>
-            handleStatClick("donut_hours_played", uuid, setMetricData)
+            setSelectedMetric("donut_hours_played")
           }
+
         >
           <DistributionChartWrapper metricData={metricData} />
         </InfoCard>
@@ -36,7 +58,8 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           label="Kills"
           value={formatValue(donutData.kills)}
           hasStats={true}
-          onClick={() => handleStatClick("donut_kills", uuid, setMetricData)}
+          onClick={() => setSelectedMetric("donut_kills")}
+
         >
           <DistributionChartWrapper metricData={metricData} />
         </InfoCard>
@@ -44,7 +67,8 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           label="Deaths"
           value={formatValue(donutData.deaths)}
           hasStats={true}
-          onClick={() => handleStatClick("donut_deaths", uuid, setMetricData)}
+          onClick={() => setSelectedMetric("donut_deaths")}
+
         >
           <DistributionChartWrapper metricData={metricData} />
         </InfoCard>
@@ -55,7 +79,8 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           label="Money"
           value={formatValue(donutData.money)}
           hasStats={true}
-          onClick={() => handleStatClick("donut_money", uuid, setMetricData)}
+          onClick={() => setSelectedMetric("donut_money")}
+
         >
           <DistributionChartWrapper metricData={metricData} />
         </InfoCard>
@@ -64,8 +89,9 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           value={formatValue(donutData.money_spent)}
           hasStats={true}
           onClick={() =>
-            handleStatClick("donut_money_spent", uuid, setMetricData)
+            setSelectedMetric("donut_money_spent")
           }
+
         >
           <DistributionChartWrapper metricData={metricData} />
         </InfoCard>
@@ -74,8 +100,9 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           value={formatValue(donutData.money_earned)}
           hasStats={true}
           onClick={() =>
-            handleStatClick("donut_money_earned", uuid, setMetricData)
+            setSelectedMetric("donut_money_earned")
           }
+
         >
           <DistributionChartWrapper metricData={metricData} />
         </InfoCard>
@@ -83,7 +110,8 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           label="Shards"
           value={formatValue(donutData.shards)}
           hasStats={true}
-          onClick={() => handleStatClick("donut_shards", uuid, setMetricData)}
+          onClick={() => setSelectedMetric("donut_shards")}
+
         >
           <DistributionChartWrapper metricData={metricData} />
         </InfoCard>
@@ -95,8 +123,9 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           value={formatValue(donutData.placed_blocks)}
           hasStats={true}
           onClick={() =>
-            handleStatClick("donut_blocks_placed", uuid, setMetricData)
+            setSelectedMetric("donut_blocks_placed")
           }
+
         >
           <DistributionChartWrapper metricData={metricData} />
         </InfoCard>
@@ -105,8 +134,9 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           value={formatValue(donutData.broken_blocks)}
           hasStats={true}
           onClick={() =>
-            handleStatClick("donut_blocks_broken", uuid, setMetricData)
+            setSelectedMetric("donut_blocks_broken")
           }
+
         >
           <DistributionChartWrapper metricData={metricData} />
         </InfoCard>

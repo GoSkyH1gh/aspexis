@@ -4,12 +4,13 @@ import {
   formatISOTimestamp,
   formatISOToDistance,
   formatValue,
-  handleStatClick,
 } from "../../utils/utils";
 import WynncraftGuild from "./wynncraftGuild";
 import { useState } from "react";
 import DistributionChartWrapper from "./distributionChartWrapper";
 import { WynncraftPlayerSummary, WynncraftGuildInfo } from "../../client";
+import { useQuery } from "@tanstack/react-query";
+import { fetchMetric } from "../../utils/queries";
 
 type WynncraftProps = {
   wynncraftData: WynncraftPlayerSummary;
@@ -22,7 +23,26 @@ function WynncraftTabbedData({
   wynncraftGuildData,
   uuid,
 }: WynncraftProps) {
-  const [metricData, setMetricData] = useState(null);
+  const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
+
+  const { data: metricDataRaw, isLoading, isError } = useQuery({
+    queryKey: ["metric", selectedMetric, wynncraftData.uuid],
+    queryFn: () => fetchMetric(selectedMetric!, wynncraftData.uuid),
+    enabled: !!selectedMetric,
+  });
+
+  let metricData: any = null;
+  if (selectedMetric) {
+    if (isLoading) {
+      metricData = "loading";
+    } else if (isError) {
+      metricData = "error";
+    } else if (metricDataRaw === null) {
+      metricData = "notFound";
+    } else if (metricDataRaw) {
+      metricData = "metricDataRaw" in metricDataRaw ? metricDataRaw.metricDataRaw : metricDataRaw;
+    }
+  }
 
   let wynnGuildElements;
   if (wynncraftGuildData) {
@@ -75,10 +95,8 @@ function WynncraftTabbedData({
       <ul className="info-card-list">
         <InfoCard
           onClick={() =>
-            handleStatClick(
-              "wynncraft_hours_played",
-              wynncraftData.uuid,
-              setMetricData,
+            setSelectedMetric(
+              "wynncraft_hours_played"
             )
           }
           hasStats={true}
@@ -124,7 +142,7 @@ function WynncraftTabbedData({
       <ul className="info-card-list">
         <InfoCard
           onClick={() =>
-            handleStatClick("wynncraft_wars", wynncraftData.uuid, setMetricData)
+            setSelectedMetric("wynncraft_wars")
           }
           hasStats={true}
           label="Wars"
@@ -134,10 +152,8 @@ function WynncraftTabbedData({
         </InfoCard>
         <InfoCard
           onClick={() =>
-            handleStatClick(
-              "wynncraft_mobs_killed",
-              wynncraftData.uuid,
-              setMetricData,
+            setSelectedMetric(
+              "wynncraft_mobs_killed"
             )
           }
           hasStats={true}
@@ -148,10 +164,8 @@ function WynncraftTabbedData({
         </InfoCard>
         <InfoCard
           onClick={() =>
-            handleStatClick(
-              "wynncraft_chests_opened",
-              wynncraftData.uuid,
-              setMetricData,
+            setSelectedMetric(
+              "wynncraft_chests_opened"
             )
           }
           hasStats={true}
@@ -162,10 +176,8 @@ function WynncraftTabbedData({
         </InfoCard>
         <InfoCard
           onClick={() =>
-            handleStatClick(
-              "wynncraft_dungeons_completed",
-              wynncraftData.uuid,
-              setMetricData,
+            setSelectedMetric(
+              "wynncraft_dungeons_completed"
             )
           }
           hasStats={true}
@@ -176,10 +188,8 @@ function WynncraftTabbedData({
         </InfoCard>
         <InfoCard
           onClick={() =>
-            handleStatClick(
-              "wynncraft_raids_completed",
-              wynncraftData.uuid,
-              setMetricData,
+            setSelectedMetric(
+              "wynncraft_raids_completed"
             )
           }
           hasStats={true}
