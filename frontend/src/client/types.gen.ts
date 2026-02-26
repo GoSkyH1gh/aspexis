@@ -394,6 +394,10 @@ export type HypixelGuild = {
      */
     experience: number;
     /**
+     * Level
+     */
+    level: number;
+    /**
      * Tag
      */
     tag: string | null;
