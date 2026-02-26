@@ -25,7 +25,11 @@ function WynncraftTabbedData({
 }: WynncraftProps) {
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
 
-  const { data: metricDataRaw, isLoading, isError } = useQuery({
+  const {
+    data: metricDataRaw,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["metric", selectedMetric, wynncraftData.uuid],
     queryFn: () => fetchMetric(selectedMetric!, wynncraftData.uuid),
     enabled: !!selectedMetric,
@@ -40,7 +44,10 @@ function WynncraftTabbedData({
     } else if (metricDataRaw === null) {
       metricData = "notFound";
     } else if (metricDataRaw) {
-      metricData = "metricDataRaw" in metricDataRaw ? metricDataRaw.metricDataRaw : metricDataRaw;
+      metricData =
+        "metricDataRaw" in metricDataRaw
+          ? metricDataRaw.metricDataRaw
+          : metricDataRaw;
     }
   }
 
@@ -94,11 +101,7 @@ function WynncraftTabbedData({
       </h2>
       <ul className="info-card-list">
         <InfoCard
-          onClick={() =>
-            setSelectedMetric(
-              "wynncraft_hours_played"
-            )
-          }
+          onClick={() => setSelectedMetric("wynncraft_hours_played")}
           hasStats={true}
           label="Total playtime"
           value={
@@ -141,9 +144,7 @@ function WynncraftTabbedData({
       <h3>Global Stats</h3>
       <ul className="info-card-list">
         <InfoCard
-          onClick={() =>
-            setSelectedMetric("wynncraft_wars")
-          }
+          onClick={() => setSelectedMetric("wynncraft_wars")}
           hasStats={true}
           label="Wars"
           value={formatValue(wynncraftData.player_stats?.wars)}
@@ -151,11 +152,7 @@ function WynncraftTabbedData({
           <DistributionChartWrapper metricData={metricData} />
         </InfoCard>
         <InfoCard
-          onClick={() =>
-            setSelectedMetric(
-              "wynncraft_mobs_killed"
-            )
-          }
+          onClick={() => setSelectedMetric("wynncraft_mobs_killed")}
           hasStats={true}
           label="Mobs killed"
           value={formatValue(wynncraftData.player_stats?.mobs_killed)}
@@ -163,11 +160,7 @@ function WynncraftTabbedData({
           <DistributionChartWrapper metricData={metricData} />
         </InfoCard>
         <InfoCard
-          onClick={() =>
-            setSelectedMetric(
-              "wynncraft_chests_opened"
-            )
-          }
+          onClick={() => setSelectedMetric("wynncraft_chests_opened")}
           hasStats={true}
           label="Chests opened"
           value={formatValue(wynncraftData.player_stats?.chests_opened)}
@@ -175,11 +168,7 @@ function WynncraftTabbedData({
           <DistributionChartWrapper metricData={metricData} />
         </InfoCard>
         <InfoCard
-          onClick={() =>
-            setSelectedMetric(
-              "wynncraft_dungeons_completed"
-            )
-          }
+          onClick={() => setSelectedMetric("wynncraft_dungeons_completed")}
           hasStats={true}
           label="Dungeons completed"
           value={formatValue(wynncraftData.player_stats?.dungeons_completed)}
@@ -187,11 +176,7 @@ function WynncraftTabbedData({
           <DistributionChartWrapper metricData={metricData} />
         </InfoCard>
         <InfoCard
-          onClick={() =>
-            setSelectedMetric(
-              "wynncraft_raids_completed"
-            )
-          }
+          onClick={() => setSelectedMetric("wynncraft_raids_completed")}
           hasStats={true}
           label="Raids completed"
           value={formatValue(wynncraftData.player_stats?.raids_completed)}

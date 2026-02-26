@@ -9,6 +9,7 @@ import {
   WynncraftPlayerSummary,
   AbilityTreePage,
   PlayerStatus,
+  HistogramData,
 } from "../client";
 import { InvalidArgumentsError } from "./errors";
 
@@ -27,14 +28,14 @@ const capesUrl = `${baseUrl}/v1/players/capes/`;
 
 export async function fetchMojang(
   search_term: string | undefined,
-  allow_stale: boolean = false
+  allow_stale: boolean = false,
 ): Promise<MojangData | null> {
   if (!search_term) {
     throw new InvalidArgumentsError();
   }
   const queryParam = allow_stale ? "?allow_stale=true" : "";
   const response = await fetch(
-    mojangUrl + encodeURIComponent(search_term) + queryParam
+    mojangUrl + encodeURIComponent(search_term) + queryParam,
   );
 
   if (response.status === 404) {
@@ -216,12 +217,12 @@ export async function fetchCapes(
 export async function fetchMetric(
   metric_key: string,
   player_uuid: string,
-): Promise<any | null> {
+): Promise<HistogramData | null> {
   if (!metric_key || !player_uuid) {
     throw new InvalidArgumentsError();
   }
   const response = await fetch(
-    `${baseUrl}/v1/metrics/${encodeURIComponent(metric_key)}/distribution/${encodeURIComponent(player_uuid)}`
+    `${baseUrl}/v1/metrics/${encodeURIComponent(metric_key)}/distribution/${encodeURIComponent(player_uuid)}`,
   );
 
   if (response.status === 404) {

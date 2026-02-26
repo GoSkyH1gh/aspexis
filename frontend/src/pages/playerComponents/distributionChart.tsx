@@ -151,6 +151,7 @@ function DistributionChart({
                   <XAxis
                     dataKey="range"
                     tick={{ fill: "#f3f3f7", fontSize: 13 }}
+                    interval={0}
                   />
                   <Tooltip
                     contentStyle={{

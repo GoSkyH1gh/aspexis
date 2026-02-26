@@ -369,8 +369,31 @@ button {
   height: fit-content;
 }
 
-.info-card-row {
+.info-card-stats {
+  padding: 0;
+  margin: 0;
+  display: contents;
+}
+
+.info-card-button-wrapper {
+  transition: 0.2s background-color;
   display: flex;
+  gap: 0.3rem;
+}
+
+.info-card-icon-wrapper {
+  padding: 5px;
+  height: fit-content;
+}
+
+.info-card-content-wrapper {
+  text-align: left;
+  height: 100%;
+  line-height: 1.5;
+}
+
+.info-card-stats:hover {
+  background-color: var(--color-surface-layer-3);
 }
 
 .icon-button {
@@ -1150,6 +1173,8 @@ button {
 
 .history-icon {
   opacity: 0.6;
+  width: 18px;
+  height: 18px;
 }
 
 .search-history-popover {
@@ -1222,4 +1247,12 @@ button {
     animation: none;
     opacity: 0;
   }
+}
+
+.hypixel-guild-divider {
+  margin: 0 30px;
+  background-color: var(--color-surface-layer-3);
+  height: 0.1rem;
+  margin-top: 1rem;
+  border-radius: 5px;
 }
