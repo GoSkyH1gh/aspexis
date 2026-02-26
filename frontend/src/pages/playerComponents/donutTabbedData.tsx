@@ -7,14 +7,18 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchMetric } from "../../utils/queries";
 
 type DonutProps = {
-  donutData: DonutPlayerStats | null | undefined
+  donutData: DonutPlayerStats | null | undefined;
   uuid: string;
 };
 
 function DonutTabbedData({ donutData, uuid }: DonutProps) {
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
 
-  const { data: metricDataRaw, isLoading, isError } = useQuery({
+  const {
+    data: metricDataRaw,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["metric", selectedMetric, uuid],
     queryFn: () => fetchMetric(selectedMetric!, uuid),
     enabled: !!selectedMetric,
@@ -29,7 +33,10 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
     } else if (metricDataRaw === null) {
       metricData = "notFound";
     } else if (metricDataRaw) {
-      metricData = "metricDataRaw" in metricDataRaw ? metricDataRaw.metricDataRaw : metricDataRaw;
+      metricData =
+        "metricDataRaw" in metricDataRaw
+          ? metricDataRaw.metricDataRaw
+          : metricDataRaw;
     }
   }
 
@@ -43,10 +50,7 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           label="Total Playtime"
           hasStats={true}
           value={donutData.playtime_hours + " hours"}
-          onClick={() =>
-            setSelectedMetric("donut_hours_played")
-          }
-
+          onClick={() => setSelectedMetric("donut_hours_played")}
         >
           <DistributionChartWrapper metricData={metricData} />
         </InfoCard>
@@ -59,7 +63,6 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           value={formatValue(donutData.kills)}
           hasStats={true}
           onClick={() => setSelectedMetric("donut_kills")}
-
         >
           <DistributionChartWrapper metricData={metricData} />
         </InfoCard>
@@ -68,7 +71,6 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           value={formatValue(donutData.deaths)}
           hasStats={true}
           onClick={() => setSelectedMetric("donut_deaths")}
-
         >
           <DistributionChartWrapper metricData={metricData} />
         </InfoCard>
@@ -80,7 +82,6 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           value={formatValue(donutData.money)}
           hasStats={true}
           onClick={() => setSelectedMetric("donut_money")}
-
         >
           <DistributionChartWrapper metricData={metricData} />
         </InfoCard>
@@ -88,10 +89,7 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           label="Money spent"
           value={formatValue(donutData.money_spent)}
           hasStats={true}
-          onClick={() =>
-            setSelectedMetric("donut_money_spent")
-          }
-
+          onClick={() => setSelectedMetric("donut_money_spent")}
         >
           <DistributionChartWrapper metricData={metricData} />
         </InfoCard>
@@ -99,10 +97,7 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           label="Money earned"
           value={formatValue(donutData.money_earned)}
           hasStats={true}
-          onClick={() =>
-            setSelectedMetric("donut_money_earned")
-          }
-
+          onClick={() => setSelectedMetric("donut_money_earned")}
         >
           <DistributionChartWrapper metricData={metricData} />
         </InfoCard>
@@ -111,7 +106,6 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           value={formatValue(donutData.shards)}
           hasStats={true}
           onClick={() => setSelectedMetric("donut_shards")}
-
         >
           <DistributionChartWrapper metricData={metricData} />
         </InfoCard>
@@ -122,10 +116,7 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           label="Blocks placed"
           value={formatValue(donutData.placed_blocks)}
           hasStats={true}
-          onClick={() =>
-            setSelectedMetric("donut_blocks_placed")
-          }
-
+          onClick={() => setSelectedMetric("donut_blocks_placed")}
         >
           <DistributionChartWrapper metricData={metricData} />
         </InfoCard>
@@ -133,10 +124,7 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           label="Blocks broken"
           value={formatValue(donutData.broken_blocks)}
           hasStats={true}
-          onClick={() =>
-            setSelectedMetric("donut_blocks_broken")
-          }
-
+          onClick={() => setSelectedMetric("donut_blocks_broken")}
         >
           <DistributionChartWrapper metricData={metricData} />
         </InfoCard>

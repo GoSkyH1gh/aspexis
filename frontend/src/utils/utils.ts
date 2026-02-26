@@ -1,9 +1,4 @@
-import {
-  format,
-  formatDistanceToNow,
-  parseISO,
-  formatDistanceToNowStrict,
-} from "date-fns";
+import { format, parseISO, formatDistanceToNowStrict } from "date-fns";
 
 function formatISOTimestamp(timestamp: string | null | undefined) {
   // Convert string to Date object
@@ -13,11 +8,9 @@ function formatISOTimestamp(timestamp: string | null | undefined) {
 
   let readableDate;
   let date;
-  let relativeTime;
   try {
     date = parseISO(timestamp);
     readableDate = format(date, "d MMM yyyy");
-    relativeTime = formatDistanceToNow(date, { addSuffix: true }); // e.g. "2 days ago"
   } catch {
     readableDate = "Unknown";
   }
@@ -50,7 +43,7 @@ const formatISOToDistance = (isoDate: string | null | undefined) => {
   }
   try {
     const date = parseISO(isoDate);
-    return formatDistanceToNow(date, { addSuffix: true });
+    return formatDistanceToNowStrict(date, { addSuffix: true });
   } catch (error) {
     console.error("Error parsing ISO date:", error);
     return "Unknown";

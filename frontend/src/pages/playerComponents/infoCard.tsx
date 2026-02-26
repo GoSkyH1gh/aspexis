@@ -3,6 +3,7 @@ import ArrowOutward from "/src/assets/arrow-outward.svg";
 import { Popover } from "radix-ui";
 import { ReactNode } from "react";
 import { Tooltip } from "radix-ui";
+import { Icon } from "@iconify/react";
 
 // can't use both hasStats and tooltip at the same time
 type BaseProps = {
@@ -55,47 +56,59 @@ function InfoCard({
   if (hasStats) {
     return (
       <motion.li
-        className="info-card"
+        className="info-card info-card-stats"
         variants={{
           hidden: { opacity: 0, y: 20 },
           show: { opacity: 1, y: 0 },
         }}
       >
-        <div className="info-card-row">
-          <div>
-            <span className="info-card-label">{label}</span>
-            <br />
-            <span className="info-card-value">
-              {onlineIndicator && <StatusDot />}
-              {value}
-            </span>
-          </div>
-          <Popover.Root>
-            <Popover.Trigger asChild>
-              <motion.button
-                className="icon-button"
-                onClick={onClick}
-                whileHover={{ scale: 1 }}
-                whileTap={{ scale: 0.8 }}
+        <Popover.Root>
+          <Popover.Trigger asChild>
+            <button
+              onClick={onClick}
+              className="info-card-button-wrapper info-card"
+            >
+              <div className="info-card-content-wrapper">
+                <span className="info-card-label">{label}</span>
+                <br />
+                <span className="info-card-value">
+                  {onlineIndicator && <StatusDot />}
+
+                  {value}
+                </span>
+              </div>
+              <Tooltip.Root delayDuration={150}>
+                <Tooltip.Trigger asChild>
+                  <div className="info-card-icon-wrapper">
+                    <Icon
+                      icon="material-symbols:query-stats-rounded"
+                      height={20}
+                      width={20}
+                    />
+                  </div>
+                </Tooltip.Trigger>
+                <Tooltip.Portal>
+                  <Tooltip.Content className="TooltipContent">
+                    View Distribution
+                  </Tooltip.Content>
+                </Tooltip.Portal>
+              </Tooltip.Root>
+            </button>
+          </Popover.Trigger>
+          <Popover.Portal>
+            <Popover.Content align="start" side="right">
+              <motion.div
+                initial={{ scale: 0, y: -30, x: -60 }}
+                animate={{ scale: 1, y: 0, x: 0 }}
+                transition={{ duration: 0.6, type: "spring" }}
+                layout
+                className="popover-container"
               >
-                <img src={ArrowOutward} alt="View Stats" className="icon" />
-              </motion.button>
-            </Popover.Trigger>
-            <Popover.Portal>
-              <Popover.Content align="start" side="right">
-                <motion.div
-                  initial={{ scale: 0, y: -30, x: -60 }}
-                  animate={{ scale: 1, y: 0, x: 0 }}
-                  transition={{ duration: 0.6, type: "spring" }}
-                  layout
-                  className="popover-container"
-                >
-                  {children}
-                </motion.div>
-              </Popover.Content>
-            </Popover.Portal>
-          </Popover.Root>
-        </div>
+                {children}
+              </motion.div>
+            </Popover.Content>
+          </Popover.Portal>
+        </Popover.Root>
       </motion.li>
     );
   }

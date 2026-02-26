@@ -174,7 +174,8 @@ async def get_core_hypixel_data(uuid, http_client: httpx.AsyncClient) -> Hypixel
     if player_rank is None:
         player_rank = player.get("newPackageRank")
 
-    player_rank = rank_map.get(player_rank, player_rank)
+    if player_rank is not None:
+        player_rank = rank_map.get(player_rank, player_rank)
 
     achievement_points = player.get("achievementPoints", 0)
     karma = player.get("karma", 0)

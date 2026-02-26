@@ -1,8 +1,5 @@
 import InfoCard from "./infoCard";
-import {
-  formatValue,
-  formatISOToDistance,
-} from "../../utils/utils";
+import { formatValue, formatISOToDistance } from "../../utils/utils";
 import { Dialog } from "radix-ui";
 import "./dialog.css";
 import { toProperCase, formatISOTimestamp } from "../../utils/utils";
@@ -31,7 +28,11 @@ function HypixelTabbedData({
 }: HypixelDataProps) {
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
 
-  const { data: metricDataRaw, isLoading, isError } = useQuery({
+  const {
+    data: metricDataRaw,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["metric", selectedMetric, hypixelData.player.uuid],
     queryFn: () => fetchMetric(selectedMetric!, hypixelData.player.uuid),
     enabled: !!selectedMetric,
@@ -46,7 +47,10 @@ function HypixelTabbedData({
     } else if (metricDataRaw === null) {
       metricData = "notFound";
     } else if (metricDataRaw) {
-      metricData = "metricDataRaw" in metricDataRaw ? metricDataRaw.metricDataRaw : metricDataRaw;
+      metricData =
+        "metricDataRaw" in metricDataRaw
+          ? metricDataRaw.metricDataRaw
+          : metricDataRaw;
     }
   }
 
@@ -73,11 +77,7 @@ function HypixelTabbedData({
         <InfoCard
           label="Level"
           hasStats={true}
-          onClick={() =>
-            setSelectedMetric(
-              "hypixel_level"
-            )
-          }
+          onClick={() => setSelectedMetric("hypixel_level")}
           value={formatValue(hypixelData.player.network_level)}
         >
           <DistributionChartWrapper metricData={metricData} />
@@ -85,11 +85,7 @@ function HypixelTabbedData({
         <InfoCard
           label="Karma"
           hasStats={true}
-          onClick={() =>
-            setSelectedMetric(
-              "hypixel_karma"
-            )
-          }
+          onClick={() => setSelectedMetric("hypixel_karma")}
           value={formatValue(hypixelData.player.karma)}
         >
           <DistributionChartWrapper metricData={metricData} />
@@ -97,11 +93,7 @@ function HypixelTabbedData({
         <InfoCard
           label="Achievement Points"
           hasStats={true}
-          onClick={() =>
-            setSelectedMetric(
-              "hypixel_achievement_points"
-            )
-          }
+          onClick={() => setSelectedMetric("hypixel_achievement_points")}
           value={formatValue(hypixelData.player.achievement_points)}
         >
           <DistributionChartWrapper metricData={metricData} />
@@ -110,10 +102,13 @@ function HypixelTabbedData({
       <h3>Game Stats</h3>
       <HypixelBedwarsPopup bedwarsData={hypixelData.player.bedwars} />
       {hypixelData?.guild && (
-        <HypixelGuild
-          hypixelData={hypixelData}
-          hypixelGuildQuery={hypixelGuildQuery}
-        />
+        <>
+          
+          <HypixelGuild
+            hypixelData={hypixelData}
+            hypixelGuildQuery={hypixelGuildQuery}
+          />
+        </>
       )}
     </>
   );

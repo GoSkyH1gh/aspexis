@@ -22,7 +22,7 @@ function FavoriteElement({
   const navigator = useNavigate();
   const mojangQuery = useQuery({
     queryKey: ["mojang", uuid],
-    queryFn: () => fetchMojang(uuid),
+    queryFn: () => fetchMojang(uuid, true),
   });
   if (mojangQuery.isError) {
     return <li key={uuid}>Coudn't load {username}</li>;
