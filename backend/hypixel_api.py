@@ -123,6 +123,7 @@ class HypixelGuild(BaseModel):
     id: str
     created: str
     experience: int
+    level: int
     tag: Optional[str]
     description: Optional[str]
     publicly_listed: bool
@@ -283,6 +284,44 @@ def calculate_bedwars_level(experience) -> int:
     return int(level)
 
 
+GUILD_EXP_NEEDED = [
+    100_000,
+    150_000,
+    250_000,
+    500_000,
+    750_000,
+    1_000_000,
+    1_250_000,
+    1_500_000,
+    2_000_000,
+    2_500_000,
+    2_500_000,
+    2_500_000,
+    2_500_000,
+    2_500_000,
+    3_000_000,
+]
+
+
+def get_guild_level(exp: int) -> int:
+    level = 0
+    i = 0
+
+    while True:
+        if i >= len(GUILD_EXP_NEEDED):
+            need = GUILD_EXP_NEEDED[-1]
+        else:
+            need = GUILD_EXP_NEEDED[i]
+
+        exp -= need
+
+        if exp < 0:
+            return level
+
+        level += 1
+        i += 1
+
+
 async def get_guild_data(
     http_client: httpx.AsyncClient, uuid: str | None = None, id: str | None = None
 ) -> HypixelGuild:
@@ -340,6 +379,7 @@ async def get_guild_data(
         id=guild_data["_id"],
         created=convert_unix_milliseconds_to_UTC(guild_data["created"]),
         experience=guild_data.get("exp", 0),
+        level=get_guild_level(guild_data.get("exp", 0)),
         tag=guild_data.get("tag"),
         description=guild_data.get("description"),
         publicly_listed=guild_data.get("publiclyListed", False),

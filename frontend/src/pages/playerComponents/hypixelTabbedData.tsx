@@ -4,7 +4,7 @@ import { Dialog } from "radix-ui";
 import "./dialog.css";
 import { toProperCase, formatISOTimestamp } from "../../utils/utils";
 import { useNavigate } from "react-router-dom";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import BedwarsHeroIcon from "/src/assets/bedwars.png";
 import {
@@ -16,6 +16,7 @@ import DistributionChartWrapper from "./distributionChartWrapper";
 import { Icon } from "@iconify/react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchMetric } from "../../utils/queries";
+import { Link } from "react-router-dom";
 
 type HypixelDataProps = {
   hypixelData: HypixelFullData;
@@ -103,7 +104,7 @@ function HypixelTabbedData({
       <HypixelBedwarsPopup bedwarsData={hypixelData.player.bedwars} />
       {hypixelData?.guild && (
         <>
-          
+          <div className="hypixel-guild-divider" role="separator" />
           <HypixelGuild
             hypixelData={hypixelData}
             hypixelGuildQuery={hypixelGuildQuery}
@@ -270,12 +271,12 @@ function HypixelGuild({ hypixelData, hypixelGuildQuery }: HypixelDataProps) {
     return <p>No guild to show</p>;
   }
 
+  const [displayMode, setDisplayMode] = useState<"card" | "list">("card");
+
   // Access the pages from the infinite query data
   const guildMembers: HypixelGuildMemberFull[] =
     hypixelGuildQuery.data?.pages?.flat() ?? [];
 
-  const totalGuildMembers = hypixelData.guild.members.length;
-  const loadedMembersCount = guildMembers.length;
   const hasNextPage = hypixelGuildQuery.hasNextPage;
   const isFetchingNextPage = hypixelGuildQuery.isFetchingNextPage;
 
@@ -290,46 +291,127 @@ function HypixelGuild({ hypixelData, hypixelGuildQuery }: HypixelDataProps) {
     }
   };
 
-  const hypixelMemberElements = guildMembers.map((member) => (
-    <li key={member.uuid}>
-      <motion.button
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.95 }}
-        transition={{ duration: 0.1, ease: "easeInOut" }}
-        className="guild-list-item"
-        onClick={() => handleGuildMemberClick(member.uuid)}
-        variants={{
-          hidden: { opacity: 0 },
-          show: { opacity: 1 },
-        }}
-      >
-        <div className="guild-member-flex-container">
-          <img
-            src={"data:image/png;base64," + member.skin_showcase_b64}
-            className="guild-member-image"
-            alt={"head of " + member.username + "'s skin"}
-          />
-          <div>
-            <p className="list-username">{member.username}</p>
-            <p className="list-uuid">
-              {member.rank} <br />
-              Joined {formatISOTimestamp(member.joined)}
-            </p>
-          </div>
-        </div>
-      </motion.button>
-    </li>
-  ));
+  const hypixelMemberElements = guildMembers.map((member) => {
+    if (displayMode === "card") {
+      return (
+        <li key={`${member.uuid}:card`}>
+          <Link to={`/player/${member.uuid}`}>
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.1, ease: "easeInOut" }}
+              className="guild-list-item"
+              variants={{
+                hidden: { opacity: 0 },
+                show: { opacity: 1 },
+              }}
+              tabIndex={-1}
+            >
+              <div className="guild-member-flex-container">
+                <img
+                  src={"data:image/png;base64," + member.skin_showcase_b64}
+                  className="guild-member-image"
+                  alt={"head of " + member.username + "'s skin"}
+                />
+                <div className="guild-member-item-card">
+                  <div>
+                    <p className="list-username">{member.username}</p>
+                    <p className="list-rank">{member.rank}</p>
+                  </div>
+
+                  <p className="list-uuid">
+                    Joined {formatISOTimestamp(member.joined)}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </Link>
+        </li>
+      );
+    }
+    if (displayMode === "list") {
+      return (
+        <li key={`${member.uuid}:list`}>
+          <Link to={`/player/${member.uuid}`}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.1, ease: "easeInOut" }}
+              className="hypixel-guild-list-item-list"
+              variants={{
+                hidden: { opacity: 0 },
+                show: { opacity: 1 },
+              }}
+            >
+              <div className="hypixel-guild-list-member-primary">
+                <img
+                  src={"data:image/png;base64," + member.skin_showcase_b64}
+                  className="guild-member-image guild-member-image-list"
+                  alt={"head of " + member.username + "'s skin"}
+                />
+                <div className="flex">
+                  <p className="list-username">{member.username}</p>
+                  <p className="list-rank">{member.rank}</p>
+                </div>
+              </div>
+              <p className="list-date-joined">
+                Joined {formatISOTimestamp(member.joined)}
+              </p>
+            </motion.div>
+          </Link>
+        </li>
+      );
+    }
+  });
 
   return (
     <>
-      <h3>{hypixelData?.guild?.name}</h3>
-      <p className="secondary-text">
-        Showing {loadedMembersCount} of {totalGuildMembers} members
-      </p>
-      <ul className="guild-list">{hypixelMemberElements}</ul>
+      <div className="hypixel-guild-card">
+        <h3 className="hypixel-guild-header">
+          {hypixelData.guild.name}
+          {hypixelData.guild.tag && ` [${hypixelData.guild.tag}]`}
+        </h3>
+        <div>
+          {hypixelData.guild.description && (
+            <div className="hypixel-guild-description">
+              {hypixelData.guild.description}
+            </div>
+          )}
+
+          <div className="hypixel-guild-info-container">
+            Founded {formatISOTimestamp(hypixelData.guild.created)} •{" "}
+            {hypixelData.guild.members.length} members • Level{" "}
+            {hypixelData.guild.level}
+          </div>
+        </div>
+      </div>
+      <div className="hypixel-guild-members-heading">
+        <h3>Members</h3>
+        <div className="flex">
+          Display as
+          <div className="select-container">
+            <button
+              onClick={() => setDisplayMode("card")}
+              className={`select-button-left select-button ${displayMode === "card" && "select-button-active"}`}
+            >
+              Card
+            </button>
+            <button
+              onClick={() => setDisplayMode("list")}
+              className={`select-button-right select-button ${displayMode === "list" && "select-button-active"}`}
+            >
+              List
+            </button>
+          </div>
+        </div>
+      </div>
+      <ul
+        className={`guild-list ${displayMode === "card" ? "guild-list-card" : "guild-list-list"}`}
+      >
+        {hypixelMemberElements}
+      </ul>
       {hasNextPage && (
         <div className="load-more-container">
           <motion.button
