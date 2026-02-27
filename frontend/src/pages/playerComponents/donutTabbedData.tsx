@@ -14,31 +14,11 @@ type DonutProps = {
 function DonutTabbedData({ donutData, uuid }: DonutProps) {
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
 
-  const {
-    data: metricDataRaw,
-    isLoading,
-    isError,
-  } = useQuery({
+  const metricQuery = useQuery({
     queryKey: ["metric", selectedMetric, uuid],
     queryFn: () => fetchMetric(selectedMetric!, uuid),
     enabled: !!selectedMetric,
   });
-
-  let metricData: any = null;
-  if (selectedMetric) {
-    if (isLoading) {
-      metricData = "loading";
-    } else if (isError) {
-      metricData = "error";
-    } else if (metricDataRaw === null) {
-      metricData = "notFound";
-    } else if (metricDataRaw) {
-      metricData =
-        "metricDataRaw" in metricDataRaw
-          ? metricDataRaw.metricDataRaw
-          : metricDataRaw;
-    }
-  }
 
   if (!donutData) {
     return <p>No DonutSMP data to show</p>;
@@ -52,7 +32,7 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           value={donutData.playtime_hours + " hours"}
           onClick={() => setSelectedMetric("donut_hours_played")}
         >
-          <DistributionChartWrapper metricData={metricData} />
+          <DistributionChartWrapper metricQuery={metricQuery} />
         </InfoCard>
         <InfoCard
           label="Status"
@@ -64,7 +44,7 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           hasStats={true}
           onClick={() => setSelectedMetric("donut_kills")}
         >
-          <DistributionChartWrapper metricData={metricData} />
+          <DistributionChartWrapper metricQuery={metricQuery} />
         </InfoCard>
         <InfoCard
           label="Deaths"
@@ -72,7 +52,7 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           hasStats={true}
           onClick={() => setSelectedMetric("donut_deaths")}
         >
-          <DistributionChartWrapper metricData={metricData} />
+          <DistributionChartWrapper metricQuery={metricQuery} />
         </InfoCard>
       </ul>
       <h3>Economy</h3>
@@ -83,7 +63,7 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           hasStats={true}
           onClick={() => setSelectedMetric("donut_money")}
         >
-          <DistributionChartWrapper metricData={metricData} />
+          <DistributionChartWrapper metricQuery={metricQuery} />
         </InfoCard>
         <InfoCard
           label="Money spent"
@@ -91,7 +71,7 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           hasStats={true}
           onClick={() => setSelectedMetric("donut_money_spent")}
         >
-          <DistributionChartWrapper metricData={metricData} />
+          <DistributionChartWrapper metricQuery={metricQuery} />
         </InfoCard>
         <InfoCard
           label="Money earned"
@@ -99,7 +79,7 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           hasStats={true}
           onClick={() => setSelectedMetric("donut_money_earned")}
         >
-          <DistributionChartWrapper metricData={metricData} />
+          <DistributionChartWrapper metricQuery={metricQuery} />
         </InfoCard>
         <InfoCard
           label="Shards"
@@ -107,7 +87,7 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           hasStats={true}
           onClick={() => setSelectedMetric("donut_shards")}
         >
-          <DistributionChartWrapper metricData={metricData} />
+          <DistributionChartWrapper metricQuery={metricQuery} />
         </InfoCard>
       </ul>
       <h3>World</h3>
@@ -118,7 +98,7 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           hasStats={true}
           onClick={() => setSelectedMetric("donut_blocks_placed")}
         >
-          <DistributionChartWrapper metricData={metricData} />
+          <DistributionChartWrapper metricQuery={metricQuery} />
         </InfoCard>
         <InfoCard
           label="Blocks broken"
@@ -126,7 +106,7 @@ function DonutTabbedData({ donutData, uuid }: DonutProps) {
           hasStats={true}
           onClick={() => setSelectedMetric("donut_blocks_broken")}
         >
-          <DistributionChartWrapper metricData={metricData} />
+          <DistributionChartWrapper metricQuery={metricQuery} />
         </InfoCard>
       </ul>
     </>

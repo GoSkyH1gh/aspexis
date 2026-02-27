@@ -3,8 +3,7 @@ import { formatValue, formatISOToDistance } from "../../utils/utils";
 import { Dialog } from "radix-ui";
 import "./dialog.css";
 import { toProperCase, formatISOTimestamp } from "../../utils/utils";
-import { useNavigate } from "react-router-dom";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import { useState } from "react";
 import BedwarsHeroIcon from "/src/assets/bedwars.png";
 import {
@@ -29,31 +28,11 @@ function HypixelTabbedData({
 }: HypixelDataProps) {
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
 
-  const {
-    data: metricDataRaw,
-    isLoading,
-    isError,
-  } = useQuery({
+  const metricQuery = useQuery({
     queryKey: ["metric", selectedMetric, hypixelData.player.uuid],
     queryFn: () => fetchMetric(selectedMetric!, hypixelData.player.uuid),
     enabled: !!selectedMetric,
   });
-
-  let metricData: any = null;
-  if (selectedMetric) {
-    if (isLoading) {
-      metricData = "loading";
-    } else if (isError) {
-      metricData = "error";
-    } else if (metricDataRaw === null) {
-      metricData = "notFound";
-    } else if (metricDataRaw) {
-      metricData =
-        "metricDataRaw" in metricDataRaw
-          ? metricDataRaw.metricDataRaw
-          : metricDataRaw;
-    }
-  }
 
   return (
     <>
@@ -81,7 +60,7 @@ function HypixelTabbedData({
           onClick={() => setSelectedMetric("hypixel_level")}
           value={formatValue(hypixelData.player.network_level)}
         >
-          <DistributionChartWrapper metricData={metricData} />
+          <DistributionChartWrapper metricQuery={metricQuery} />
         </InfoCard>
         <InfoCard
           label="Karma"
@@ -89,7 +68,7 @@ function HypixelTabbedData({
           onClick={() => setSelectedMetric("hypixel_karma")}
           value={formatValue(hypixelData.player.karma)}
         >
-          <DistributionChartWrapper metricData={metricData} />
+          <DistributionChartWrapper metricQuery={metricQuery} />
         </InfoCard>
         <InfoCard
           label="Achievement Points"
@@ -97,7 +76,7 @@ function HypixelTabbedData({
           onClick={() => setSelectedMetric("hypixel_achievement_points")}
           value={formatValue(hypixelData.player.achievement_points)}
         >
-          <DistributionChartWrapper metricData={metricData} />
+          <DistributionChartWrapper metricQuery={metricQuery} />
         </InfoCard>
       </ul>
       <h3>Game Stats</h3>
@@ -261,8 +240,6 @@ function HypixelBedwarsPopup({ bedwarsData }: { bedwarsData: BedwarsProfile }) {
 }
 
 function HypixelGuild({ hypixelData, hypixelGuildQuery }: HypixelDataProps) {
-  let navigate = useNavigate();
-
   if (!hypixelGuildQuery) {
     return <p>No guild members to show</p>;
   }
@@ -279,11 +256,6 @@ function HypixelGuild({ hypixelData, hypixelGuildQuery }: HypixelDataProps) {
 
   const hasNextPage = hypixelGuildQuery.hasNextPage;
   const isFetchingNextPage = hypixelGuildQuery.isFetchingNextPage;
-
-  const handleGuildMemberClick = (username: string) => {
-    console.log("searching for " + username);
-    navigate(`/player/${username}`);
-  };
 
   const handleLoadMore = () => {
     if (hasNextPage && !isFetchingNextPage) {

@@ -1,52 +1,45 @@
 import { lazy, Suspense } from "react";
 import LoadingIndicator from "./loadingIndicator";
 import { HistogramData } from "../../client";
+import { UseQueryResult } from "@tanstack/react-query";
 
 // Lazy load the heavy recharts dependency
 const DistributionChart = lazy(() => import("./distributionChart"));
 
 function DistributionChartWrapper({
-  metricData,
+  metricQuery,
 }: {
-  metricData: HistogramData | null | "notFound" | "error" | "loading";
+  metricQuery: UseQueryResult<HistogramData | null, Error>;
 }) {
-  if (metricData === null) {
-    return <p className="distribution-graph center">There's no data to show</p>;
+  if (metricQuery.isPending) {
+    return (
+      <div className="distribution-graph center">
+        <LoadingIndicator />
+      </div>
+    );
   }
-  if (metricData === "notFound") {
+  if (metricQuery.data === null) {
     return (
       <p className="distribution-graph center">Data not found for player</p>
     );
   }
-  if (metricData === "error") {
+  if (metricQuery.isError) {
     return (
       <p className="distribution-graph center">
         An error occurred while fetching metrics
       </p>
     );
   }
-  if (metricData === "loading") {
-    return (
-      <div className="distribution-graph center">
-        <LoadingIndicator />
-      </div>
-    );
-  }
+
   return (
-    <Suspense fallback={
-      <div className="distribution-graph center">
-        <LoadingIndicator />
-      </div>
-    }>
-      <DistributionChart
-        buckets={metricData.buckets}
-        counts={metricData.counts}
-        playerValue={metricData.player_value}
-        percentile={metricData.percentile}
-        sampleSize={metricData.sample_size}
-        topPlayers={metricData.top_players as any}
-        playerRank={metricData.player_rank}
-      />
+    <Suspense
+      fallback={
+        <div className="distribution-graph center">
+          <LoadingIndicator />
+        </div>
+      }
+    >
+      <DistributionChart histogramData={metricQuery.data} />
     </Suspense>
   );
 }

@@ -11,6 +11,11 @@ BUCKET_COUNT = 6
 load_dotenv()
 
 
+class RankedPlayer(BaseModel):
+    uuid: str
+    value: float
+
+
 class HistogramData(BaseModel):
     metric_key: str
     unit: Optional[str]
@@ -20,9 +25,9 @@ class HistogramData(BaseModel):
     min_value: float
     max_value: float
     buckets: List[float]
-    counts: List[int]
+    counts: List[float]
     percentile: float
-    top_players: List[dict]
+    top_players: List[RankedPlayer]
     player_rank: int
 
 
@@ -70,12 +75,12 @@ async def get_stats(metric_key, player_uuid) -> HistogramData:
             {"metric_key": metric_key, "player_uuid": player_uuid},
         )
         row = result.fetchone()
-        
+
         if not row:
             raise exceptions.NotFound()
         if row.player_value is None:
             raise exceptions.NotFound()
-            
+
         metric_id = row.id
         unit = row.unit
         higher_is_better = row.higher_is_better
@@ -101,11 +106,16 @@ async def get_stats(metric_key, player_uuid) -> HistogramData:
             {"metric_id": metric_id, "pv": player_value},
         )
         bounds = result.fetchone()
+        if bounds is None:
+            raise exceptions.ServiceError()
+
         min_value = float(bounds.min_value) if bounds.min_value is not None else 0.0
         max_value = float(bounds.max_value) if bounds.max_value is not None else 0.0
         sample_size = bounds.sample_size or 0
         percentile = float(bounds.pct) if bounds.pct is not None else 0.0
-        player_rank = bounds.custom_rank_desc if higher_is_better else bounds.custom_rank_asc
+        player_rank = (
+            bounds.custom_rank_desc if higher_is_better else bounds.custom_rank_asc
+        )
         log_mn = bounds.log_mn
         log_mx = bounds.log_mx
 
@@ -139,7 +149,12 @@ async def get_stats(metric_key, player_uuid) -> HistogramData:
                     ORDER BY s.bucket;
                     """
                 ),
-                {"bucket_count": BUCKET_COUNT, "metric_id": metric_id, "log_mn": log_mn, "log_mx": log_mx},
+                {
+                    "bucket_count": BUCKET_COUNT,
+                    "metric_id": metric_id,
+                    "log_mn": log_mn,
+                    "log_mx": log_mx,
+                },
             )
             buckets_row = result.fetchall()
             buckets = [float(item[1]) for item in buckets_row]
@@ -159,7 +174,10 @@ async def get_stats(metric_key, player_uuid) -> HistogramData:
             {"metric_id": metric_id},
         )
         top_players_rows = result.fetchall()
-        top_players = [{"uuid": top_row.player_uuid, "value": float(top_row.value)} for top_row in top_players_rows]
+        top_players = [
+            RankedPlayer(uuid=top_row.player_uuid.hex, value=float(top_row.value))
+            for top_row in top_players_rows
+        ]
 
         histogram_data = HistogramData(
             metric_key=metric_key,
@@ -180,5 +198,6 @@ async def get_stats(metric_key, player_uuid) -> HistogramData:
 
 if __name__ == "__main__":
     import asyncio
+
     asyncio.run(get_stats("wynncraft_hours_played", "1ed075fc5aa942e0a29f640326c1d80c"))
     # asyncio.run(add_value("3ff2e63ad63045e0b96f57cd0eae708d", 7, 52))
