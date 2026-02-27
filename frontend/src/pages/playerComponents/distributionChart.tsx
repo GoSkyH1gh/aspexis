@@ -16,31 +16,13 @@ import { MdStackedBarChart } from "react-icons/md";
 import { useQuery, useQueries } from "@tanstack/react-query";
 import { fetchMojang } from "../../utils/queries";
 import { Link, useParams } from "react-router-dom";
-
-type RankedPlayer = {
-  uuid: string;
-  value: number;
-};
-
-type DistributionChartProps = {
-  buckets: number[];
-  counts: number[];
-  playerValue: number;
-  percentile: number;
-  sampleSize: number;
-  topPlayers: RankedPlayer[];
-  playerRank: number;
-};
+import { HistogramData } from "../../client";
 
 function DistributionChart({
-  buckets,
-  counts,
-  playerValue,
-  percentile,
-  sampleSize,
-  topPlayers,
-  playerRank,
-}: DistributionChartProps) {
+  histogramData,
+}: {
+  histogramData: HistogramData;
+}) {
   const { username } = useParams();
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<"chart" | "leaderboard">("chart");
@@ -77,7 +59,7 @@ function DistributionChart({
   };
 
   const playerQueries = useQueries({
-    queries: topPlayers.map((player) => ({
+    queries: histogramData.top_players.map((player) => ({
       queryKey: ["mojang", player.uuid],
       queryFn: () => fetchMojang(player.uuid, true),
     })),
@@ -88,21 +70,23 @@ function DistributionChart({
     show: { y: 0, opacity: 1 },
   };
 
-  const data = counts.map((count, i) => ({
-    range: `${Math.round(buckets[i]).toLocaleString("en-US", {
+  const data = histogramData.counts.map((count, i) => ({
+    range: `${Math.round(histogramData.buckets[i]).toLocaleString("en-US", {
       notation: "compact",
       maximumFractionDigits: 0,
-    })}-${Math.round(buckets[i + 1]).toLocaleString("en-US", {
+    })}-${Math.round(histogramData.buckets[i + 1]).toLocaleString("en-US", {
       notation: "compact",
       maximumFractionDigits: 0,
     })}`,
     count,
-    bucketStart: buckets[i],
-    bucketEnd: buckets[i + 1],
+    bucketStart: histogramData.buckets[i],
+    bucketEnd: histogramData.buckets[i + 1],
   }));
 
   const playerBucketIndex = data.findIndex(
-    (d) => playerValue >= d.bucketStart && playerValue < d.bucketEnd,
+    (d) =>
+      histogramData.player_value >= d.bucketStart &&
+      histogramData.player_value < d.bucketEnd,
   );
 
   // If the player is exactly the max value, put them in the last bucket
@@ -180,8 +164,8 @@ function DistributionChart({
             <div>
               <div className="text-icon flex">
                 <p style={{ textAlign: "center" }}>
-                  Better than {percentile.toFixed(1)}% of{" "}
-                  {formatValue(sampleSize)} recorded players
+                  Better than {histogramData.percentile.toFixed(1)}% of{" "}
+                  {formatValue(histogramData.sample_size)} recorded players
                 </p>
                 <button
                   className="icon-button"
@@ -226,7 +210,7 @@ function DistributionChart({
 
         {activeTab === "leaderboard" && (
           <div className="leaderboard-list">
-            {topPlayers.map((player, index) => {
+            {histogramData.top_players.map((player, index) => {
               const query = playerQueries[index];
               const playerName = query.data?.username || "Loading...";
               const avatarUrl = query.data
@@ -264,13 +248,13 @@ function DistributionChart({
             })}
 
             {/* Show current player exact rank if they aren't in top 5 */}
-            {playerRank > 5 && (
+            {histogramData.player_rank > 5 && (
               <>
                 <div className="leaderboard-separator" />
                 <div className="leaderboard-item current-user">
                   <div className="leaderboard-item-left">
                     <span className="leaderboard-rank">
-                      #{formatValue(playerRank)}
+                      #{formatValue(histogramData.player_rank)}
                     </span>
                     {currentPlayerQuery.data?.skin_showcase_b64 ? (
                       <img
@@ -287,7 +271,7 @@ function DistributionChart({
                     <span>{currentPlayerQuery.data?.username || "You"}</span>
                   </div>
                   <span className="leaderboard-value">
-                    {formatValue(playerValue)}
+                    {formatValue(histogramData.player_value)}
                   </span>
                 </div>
               </>

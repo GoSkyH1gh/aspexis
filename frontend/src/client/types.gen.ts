@@ -352,9 +352,7 @@ export type HistogramData = {
     /**
      * Top Players
      */
-    top_players: Array<{
-        [key: string]: unknown;
-    }>;
+    top_players: Array<RankedPlayer>;
     /**
      * Player Rank
      */
@@ -747,6 +745,20 @@ export type ProfessionInfo = {
      * Armouring
      */
     armouring: number;
+};
+
+/**
+ * RankedPlayer
+ */
+export type RankedPlayer = {
+    /**
+     * Uuid
+     */
+    uuid: string;
+    /**
+     * Value
+     */
+    value: number;
 };
 
 /**
