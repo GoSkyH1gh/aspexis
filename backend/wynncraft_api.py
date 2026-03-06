@@ -103,6 +103,18 @@ STORYLINES = [
     },
 ]
 
+LEGACY_DUNGEONS = [
+    "Skeleton",
+    "Spider",
+    "Animal",
+    "Zombie",
+    "Silverfish",
+    "Ice",
+    "Ocean",
+    "Jungle",
+    "Lost Sanctuary",
+]
+
 
 class PlayerRestrictions(BaseModel):
     main_access: bool
@@ -112,6 +124,7 @@ class PlayerRestrictions(BaseModel):
 
 
 class ContentProgress(BaseModel):
+    unique_completions: int | None
     total: int | None
     list: dict[str, int]
 
@@ -123,6 +136,7 @@ class DungeonCompletions(BaseModel):
 
 
 class DungeonProgress(BaseModel):
+    unique_completions: int | None
     total: int | None
     list: list[DungeonCompletions]
 
@@ -245,6 +259,14 @@ class WynncraftGuildInfo(BaseModel):
     members: list[WynncraftGuildMember]
 
 
+def get_dungeon_unique_completions(dungeon_list: dict) -> int | None:
+    all_dungeons: list[str] = list(dungeon_list.keys())
+    unique_completions = len(
+        [dungeon for dungeon in all_dungeons if dungeon not in LEGACY_DUNGEONS]
+    )  # only count non-legacy dungeons
+    return unique_completions
+
+
 def get_character_stat(
     stat: str, selected_character: dict, removed_stats: list[str]
 ) -> int | None:
@@ -362,18 +384,24 @@ def process_characters(
         )
 
         if "raids" in removed_stats:
-            raids = ContentProgress(total=None, list={})
+            raids = ContentProgress(total=None, unique_completions=None, list={})
         else:
             raids = ContentProgress(
+                unique_completions=len(
+                    selected_character.get("raids", {}).get("list", {})
+                ),
                 list=selected_character.get("raids", {}).get("list", {}),
                 total=selected_character.get("raids", {}).get("total") or 0,
             )
 
         if "dungeons" in removed_stats:
-            dungeons = DungeonProgress(total=None, list=[])
+            dungeons = DungeonProgress(total=None, unique_completions=None, list=[])
         else:
             dungeons = DungeonProgress(
-                total=len(selected_character.get("dungeons", {}).get("list", {})),
+                unique_completions=get_dungeon_unique_completions(
+                    selected_character.get("dungeons", {}).get("list", {})
+                ),
+                total=selected_character.get("dungeons", {}).get("total") or 0,
                 list=normalize_dungeons(
                     selected_character.get("dungeons", {}).get("list", {})
                 ),

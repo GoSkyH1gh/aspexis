@@ -35,16 +35,24 @@ import time
 from telemetry_manager import add_telemetry_event
 from capes import get_capes_for_user, UserCapeData
 from wynncraft_ability_tree import get_ability_tree, AbilityTreePage
+from wynncraft_content_max import (
+    update_content_max,
+    MaxContent,
+    get_wynncraft_content_max,
+)
 
 from slowapi.util import get_remote_address
 from slowapi import Limiter
 from slowapi.middleware import SlowAPIMiddleware
 
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from contextlib import asynccontextmanager
+import datetime
 import httpx
 from utils import normalize_uuid
 from redis_manager import get_redis
 from redis.asyncio import Redis
+
 
 load_dotenv()
 
@@ -71,8 +79,18 @@ async def lifespan(app: FastAPI):
     client = httpx.AsyncClient(
         timeout=httpx.Timeout(10.0, connect=5.0),
     )
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(
+        update_content_max,
+        trigger="interval",
+        hours=6,
+        next_run_time=datetime.datetime.now() + datetime.timedelta(seconds=10),
+        args=[await get_client(), await get_redis()],
+    )
+    scheduler.start()
     yield
     # Shutdown
+    scheduler.shutdown()
     await client.aclose()
 
 
@@ -353,6 +371,20 @@ async def get_wynncraft_character_ability_tree(
         http_client=http_client,
         redis=redis,
     )
+
+
+@app.get(
+    "/v1/wynncraft/max_content",
+    responses=COMMON_ERROR_RESPONSES,
+    tags=["Wynncraft"],
+    response_model=MaxContent,
+    description="Fetches the max Wynncraft content available.",
+)
+async def get_wynncraft_max_content(
+    http_client: httpx.AsyncClient = Depends(get_client),
+    redis: Redis = Depends(get_redis),
+):
+    return await get_wynncraft_content_max(http_client, redis)
 
 
 # donutsmp endpoint

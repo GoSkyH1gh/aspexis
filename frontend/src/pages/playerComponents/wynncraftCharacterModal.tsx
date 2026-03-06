@@ -223,79 +223,79 @@ function CharacterDetails({
             "Private",
           )}
         />
+        <HorizontalInfoCard
+          label="Wars"
+          value={formatValue(character.content.wars, undefined, "Private")}
+        />
+        <HorizontalInfoCard
+          label="Raids"
+          value={formatValue(
+            character.content.raids.total,
+            undefined,
+            "Private",
+          )}
+        />
       </ul>
       <h3>Content</h3>
-      <div className="wynn-content-container">
-        <ul className="horizontal-card-list">
-          <HorizontalInfoCard
-            label="Content Completed"
-            value={formatValue(
-              character.content.content_completed,
-              false,
-              "Private",
-            )}
-          />
-          <HorizontalInfoCard
-            label="Quests Completed"
-            value={formatValue(
-              character.content.quests_completed,
-              undefined,
-              "Private",
-            )}
-          />
-          <HorizontalInfoCard
-            label="Discoveries"
-            value={formatValue(
-              character.content.discoveries,
-              undefined,
-              "Private",
-            )}
-          />
-          <HorizontalInfoCard
-            label="Caves"
-            value={formatValue(character.content.caves, undefined, "Private")}
-          />
-          <HorizontalInfoCard
-            label="World Events"
-            value={formatValue(
-              character.content.world_events,
-              undefined,
-              "Private",
-            )}
-          />
-        </ul>
 
-        <ul className="horizontal-card-list">
-          <HorizontalInfoCard
-            label="Lootruns"
-            value={formatValue(
-              character.content.lootruns,
-              undefined,
-              "Private",
-            )}
-          />
-          <HorizontalInfoCard
-            label="Wars"
-            value={formatValue(character.content.wars, undefined, "Private")}
-          />
-          <HorizontalInfoCard
-            label="Dungeons"
-            value={formatValue(
-              character.content.dungeons.total,
-              undefined,
-              "Private",
-            )}
-          />
-          <HorizontalInfoCard
-            label="Raids"
-            value={formatValue(
-              character.content.raids.total,
-              undefined,
-              "Private",
-            )}
-          />
-        </ul>
-      </div>
+      <ul className="horizontal-card-list">
+        <HorizontalInfoCard
+          label="Content Completed"
+          value={formatValue(
+            character.content.content_completed,
+            false,
+            "Private",
+          )}
+        />
+        <HorizontalInfoCard
+          label="Quests Completed"
+          value={formatValue(
+            character.content.quests_completed,
+            undefined,
+            "Private",
+          )}
+        />
+        <HorizontalInfoCard
+          label="Discoveries"
+          value={formatValue(
+            character.content.discoveries,
+            undefined,
+            "Private",
+          )}
+        />
+        <HorizontalInfoCard
+          label="Caves"
+          value={formatValue(character.content.caves, undefined, "Private")}
+        />
+        <HorizontalInfoCard
+          label="World Events"
+          value={formatValue(
+            character.content.world_events,
+            undefined,
+            "Private",
+          )}
+        />
+        <HorizontalInfoCard
+          label="Lootruns"
+          value={formatValue(character.content.lootruns, undefined, "Private")}
+        />
+
+        <HorizontalInfoCard
+          label="Dungeons"
+          value={formatValue(
+            character.content.dungeons.total,
+            undefined,
+            "Private",
+          )}
+        />
+      </ul>
+
+      {character.professions && (
+        <>
+          <h3>Professions</h3>
+          <ul className="profession-list">{professionElements}</ul>
+        </>
+      )}
       {character.skill_points && (
         <>
           <h3>Skill Points</h3>
@@ -397,12 +397,6 @@ function CharacterDetails({
               </li>
             ))}
           </ul>
-        </>
-      )}
-      {character.professions && (
-        <>
-          <h3>Professions</h3>
-          <ul className="profession-list">{professionElements}</ul>
         </>
       )}
       {character.content.storylines && (
