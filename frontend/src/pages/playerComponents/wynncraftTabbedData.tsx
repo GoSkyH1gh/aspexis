@@ -8,19 +8,25 @@ import {
 import WynncraftGuild from "./wynncraftGuild";
 import { useState } from "react";
 import DistributionChartWrapper from "./distributionChartWrapper";
-import { WynncraftPlayerSummary, WynncraftGuildInfo } from "../../client";
+import {
+  WynncraftPlayerSummary,
+  WynncraftGuildInfo,
+  MaxContent,
+} from "../../client";
 import { useQuery } from "@tanstack/react-query";
 import { fetchMetric } from "../../utils/queries";
 
 type WynncraftProps = {
   wynncraftData: WynncraftPlayerSummary;
   wynncraftGuildData: WynncraftGuildInfo | null | undefined;
+  wynncraftMaxContent: MaxContent | null | undefined;
   uuid: string;
 };
 
 function WynncraftTabbedData({
   wynncraftData,
   wynncraftGuildData,
+  wynncraftMaxContent,
   uuid,
 }: WynncraftProps) {
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
@@ -169,6 +175,7 @@ function WynncraftTabbedData({
           characterList={wynncraftData.characters}
           uuid={uuid}
           restrictions={wynncraftData.restrictions}
+          wynncraftMaxContent={wynncraftMaxContent}
         />
       )}
       {wynncraftData?.characters?.length === 0 &&

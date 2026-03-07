@@ -10,6 +10,7 @@ import {
   AbilityTreePage,
   PlayerStatus,
   HistogramData,
+  MaxContent,
 } from "../client";
 import { InvalidArgumentsError } from "./errors";
 
@@ -22,6 +23,7 @@ const statusUrl = `${baseUrl}/v1/players/status/`;
 const wynncraftUrl = `${baseUrl}/v1/players/wynncraft/`;
 const wynncraftGuildUrl = `${baseUrl}/v1/wynncraft/guilds/`;
 const wynncraftAbilityTreeUrl = `${baseUrl}/v1/players/wynncraft/`;
+const wynncraftMaxContentUrl = `${baseUrl}/v1/wynncraft/max_content`;
 const donutUrl = `${baseUrl}/v1/players/donutsmp/`;
 const mcciUrl = `${baseUrl}/v1/players/mccisland/`;
 const capesUrl = `${baseUrl}/v1/players/capes/`;
@@ -228,6 +230,16 @@ export async function fetchMetric(
   if (response.status === 404) {
     return null;
   }
+
+  if (!response.ok) {
+    throw new Error("Server error");
+  }
+
+  return response.json();
+}
+
+export async function fetchWynncraftMaxContent(): Promise<MaxContent | null> {
+  const response = await fetch(wynncraftMaxContentUrl);
 
   if (!response.ok) {
     throw new Error("Server error");

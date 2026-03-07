@@ -11,6 +11,7 @@ import {
   WynncraftGuildInfo,
   DonutPlayerStats,
   McciPlayer,
+  MaxContent,
 } from "../../client";
 
 type AdvancedInfoProps = {
@@ -20,6 +21,7 @@ type AdvancedInfoProps = {
   wynncraftData: WynncraftPlayerSummary | undefined | null;
   wynncraftStatus: "pending" | "error" | "success";
   wynncraftGuildData: WynncraftGuildInfo | null | undefined;
+  wynncraftMaxContent: MaxContent | null | undefined;
   donutData: DonutPlayerStats | null | undefined;
   donutStatus: "pending" | "success" | "error";
   mcciData: McciPlayer | null | undefined;
@@ -35,6 +37,7 @@ function AdvancedInfoTabs({
   wynncraftData,
   wynncraftStatus,
   wynncraftGuildData,
+  wynncraftMaxContent,
   donutData,
   donutStatus,
   mcciData,
@@ -132,6 +135,7 @@ function AdvancedInfoTabs({
             wynncraftData={wynncraftData}
             wynncraftGuildData={wynncraftGuildData}
             uuid={uuid}
+            wynncraftMaxContent={wynncraftMaxContent}
           />
         );
       }

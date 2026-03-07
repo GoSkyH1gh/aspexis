@@ -22,6 +22,7 @@ import {
 import { Toast } from "radix-ui";
 import { useSearchHistory } from "../hooks/useSearchHistory";
 import { useEffect } from "react";
+import { fetchWynncraftMaxContent } from "../utils/queries";
 
 export function PlayerPage() {
   const { username } = useParams();
@@ -80,6 +81,12 @@ export function PlayerPage() {
     queryKey: ["wynncraftGuild", wynncraftQuery.data?.guild_prefix],
     queryFn: () => fetchWynncraftGuildData(wynncraftQuery.data?.guild_prefix),
     enabled: !!wynncraftQuery.data?.guild_prefix,
+  });
+
+  const wynncraftMaxContentQuery = useQuery({
+    queryKey: ["wynncraftMaxContent"],
+    queryFn: () => fetchWynncraftMaxContent(),
+    staleTime: 1000 * 60 * 60,
   });
 
   const donutSMPQuery = useQuery({
@@ -244,6 +251,7 @@ export function PlayerPage() {
                 wynncraftQuery.isPending ||
                 mcciQuery.isPending
               }
+              wynncraftMaxContent={wynncraftMaxContentQuery.data}
             />
           )}
           <AdvancedInfoTabs
@@ -253,6 +261,7 @@ export function PlayerPage() {
             wynncraftData={wynncraftQuery.data}
             wynncraftStatus={wynncraftQuery.status}
             wynncraftGuildData={wynncraftGuildQuery.data}
+            wynncraftMaxContent={wynncraftMaxContentQuery.data}
             donutData={donutSMPQuery.data}
             donutStatus={donutSMPQuery.status}
             mcciData={mcciQuery.data}
