@@ -372,7 +372,6 @@
   margin: 0;
   gap: 0.4rem;
   flex-wrap: wrap;
-  
 }
 
 .wynn-square-card {
@@ -413,4 +412,26 @@
   gap: 0.4rem;
   justify-content: center;
   align-items: center;
+  cursor: help;
+}
+
+.wynn-storyline {
+  cursor: help;
+}
+
+.wynn-progress-label {
+  text-align: right;
+}
+
+.wynn-progress-label-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.wynn-progress-container {
+  width: 100%;
+}
+
+.wynn-content-card-grid {
+  margin-top: 0.8rem;
 }

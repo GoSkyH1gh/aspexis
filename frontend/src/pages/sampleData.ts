@@ -1,4 +1,4 @@
-import { WynncraftPlayerSummary } from "../client";
+import { MaxContent, WynncraftPlayerSummary } from "../client";
 
 const loadingSkin =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAGISURBVHgBTVNbYgMhCAT1hj17b9K/rNJ5qJvNC0FgZiD59/uzsvWo1jN6q8iRsPHTYffM3ksx+KK10DkyAw+/RjwzC76iO1AoHchZsPHhETF/uoIVKMQaLWvE+iCCjsWaKNJCD9qiO7MQKiCLxUoRk/1RCGjhNwLkqwGgyOaBQaFU4cbuWYrxKDS6CwQPb+NQwrpq2dbtONBdWBd5HdoESVcCwaOEUKAompuWfbHIkDaMNXKVaUodvEfNR6JdocA4nSy5BJcOUuCQANpPc4Gc815Q3QcoWm0hGNEXUZY0OrwWR2sNoj7t0FDS5iDU2cdLp20/0bkJCky0JO/JqWNCZb4SSmPkeaSFDu/CqxH2YH6ueA50rcO7A56ONpSuvhBfB1lCxHkhlyBrGmcnzNtLGiKdu7mXjYv0eEyEwWTy2/Bij6r2hISSPLdeLC4R9dcgR2HeCWx+Equfgq+v24YG0+Nv1qAWOG498msqRJYeaZxXQmxO4SpaWmMvihS8nJf+uEfQPEoA2T8iAFJ0DRDb5AAAAABJRU5ErkJggg==";
@@ -163,6 +163,7 @@ const sampleHypixelResponse = {
     id: "58e5947d0cf28a503e76f7fd",
     created: "2017-04-06T04:06:05.490000Z",
     experience: 5131271,
+    level: 7,
     tag: "BANT",
     description: null,
     publicly_listed: false,
@@ -334,8 +335,8 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 0, list: [] },
-        raids: { total: 0, list: {} },
+        dungeons: { unique_completions: 0, total: 0, list: [] },
+        raids: { unique_completions: 0, total: 0, list: {} },
         storylines: [
           {
             name: "Recover the Past",
@@ -492,12 +493,13 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         world_events: 0,
         wars: 0,
         dungeons: {
+          unique_completions: 0,
           total: 1,
           list: [
             { name: "Spider", normal_completions: 1, corrupted_completions: 0 },
           ],
         },
-        raids: { total: 0, list: {} },
+        raids: { unique_completions: 0, total: 0, list: {} },
         storylines: [
           {
             name: "Recover the Past",
@@ -653,8 +655,8 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 0, list: [] },
-        raids: { total: 0, list: {} },
+        dungeons: { unique_completions: 0, total: 0, list: [] },
+        raids: { unique_completions: 0, total: 0, list: {} },
         storylines: [
           {
             name: "Recover the Past",
@@ -811,12 +813,13 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         world_events: 0,
         wars: 0,
         dungeons: {
+          unique_completions: 0,
           total: 1,
           list: [
             { name: "Spider", normal_completions: 1, corrupted_completions: 0 },
           ],
         },
-        raids: { total: 0, list: {} },
+        raids: { unique_completions: 0, total: 0, list: {} },
         storylines: [
           {
             name: "Recover the Past",
@@ -973,7 +976,8 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         world_events: 0,
         wars: 0,
         dungeons: {
-          total: 2,
+          unique_completions: 0,
+          total: 3,
           list: [
             {
               name: "Skeleton",
@@ -983,7 +987,7 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
             { name: "Spider", normal_completions: 2, corrupted_completions: 0 },
           ],
         },
-        raids: { total: 0, list: {} },
+        raids: { unique_completions: 0, total: 0, list: {} },
         storylines: [
           {
             name: "Recover the Past",
@@ -1139,8 +1143,8 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 0, list: [] },
-        raids: { total: 0, list: {} },
+        dungeons: { unique_completions: 0, total: 0, list: [] },
+        raids: { unique_completions: 0, total: 0, list: {} },
         storylines: [
           {
             name: "Recover the Past",
@@ -1296,8 +1300,8 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 0, list: [] },
-        raids: { total: 0, list: {} },
+        dungeons: { unique_completions: 0, total: 0, list: [] },
+        raids: { unique_completions: 0, total: 0, list: {} },
         storylines: [
           {
             name: "Recover the Past",
@@ -1453,8 +1457,8 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 0, list: [] },
-        raids: { total: 0, list: {} },
+        dungeons: { unique_completions: 0, total: 0, list: [] },
+        raids: { unique_completions: 0, total: 0, list: {} },
         storylines: [
           {
             name: "Recover the Past",
@@ -1611,6 +1615,7 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         world_events: 0,
         wars: 0,
         dungeons: {
+          unique_completions: 0,
           total: 1,
           list: [
             {
@@ -1620,7 +1625,7 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
             },
           ],
         },
-        raids: { total: 0, list: {} },
+        raids: { unique_completions: 0, total: 0, list: {} },
         storylines: [
           {
             name: "Recover the Past",
@@ -1776,8 +1781,8 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
         lootruns: 0,
         world_events: 0,
         wars: 0,
-        dungeons: { total: 0, list: [] },
-        raids: { total: 0, list: {} },
+        dungeons: { unique_completions: 0, total: 0, list: [] },
+        raids: { unique_completions: 0, total: 0, list: {} },
         storylines: [
           {
             name: "Recover the Past",
@@ -2077,6 +2082,18 @@ const sampleCapeResponse = [
   },
 ];
 
+const sampleMaxContent: MaxContent = {
+  level: 106,
+  content: 1133,
+  discoveries: 604,
+  quests: 262,
+  world_events: 54,
+  caves: 172,
+  lootruns: 5,
+  dungeons: 18,
+  raids: 4,
+};
+
 export {
   sampleStatusResponse,
   sampleHypixelGuildResponse,
@@ -2087,4 +2104,5 @@ export {
   sampleWynncraftResponse,
   loadingSkin,
   sampleCapeResponse,
+  sampleMaxContent,
 };

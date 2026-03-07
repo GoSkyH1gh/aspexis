@@ -18,6 +18,7 @@ import {
   sampleWynncraftGuildResponse,
   sampleWynncraftResponse,
   sampleCapeResponse,
+  sampleMaxContent,
 } from "./sampleData";
 import { useStaticInfiniteQuery } from "../utils/utils";
 
@@ -132,6 +133,8 @@ export function HomePage() {
               wynncraftData={sampleWynncraftResponse}
               playerStatus={sampleStatusResponse}
               mcciData={sampleMCCIResponse}
+              isLoading={false}
+              wynncraftMaxContent={sampleMaxContent}
             />
             <div className="hypixel-data-text">
               <h3 className="vertical-text">Get insights at a glance</h3>
@@ -145,6 +148,7 @@ export function HomePage() {
             wynncraftData={sampleWynncraftResponse}
             wynncraftStatus={"success"}
             wynncraftGuildData={sampleWynncraftGuildResponse}
+            wynncraftMaxContent={sampleMaxContent}
             donutData={null}
             donutStatus={"success"}
             mcciData={sampleMCCIResponse}

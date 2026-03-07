@@ -1,11 +1,12 @@
-import { Dialog, Tooltip } from "radix-ui";
+import { Dialog, Tooltip, Progress, VisuallyHidden } from "radix-ui";
 import {
   PlayerRestrictions,
   WynncraftCharacterInfo,
   WynncraftCharacterSkillPoints,
   Storyline,
+  MaxContent,
 } from "../../client";
-import { color, motion } from "motion/react";
+import { motion } from "motion/react";
 import { toProperCase, formatValue } from "../../utils/utils";
 import { Icon } from "@iconify/react";
 import HorizontalInfoCard from "./horizontalInfoCard";
@@ -63,7 +64,7 @@ function StorylineCard({ storyline }: { storyline: Storyline }) {
   return (
     <Tooltip.Root delayDuration={150}>
       <Tooltip.Trigger asChild>
-        <li className="horizontal-info-card-item">
+        <li className="horizontal-info-card-item wynn-storyline">
           <span className="horizontal-info-card-label">{storyline.name}</span>
           <span className="horizontal-info-card-number">
             {storyline.quests_available === storyline.quests_completed
@@ -150,8 +151,10 @@ function CharacterHeader({ character }: { character: WynncraftCharacterInfo }) {
 
 function CharacterDetails({
   character,
+  wynncraftMaxContent,
 }: {
   character: WynncraftCharacterInfo;
+  wynncraftMaxContent: MaxContent | null | undefined;
 }) {
   const professionList = [
     "fishing",
@@ -237,56 +240,90 @@ function CharacterDetails({
         />
       </ul>
       <h3>Content</h3>
-
-      <ul className="horizontal-card-list">
+      <div
+        className={`horizontal-info-card-item horizontal-info-card-full-width`}
+      >
+        <div className="wynn-progress-container">
+          <div className="wynn-progress-label-container">
+            <span className="horizontal-info-card-label">
+              Content Completed
+            </span>
+            <span className="horizontal-info-card-number wynn-progress-label">
+              {`${character.content.content_completed}/${wynncraftMaxContent?.content || "?"}`}
+            </span>
+          </div>
+          <Progress.Root
+            className="ProgressRoot"
+            max={wynncraftMaxContent?.content}
+            value={character.content.content_completed}
+          >
+            <Progress.Indicator
+              className="ProgressIndicator"
+              style={{
+                transform: `translateX(-${
+                  100 -
+                  ((character.content.content_completed || 0) /
+                    (wynncraftMaxContent?.content || 1133)) *
+                    100
+                }%)`,
+              }}
+            />
+          </Progress.Root>
+        </div>
+      </div>
+      <ul className="horizontal-card-grid wynn-content-card-grid">
         <HorizontalInfoCard
-          label="Content Completed"
-          value={formatValue(
-            character.content.content_completed,
+          label="Quests"
+          value={`${formatValue(
+            character.content.quests_completed,
             false,
             "Private",
-          )}
-        />
-        <HorizontalInfoCard
-          label="Quests Completed"
-          value={formatValue(
-            character.content.quests_completed,
-            undefined,
-            "Private",
-          )}
+          )}/${wynncraftMaxContent?.quests || "?"}`}
         />
         <HorizontalInfoCard
           label="Discoveries"
-          value={formatValue(
+          value={`${formatValue(
             character.content.discoveries,
-            undefined,
+            false,
             "Private",
-          )}
+          )}/${wynncraftMaxContent?.discoveries || "?"}`}
         />
         <HorizontalInfoCard
           label="Caves"
-          value={formatValue(character.content.caves, undefined, "Private")}
+          value={`${formatValue(character.content.caves, false, "Private")}/${wynncraftMaxContent?.caves || "?"}`}
         />
         <HorizontalInfoCard
           label="World Events"
-          value={formatValue(
+          value={`${formatValue(
             character.content.world_events,
-            undefined,
+            false,
             "Private",
-          )}
+          )}/${wynncraftMaxContent?.world_events || "?"}`}
         />
         <HorizontalInfoCard
           label="Lootruns"
-          value={formatValue(character.content.lootruns, undefined, "Private")}
+          value={`${formatValue(
+            character.content.lootruns,
+            false,
+            "Private",
+          )}/${wynncraftMaxContent?.lootruns || "?"}`}
         />
 
         <HorizontalInfoCard
           label="Dungeons"
-          value={formatValue(
-            character.content.dungeons.total,
-            undefined,
+          value={`${formatValue(
+            character.content.dungeons.unique_completions,
+            false,
             "Private",
-          )}
+          )}/${wynncraftMaxContent?.dungeons || "?"}`}
+        />
+        <HorizontalInfoCard
+          label="Raids"
+          value={`${formatValue(
+            character.content.raids.unique_completions,
+            false,
+            "Private",
+          )}/${wynncraftMaxContent?.raids || "?"}`}
         />
       </ul>
 
@@ -356,7 +393,7 @@ function CharacterDetails({
                 <div className="wynn-dungeon-list">
                   {dungeon.normal_completions &&
                   dungeon.normal_completions > 0 ? (
-                    <Tooltip.Root delayDuration={50}>
+                    <Tooltip.Root delayDuration={0}>
                       <Tooltip.Trigger asChild>
                         <div className="wynn-dungeon-key">
                           <Icon icon={"material-symbols:vpn-key"} />
@@ -374,7 +411,10 @@ function CharacterDetails({
                   )}
                   {dungeon.corrupted_completions &&
                   dungeon.corrupted_completions > 0 ? (
-                    <Tooltip.Root delayDuration={50}>
+                    <Tooltip.Root
+                      delayDuration={0}
+                      disableHoverableContent={true}
+                    >
                       <Tooltip.Trigger asChild>
                         <div className="wynn-dungeon-key">
                           <Icon
@@ -417,11 +457,13 @@ export default function WynncraftCharacterModal({
   character,
   uuid,
   restrictions,
+  wynncraftMaxContent,
   smallVersion = false,
 }: {
   character: WynncraftCharacterInfo;
   uuid: string;
   restrictions: PlayerRestrictions;
+  wynncraftMaxContent: MaxContent | null | undefined;
   smallVersion?: boolean;
 }) {
   if (smallVersion) {
@@ -490,7 +532,7 @@ export default function WynncraftCharacterModal({
           </button>
         </Dialog.Trigger>
         <Dialog.Portal>
-          <Dialog.Title />
+          <Dialog.Title asChild>{character.character_class}</Dialog.Title>
           <Dialog.Overlay className="DialogOverlay" />
           <Dialog.Content className="DialogContent wynn-char-modal">
             <div className="skin-viewer-header">
@@ -506,7 +548,10 @@ export default function WynncraftCharacterModal({
                 </Dialog.Close>
               </div>
             </div>
-            <CharacterDetails character={character} />
+            <CharacterDetails
+              character={character}
+              wynncraftMaxContent={wynncraftMaxContent}
+            />
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
@@ -557,7 +602,10 @@ export default function WynncraftCharacterModal({
               </Dialog.Close>
             </div>
           </div>
-          <CharacterDetails character={character} />
+          <CharacterDetails
+            character={character}
+            wynncraftMaxContent={wynncraftMaxContent}
+          />
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

@@ -7,6 +7,7 @@ import {
 } from "../../utils/utils.js";
 import {
   HypixelFullData,
+  MaxContent,
   McciPlayer,
   PlayerStatus,
   WynncraftPlayerSummary,
@@ -20,6 +21,7 @@ type QuickInfoProps = {
   mcciData: McciPlayer | null | undefined;
   playerStatus: PlayerStatus | null | undefined;
   isLoading: boolean;
+  wynncraftMaxContent: MaxContent | null | undefined;
 };
 
 function QuickInfo({
@@ -28,6 +30,7 @@ function QuickInfo({
   mcciData,
   playerStatus,
   isLoading,
+  wynncraftMaxContent,
 }: QuickInfoProps) {
   if (isLoading) {
     return (
@@ -221,6 +224,7 @@ function QuickInfo({
                     restrictions={wynncraftData.restrictions}
                     uuid={wynncraftData.uuid}
                     smallVersion={true}
+                    wynncraftMaxContent={wynncraftMaxContent}
                   />
                 </div>
               }

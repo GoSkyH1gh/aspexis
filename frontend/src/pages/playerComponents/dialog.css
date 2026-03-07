@@ -120,7 +120,8 @@
   border: 1px solid var(--color-surface-layer-2);
   backdrop-filter: blur(10px);
   border-radius: 6px;
-  box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px,
+  box-shadow:
+    hsl(206 22% 7% / 35%) 0px 10px 38px -10px,
     hsl(206 22% 7% / 20%) 0px 10px 20px -15px;
   padding: 15px;
   display: grid;
@@ -209,7 +210,6 @@
   transition: none;
 }
 
-
 .ToastError {
   background-color: rgba(255, 0, 0, 0.2);
   padding: 25px;
@@ -271,4 +271,30 @@
   background: hsl(
     from var(--color-surface-layer-2) h calc(s + 10) calc(l + 120)
   );
+}
+
+.ProgressRoot {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-surface-layer-3);
+  border-radius: 99999px;
+  width: 100%;
+  height: 20px;
+  transform: translateZ(0);
+}
+
+.ProgressIndicator {
+  background: linear-gradient(
+    to left,
+    var(--color-accent-gradient-start),
+    var(--color-accent-gradient-end)
+  );
+  background: linear-gradient(
+    to left,
+    var(--color-selected),
+    var(--color-selected-hover)
+  );
+  width: 100%;
+  height: 100%;
+  transition: transform 660ms cubic-bezier(0.65, 0, 0.35, 1);
 }

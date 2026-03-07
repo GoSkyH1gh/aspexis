@@ -192,6 +192,10 @@ export type CapeImageData = {
  */
 export type ContentProgress = {
     /**
+     * Unique Completions
+     */
+    unique_completions: number | null;
+    /**
      * Total
      */
     total: number | null;
@@ -275,6 +279,10 @@ export type DungeonCompletions = {
  * DungeonProgress
  */
 export type DungeonProgress = {
+    /**
+     * Unique Completions
+     */
+    unique_completions: number | null;
     /**
      * Total
      */
@@ -589,6 +597,48 @@ export type McciStats = {
      * Level Evolution
      */
     level_evolution: number | null;
+};
+
+/**
+ * MaxContent
+ */
+export type MaxContent = {
+    /**
+     * Level
+     */
+    level: number;
+    /**
+     * Content
+     */
+    content: number;
+    /**
+     * Discoveries
+     */
+    discoveries: number;
+    /**
+     * Quests
+     */
+    quests: number;
+    /**
+     * World Events
+     */
+    world_events: number;
+    /**
+     * Caves
+     */
+    caves: number;
+    /**
+     * Lootruns
+     */
+    lootruns: number;
+    /**
+     * Dungeons
+     */
+    dungeons: number;
+    /**
+     * Raids
+     */
+    raids: number;
 };
 
 /**
@@ -1631,6 +1681,59 @@ export type GetWynncraftCharacterAbilityTreeV1PlayersWynncraftUuidCharactersChar
 };
 
 export type GetWynncraftCharacterAbilityTreeV1PlayersWynncraftUuidCharactersCharacterUuidAbilityTreeGetResponse = GetWynncraftCharacterAbilityTreeV1PlayersWynncraftUuidCharactersCharacterUuidAbilityTreeGetResponses[keyof GetWynncraftCharacterAbilityTreeV1PlayersWynncraftUuidCharactersCharacterUuidAbilityTreeGetResponses];
+
+export type GetWynncraftMaxContentV1WynncraftMaxContentGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/wynncraft/max_content';
+};
+
+export type GetWynncraftMaxContentV1WynncraftMaxContentGetErrors = {
+    /**
+     * Bad Request
+     */
+    400: ErrorResponse;
+    /**
+     * Forbidden
+     */
+    403: ErrorResponse;
+    /**
+     * Not Found
+     */
+    404: ErrorResponse;
+    /**
+     * Unprocessable Entity
+     */
+    422: ErrorResponse;
+    /**
+     * Too Many Requests
+     */
+    429: ErrorResponse;
+    /**
+     * Internal Server Error
+     */
+    500: ErrorResponse;
+    /**
+     * Upstream Error
+     */
+    502: ErrorResponse;
+    /**
+     * Upstream Timeout
+     */
+    504: ErrorResponse;
+};
+
+export type GetWynncraftMaxContentV1WynncraftMaxContentGetError = GetWynncraftMaxContentV1WynncraftMaxContentGetErrors[keyof GetWynncraftMaxContentV1WynncraftMaxContentGetErrors];
+
+export type GetWynncraftMaxContentV1WynncraftMaxContentGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: MaxContent;
+};
+
+export type GetWynncraftMaxContentV1WynncraftMaxContentGetResponse = GetWynncraftMaxContentV1WynncraftMaxContentGetResponses[keyof GetWynncraftMaxContentV1WynncraftMaxContentGetResponses];
 
 export type GetDonutSmpStatsV1PlayersDonutsmpUsernameGetData = {
     body?: never;

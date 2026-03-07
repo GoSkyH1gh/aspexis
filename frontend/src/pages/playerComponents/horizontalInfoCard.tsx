@@ -8,6 +8,7 @@ type HorizontalInfoCardProps = {
   value: string | number | ReactNode;
   imageSrc?: string;
   imageAlt?: string;
+  fullWidth?: boolean;
 };
 
 function HorizontalInfoCard({
@@ -15,9 +16,10 @@ function HorizontalInfoCard({
   value,
   imageSrc,
   imageAlt,
+  fullWidth = false,
 }: HorizontalInfoCardProps) {
   return (
-    <div className="horizontal-info-card-item">
+    <div className={`horizontal-info-card-item ${fullWidth && "horizontal-info-card-full-width"}`}>
       {imageSrc && (
         <img
           src={imageSrc}

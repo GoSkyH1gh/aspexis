@@ -4,6 +4,7 @@ import {
   WynncraftCharacterInfo,
   ProfessionInfo,
   PlayerRestrictions,
+  MaxContent,
 } from "../../client";
 import { Select } from "radix-ui";
 import WynncraftCharacterModal from "./wynncraftCharacterModal";
@@ -12,10 +13,12 @@ function WynncraftCharacters({
   characterList,
   uuid,
   restrictions,
+  wynncraftMaxContent,
 }: {
   characterList: WynncraftCharacterInfo[];
   uuid: string;
   restrictions: PlayerRestrictions;
+  wynncraftMaxContent: MaxContent | null | undefined;
 }) {
   if (characterList.length === 0) {
     return <p>This player has no characters.</p>;
@@ -130,6 +133,7 @@ function WynncraftCharacters({
             key={char.character_uuid}
             uuid={uuid}
             restrictions={restrictions}
+            wynncraftMaxContent={wynncraftMaxContent}
           />
         ))}
       </ul>
