@@ -9,17 +9,17 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { Tooltip } from "radix-ui";
 import { ThemeProvider } from "./pages/playerComponents/themeContext";
 
-function App() {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-        refetchOnWindowFocus: false,
-        staleTime: 3 * 60 * 1000,
-      },
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false,
+      staleTime: 3 * 60 * 1000,
     },
-  });
+  },
+});
 
+function App() {
   return (
     <Tooltip.Provider>
       <ThemeProvider>
