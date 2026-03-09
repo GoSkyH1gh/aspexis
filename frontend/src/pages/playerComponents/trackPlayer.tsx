@@ -68,8 +68,9 @@ function TrackPlayer({
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTick((tick) => tick + 1);
+      setTick((t) => t + 1);
     }, 1000);
+    return () => clearInterval(interval);
   }, []);
 
   let onlineText = "Offline";
