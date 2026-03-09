@@ -61,6 +61,16 @@ function WynncraftCharacters({
     case "age":
       characters = [...characterList];
       break;
+    case "content":
+      characters = [...characterList]
+        // this sort is removed if content completed isn't available
+        .sort(
+          (charOne, charTwo) =>
+            charOne.content.content_completed! -
+            charTwo.content.content_completed!,
+        )
+        .reverse();
+      break;
     case "logins":
       characters = [...characterList]
         // this sort is removed if logins aren't available
@@ -111,14 +121,19 @@ function WynncraftCharacters({
                 <Select.Item value="age" className="SelectItem">
                   <Select.ItemText>Oldest</Select.ItemText>
                 </Select.Item>
-                {!removedStats.includes("logins") && (
-                  <Select.Item value="logins" className="SelectItem">
-                    <Select.ItemText>Logins</Select.ItemText>
+                {!removedStats.includes("contentCompletion") && (
+                  <Select.Item value="content" className="SelectItem">
+                    <Select.ItemText>Content</Select.ItemText>
                   </Select.Item>
                 )}
                 {!removedStats.includes("professions") && (
                   <Select.Item value="professions" className="SelectItem">
                     <Select.ItemText>Professions</Select.ItemText>
+                  </Select.Item>
+                )}
+                {!removedStats.includes("logins") && (
+                  <Select.Item value="logins" className="SelectItem">
+                    <Select.ItemText>Logins</Select.ItemText>
                   </Select.Item>
                 )}
               </Select.Viewport>

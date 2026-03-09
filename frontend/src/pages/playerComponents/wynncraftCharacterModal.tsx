@@ -1,4 +1,4 @@
-import { Dialog, Tooltip, Progress, VisuallyHidden } from "radix-ui";
+import { Dialog, Tooltip, Progress } from "radix-ui";
 import {
   PlayerRestrictions,
   WynncraftCharacterInfo,
@@ -249,7 +249,7 @@ function CharacterDetails({
               Content Completed
             </span>
             <span className="horizontal-info-card-number wynn-progress-label">
-              {`${character.content.content_completed}/${wynncraftMaxContent?.content || "?"}`}
+              {`${character.content.content_completed || "Private"}/${wynncraftMaxContent?.content || "?"}`}
             </span>
           </div>
           <Progress.Root
@@ -535,14 +535,14 @@ export default function WynncraftCharacterModal({
           <Dialog.Title asChild>{character.character_class}</Dialog.Title>
           <Dialog.Overlay className="DialogOverlay" />
           <Dialog.Content className="DialogContent wynn-char-modal">
-            <div className="skin-viewer-header">
+            <div className="wynn-character-header">
               <CharacterHeader character={character} />
               <div className="wynn-header-close">
                 {!restrictions.character_build_access && (
                   <WynncraftAbilityTree character={character} uuid={uuid} />
                 )}
                 <Dialog.Close asChild>
-                  <button className="dialog-close">
+                  <button className="wynn-dialog-close">
                     <Icon icon={"material-symbols:close-rounded"} />
                   </button>
                 </Dialog.Close>
@@ -586,17 +586,17 @@ export default function WynncraftCharacterModal({
         </motion.button>
       </Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Title />
+        <Dialog.Title asChild>{character.character_class}</Dialog.Title>
         <Dialog.Overlay className="DialogOverlay" />
         <Dialog.Content className="DialogContent wynn-char-modal">
-          <div className="skin-viewer-header">
+          <div className="wynn-character-header">
             <CharacterHeader character={character} />
             <div className="wynn-header-close">
               {!restrictions.character_build_access && (
                 <WynncraftAbilityTree character={character} uuid={uuid} />
               )}
               <Dialog.Close asChild>
-                <button className="dialog-close">
+                <button className="wynn-dialog-close">
                   <Icon icon={"material-symbols:close-rounded"} />
                 </button>
               </Dialog.Close>
