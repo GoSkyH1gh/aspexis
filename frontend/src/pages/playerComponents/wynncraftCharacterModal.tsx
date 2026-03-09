@@ -459,12 +459,14 @@ export default function WynncraftCharacterModal({
   restrictions,
   wynncraftMaxContent,
   smallVersion = false,
+  renderTrigger,
 }: {
   character: WynncraftCharacterInfo;
   uuid: string;
   restrictions: PlayerRestrictions;
   wynncraftMaxContent: MaxContent | null | undefined;
   smallVersion?: boolean;
+  renderTrigger?: any;
 }) {
   if (smallVersion) {
     return (
@@ -564,6 +566,7 @@ export default function WynncraftCharacterModal({
         <motion.button
           className={`wynncraft-character-item`}
           layout
+          layoutDependency={renderTrigger}
           initial="initial"
           whileHover="hover"
           transition={{
