@@ -50,7 +50,7 @@ function AbilityPage({ page }: { page: AbilityTreePage }) {
                 gridRow: row,
               }}
             >
-              <Tooltip.Root delayDuration={250} disableHoverableContent={true} >
+              <Tooltip.Root delayDuration={250} disableHoverableContent={true}>
                 <Tooltip.Trigger asChild>
                   <img src={node.icon_url} alt={node.name} draggable={false} />
                 </Tooltip.Trigger>
@@ -110,7 +110,9 @@ function WynncraftAbilityTree({
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Dialog.Trigger>Open Ability Tree</Dialog.Trigger>
+      <Dialog.Trigger asChild>
+        <button className="wynn-ability-tree-open">Open Ability Tree</button>
+      </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="DialogOverlay AbilityTreeOverlay" />
         <Dialog.Content className="DialogContent AbilityTreeContent">

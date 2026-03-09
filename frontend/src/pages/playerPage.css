@@ -1384,3 +1384,10 @@ button {
   list-style: none;
   flex-wrap: wrap;
 }
+
+@media screen and (width < 750px) {
+  .horizontal-card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+}

@@ -50,6 +50,69 @@
   gap: 0.8rem;
 }
 
+.wynn-character-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.wynn-dialog-close {
+  cursor: pointer;
+  background-color: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  transition: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 6px;
+}
+
+.wynn-dialog-close > svg {
+  width: 24px;
+  height: 24px;
+}
+
+.wynn-dialog-close:hover {
+  cursor: pointer;
+  background-color: transparent;
+  backdrop-filter: none;
+  transition: none;
+}
+
+@media screen and (width < 750px) {
+  .profession-list {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .wynn-character-header {
+    flex-wrap: wrap;
+    position: relative;
+  }
+
+  .wynn-ability-tree-open {
+    margin-top: 0.4rem;
+    width: 100%;
+  }
+
+  .wynn-header-close {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .wynn-dialog-close {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+  }
+
+  .wynn-content-card-grid > .horizontal-info-card-item:last-child {
+    grid-column: 1/3;
+  }
+}
+
 .profession-list::-webkit-scrollbar {
   height: 6px;
 }

@@ -19,7 +19,9 @@ function HorizontalInfoCard({
   fullWidth = false,
 }: HorizontalInfoCardProps) {
   return (
-    <div className={`horizontal-info-card-item ${fullWidth && "horizontal-info-card-full-width"}`}>
+    <div
+      className={`horizontal-info-card-item ${fullWidth ? "horizontal-info-card-full-width" : ""}`}
+    >
       {imageSrc && (
         <img
           src={imageSrc}
