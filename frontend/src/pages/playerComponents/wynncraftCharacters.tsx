@@ -149,6 +149,7 @@ function WynncraftCharacters({
             uuid={uuid}
             restrictions={restrictions}
             wynncraftMaxContent={wynncraftMaxContent}
+            renderTrigger={sort}
           />
         ))}
       </ul>
