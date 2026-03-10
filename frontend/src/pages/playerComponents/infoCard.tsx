@@ -4,6 +4,7 @@ import { Popover } from "radix-ui";
 import { ReactNode } from "react";
 import { Tooltip } from "radix-ui";
 import { Icon } from "@iconify/react";
+import { useMediaQuery } from "../../hooks/useMediaQuery";
 
 // can't use both hasStats and tooltip at the same time
 type BaseProps = {
@@ -53,6 +54,8 @@ function InfoCard({
   onlineIndicator = false,
   children,
 }: InfoCardProps) {
+  const isMobile = useMediaQuery("(max-width: 750px)");
+
   if (hasStats) {
     return (
       <motion.li
@@ -96,7 +99,7 @@ function InfoCard({
             </button>
           </Popover.Trigger>
           <Popover.Portal>
-            <Popover.Content align="start" side="right">
+            <Popover.Content align="start" side={isMobile ? "bottom" : "right"}>
               <motion.div
                 initial={{ scale: 0, y: -30, x: -60 }}
                 animate={{ scale: 1, y: 0, x: 0 }}

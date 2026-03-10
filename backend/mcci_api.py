@@ -6,6 +6,7 @@ import os
 from fastapi import HTTPException
 from pydantic import BaseModel
 from typing import Optional, List
+import exceptions
 
 load_dotenv()
 mcci_api_key = os.getenv("mcci_api_key")
@@ -118,8 +119,9 @@ def get_rank(ranks: list) -> str | None:
 
 async def get_mcci_data(uuid: str, http_client: httpx.AsyncClient):
     variables = {"uuid": dashify_uuid(uuid)}
-    
+
     assert mcci_api_key is not None, "MCCCI API key not found"
+    
     try:
         mcci_response_raw = await http_client.post(
             "https://api.mccisland.net/graphql",
@@ -127,19 +129,13 @@ async def get_mcci_data(uuid: str, http_client: httpx.AsyncClient):
             headers={"X-API-Key": mcci_api_key},
         )
         mcci_response_raw.raise_for_status()
-        mcci_response: dict = mcci_response_raw.json()
 
-    except httpx.HTTPError as e:
-        print(f"http exception for mcci api: {e}")
-        raise HTTPException(502, {"message": "recieved HTTP error from MCC Island api"})
+    except httpx.TimeoutException:
+        raise exceptions.UpstreamTimeoutError()
+    except httpx.RequestError:
+        raise exceptions.UpstreamError()
 
-    except Exception as e:
-        print(f"unknown error for mcci api: {e}")
-        raise HTTPException(
-            500,
-            {"message": "something went wrong while proccessing MCC Island api data"},
-        )
-
+    mcci_response: dict = mcci_response_raw.json()
     if mcci_response["data"] == {}:
         raise HTTPException(404, {"message": "player was not found"})
 
