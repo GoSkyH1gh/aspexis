@@ -4,7 +4,7 @@ import os
 import logging
 import exceptions
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import List
 import math
 import httpx
 import asyncio
@@ -90,16 +90,27 @@ class BedwarsProfile(BaseModel):
     quad_stats: BedwarsMode
 
 
+class HypixelSocials(BaseModel):
+    twitter: str | None
+    discord: str | None
+    youtube: str | None
+    twitch: str | None
+    instagram: str | None
+    tiktok: str | None
+    hypixel_forums: str | None
+
+
 class HypixelPlayer(BaseModel):
     source: str
     uuid: str
-    first_login: Optional[str]
-    last_login: Optional[str]
-    rank: Optional[str]
+    first_login: str | None
+    last_login: str | None
+    rank: str | None
     achievement_points: int
     network_experience: int
     network_level: int
     karma: int
+    socials: HypixelSocials | None
     bedwars: BedwarsProfile
 
 
@@ -124,15 +135,15 @@ class HypixelGuild(BaseModel):
     created: str
     experience: int
     level: int
-    tag: Optional[str]
-    description: Optional[str]
+    tag: str | None
+    description: str | None
     publicly_listed: bool
     members: List[HypixelGuildMember]
 
 
 class HypixelFullData(BaseModel):
     player: HypixelPlayer
-    guild: Optional[HypixelGuild]
+    guild: HypixelGuild | None
 
 
 async def get_core_hypixel_data(uuid, http_client: httpx.AsyncClient) -> HypixelPlayer:
@@ -197,9 +208,30 @@ async def get_core_hypixel_data(uuid, http_client: httpx.AsyncClient) -> Hypixel
         network_experience=network_experience,
         network_level=network_level,
         karma=karma,
+        socials=get_socials(player_data),
         bedwars=get_bedwars_profile(player_data),
     )
     return player_profile
+
+
+def get_socials(player_data: dict) -> HypixelSocials | None:
+    socials_data: dict = player_data.get("player", {}).get("socialMedia")
+    if socials_data is None:
+        return None
+
+    links: dict = socials_data.get("links", {})
+
+    socials = HypixelSocials(
+        twitter=links.get("TWITTER"),
+        discord=links.get("DISCORD"),
+        youtube=links.get("YOUTUBE"),
+        twitch=links.get("TWITCH"),
+        instagram=links.get("INSTAGRAM"),
+        tiktok=links.get("TIKTOK"),
+        hypixel_forums=links.get("HYPIXEL"),
+    )
+
+    return socials
 
 
 def get_bedwars_profile(player_data: dict) -> BedwarsProfile:
