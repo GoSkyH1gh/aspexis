@@ -1,6 +1,6 @@
 import InfoCard from "./infoCard";
 import { formatValue, formatISOToDistance } from "../../utils/utils";
-import { Dialog } from "radix-ui";
+import { Dialog, Tooltip } from "radix-ui";
 import "./dialog.css";
 import { toProperCase, formatISOTimestamp } from "../../utils/utils";
 import { motion } from "motion/react";
@@ -10,16 +10,28 @@ import {
   HypixelFullData,
   HypixelGuildMemberFull,
   BedwarsProfile,
+  HypixelSocials,
 } from "../../client";
 import DistributionChartWrapper from "./distributionChartWrapper";
 import { Icon } from "@iconify/react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchMetric } from "../../utils/queries";
 import { Link } from "react-router-dom";
+import CopyToastWrapper from "./copyToastWrapper";
 
 type HypixelDataProps = {
   hypixelData: HypixelFullData;
   hypixelGuildQuery: any; // UseInfiniteQueryResult with InfiniteData wrapper
+};
+
+const socialsIcons = {
+  twitter: "mdi:twitter",
+  discord: "ic:baseline-discord",
+  youtube: "mdi:youtube",
+  instagram: "mdi:instagram",
+  tiktok: "ic:baseline-tiktok",
+  twitch: "mdi:twitch",
+  hypixel_forums: "material-symbols:forum-outline-rounded",
 };
 
 function HypixelTabbedData({
@@ -33,6 +45,68 @@ function HypixelTabbedData({
     queryFn: () => fetchMetric(selectedMetric!, hypixelData.player.uuid),
     enabled: !!selectedMetric,
   });
+
+  let socialElement;
+  if (hypixelData.player.socials) {
+    socialElement = Object.entries(hypixelData.player.socials).map(
+      ([social_name, social_value]) => {
+        if (!social_value) {
+          return;
+        }
+        if (social_name === "discord") {
+          return (
+            <CopyToastWrapper key={social_name}>
+              {(handleCopy) => (
+                <Tooltip.Root delayDuration={50}>
+                  <Tooltip.Trigger asChild>
+                    <button
+                      className="social-button"
+                      onClick={() => handleCopy(social_value)}
+                    >
+                      <Icon icon={socialsIcons[social_name]} />
+                    </button>
+                  </Tooltip.Trigger>
+                  <Tooltip.Portal>
+                    <Tooltip.Content className="TooltipContent discord-tooltip">
+                      Discord {<br />}
+                      <span>(click to copy username)</span>
+                    </Tooltip.Content>
+                  </Tooltip.Portal>
+                </Tooltip.Root>
+              )}
+            </CopyToastWrapper>
+          );
+        }
+        return (
+          <Tooltip.Root delayDuration={50}>
+            <Tooltip.Trigger asChild>
+              <a
+                className="social-button"
+                target="_blank"
+                rel="noopener noreferrer"
+                href={
+                  social_value.startsWith("http://") ||
+                  social_value.startsWith("https://")
+                    ? social_value
+                    : `https://${social_value}`
+                  // if link starts with www. instead of https:// it doesnt work properly
+                }
+              >
+                <Icon
+                  icon={socialsIcons[social_name as keyof typeof socialsIcons]}
+                />
+              </a>
+            </Tooltip.Trigger>
+            <Tooltip.Portal>
+              <Tooltip.Content className="TooltipContent">
+                {toProperCase(social_name.replace("_", " "))}
+              </Tooltip.Content>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+        );
+      },
+    );
+  }
 
   return (
     <>
@@ -81,6 +155,12 @@ function HypixelTabbedData({
       </ul>
       <h3>Game Stats</h3>
       <HypixelBedwarsPopup bedwarsData={hypixelData.player.bedwars} />
+      {hypixelData.player.socials && (
+        <>
+          <h3>Linked Socials</h3>
+          <div className="linked-socials">{socialElement}</div>
+        </>
+      )}
       {hypixelData?.guild && (
         <>
           <div className="hypixel-guild-divider" role="separator" />

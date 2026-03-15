@@ -189,7 +189,7 @@
 }
 
 .hero-searchbar > input::placeholder {
-  color: #4b4b4b
+  color: #4b4b4b;
 }
 
 .hero-searchbar > svg {
@@ -286,7 +286,7 @@ a {
 }
 
 a:hover {
-  color: #f3a718;
+  color: var(--link-hover);
 }
 
 .features-h2 {

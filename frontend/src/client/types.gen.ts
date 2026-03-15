@@ -505,7 +505,42 @@ export type HypixelPlayer = {
      * Karma
      */
     karma: number;
+    socials: HypixelSocials | null;
     bedwars: BedwarsProfile;
+};
+
+/**
+ * HypixelSocials
+ */
+export type HypixelSocials = {
+    /**
+     * Twitter
+     */
+    twitter: string | null;
+    /**
+     * Discord
+     */
+    discord: string | null;
+    /**
+     * Youtube
+     */
+    youtube: string | null;
+    /**
+     * Twitch
+     */
+    twitch: string | null;
+    /**
+     * Instagram
+     */
+    instagram: string | null;
+    /**
+     * Tiktok
+     */
+    tiktok: string | null;
+    /**
+     * Hypixel Forums
+     */
+    hypixel_forums: string | null;
 };
 
 /**
