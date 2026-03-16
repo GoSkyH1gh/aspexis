@@ -423,3 +423,23 @@ footer {
   height: 2.4rem;
   width: 2.4rem;
 }
+
+.error-page {
+  display: flex;
+  flex-direction: column;
+  padding: 5rem;
+  backdrop-filter: var(--color-surface-layer-2);
+}
+
+.error-page-icon {
+  font-size: 3.5rem;
+}
+
+.error-page-header {
+  margin-bottom: 0;
+}
+
+.error-page-link {
+  font-size: 1.5rem;
+  margin-top: 3rem;
+}
