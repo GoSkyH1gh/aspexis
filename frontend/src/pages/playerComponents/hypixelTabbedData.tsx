@@ -68,8 +68,8 @@ function HypixelTabbedData({
                   </Tooltip.Trigger>
                   <Tooltip.Portal>
                     <Tooltip.Content className="TooltipContent discord-tooltip">
-                      Discord {<br />}
-                      <span>(click to copy username)</span>
+                      Discord - {social_value}{<br />}
+                      <span>(click to copy)</span>
                     </Tooltip.Content>
                   </Tooltip.Portal>
                 </Tooltip.Root>

@@ -60,6 +60,66 @@ const getProfessionUrl = (profession: string) =>
 const classImageUrl =
   "https://cdn.wynncraft.com/nextgen/themes/journey/assets/classes/";
 
+const gamemodeSortOrder = [
+  "hardcore",
+  "defeated_hardcore",
+  "ultimate_ironman",
+  "ironman",
+  "craftsman",
+  "hunted",
+];
+
+function CharacterGamemodes({
+  character,
+}: {
+  character: WynncraftCharacterInfo;
+}) {
+  const gamemodes = character.gamemodes;
+  let sortedGamemodes: string[] = [];
+  gamemodeSortOrder.forEach(
+    (gamemode) =>
+      gamemodes.includes(gamemode) && sortedGamemodes.push(gamemode),
+  );
+  gamemodes.forEach(
+    (gamemode) =>
+      !sortedGamemodes.includes(gamemode) && sortedGamemodes.push(gamemode),
+  );
+
+  return (
+    character.gamemodes.length >= 1 && (
+      <div className="wynn-modes">
+        {sortedGamemodes.map((gamemode) => {
+          if (character.stats?.deaths) {
+            if (character.stats.deaths >= 1 && gamemode == "hardcore") {
+              gamemode = "defeated_hardcore";
+            }
+          }
+          if (
+            gamemode == "ironman" &&
+            sortedGamemodes.includes("ultimate_ironman")
+          ) {
+            return;
+          }
+
+          const validGamemode = gamemode as keyof typeof modesMap;
+          return (
+            <Tooltip.Root delayDuration={50}>
+              <Tooltip.Trigger asChild>
+                <img src={modesMap[validGamemode]} className="wynn-mode" />
+              </Tooltip.Trigger>
+              <Tooltip.Portal>
+                <Tooltip.Content className="TooltipContent">
+                  {modeAttributeMap[validGamemode]}
+                </Tooltip.Content>
+              </Tooltip.Portal>
+            </Tooltip.Root>
+          );
+        })}
+      </div>
+    )
+  );
+}
+
 function StorylineCard({ storyline }: { storyline: Storyline }) {
   return (
     <Tooltip.Root delayDuration={150}>
@@ -114,35 +174,7 @@ function CharacterHeader({ character }: { character: WynncraftCharacterInfo }) {
             character.character_class}
         </p>
         {character.gamemodes.length >= 1 && (
-          <div className="wynn-modes">
-            {character.gamemodes.sort().map((gamemode) => {
-              if (character.stats?.deaths) {
-                if (character.stats.deaths >= 1 && gamemode == "hardcore") {
-                  gamemode = "defeated_hardcore";
-                }
-              }
-              if (
-                gamemode == "ironman" &&
-                character.gamemodes.includes("ultimate_ironman")
-              ) {
-                return;
-              }
-
-              const validGamemode = gamemode as keyof typeof modesMap;
-              return (
-                <Tooltip.Root delayDuration={50}>
-                  <Tooltip.Trigger asChild>
-                    <img src={modesMap[validGamemode]} className="wynn-mode" />
-                  </Tooltip.Trigger>
-                  <Tooltip.Portal>
-                    <Tooltip.Content className="TooltipContent">
-                      {modeAttributeMap[validGamemode]}
-                    </Tooltip.Content>
-                  </Tooltip.Portal>
-                </Tooltip.Root>
-              );
-            })}
-          </div>
+          <CharacterGamemodes character={character} />
         )}
       </div>
     </div>
@@ -493,38 +525,7 @@ export default function WynncraftCharacterModal({
                 character.character_class}
             </p>
             {character.gamemodes.length >= 1 && (
-              <div className="wynn-modes">
-                {character.gamemodes.sort().map((gamemode) => {
-                  if (character.stats?.deaths) {
-                    if (character.stats.deaths >= 1 && gamemode == "hardcore") {
-                      gamemode = "defeated_hardcore";
-                    }
-                  }
-                  if (
-                    gamemode == "ironman" &&
-                    character.gamemodes.includes("ultimate_ironman")
-                  ) {
-                    return;
-                  }
-
-                  const validGamemode = gamemode as keyof typeof modesMap;
-                  return (
-                    <Tooltip.Root delayDuration={50}>
-                      <Tooltip.Trigger asChild>
-                        <img
-                          src={modesMap[validGamemode]}
-                          className="wynn-mode"
-                        />
-                      </Tooltip.Trigger>
-                      <Tooltip.Portal>
-                        <Tooltip.Content className="TooltipContent">
-                          {modeAttributeMap[validGamemode]}
-                        </Tooltip.Content>
-                      </Tooltip.Portal>
-                    </Tooltip.Root>
-                  );
-                })}
-              </div>
+              <CharacterGamemodes character={character} />
             )}
             {
               <p className="secondary-text wynn-char-preview">
