@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { usePageTitle } from "../hooks/usePageTitle";
 import { motion } from "motion/react";
 import "./homePage.css";
 import MojangDataDisplay from "./playerComponents/mojangDataDisplay.js";
@@ -48,6 +49,7 @@ function HeroSearchbar() {
 }
 
 export function HomePage() {
+  usePageTitle();
   const [sampleState, setSampleState] = useState<any>([]);
   const targetScroll = useRef<HTMLHeadingElement>(null);
   const staticGuildQuery = useStaticInfiniteQuery(

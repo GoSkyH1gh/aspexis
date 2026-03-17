@@ -15,5 +15,5 @@
     "src/pages/playerComponents/donutTabbedData.tsx",
     "src/pages/homePage.tsx",
     "src/pages/playerComponents/distributionChart.tsx"
-, "src/pages/playerComponents/trackPlayer.tsx", "src/main.jsx", "src/App.jsx"  ]
+, "src/pages/playerComponents/trackPlayer.tsx", "src/main.tsx", "src/App.tsx"  ]
 }

@@ -32,10 +32,15 @@ class ErrorBoundary extends Component<Props, State> {
           <h3 className="error-page-icon">:(</h3>
           <h1 className="error-page-header">Something went terribly wrong</h1>
           <p>
-            An unexpected error occured while trying to render this page - that's why you're here now.
+            An unexpected error occured while trying to render this page -
+            that's why you're here now.
           </p>
-          <Link to="/" onClick={() => this.setState({ hasError: false })} className="error-page-link">
-            Return to Homepage
+          <Link
+            to="/"
+            onClick={() => this.setState({ hasError: false })}
+            className="error-page-link"
+          >
+            ← Back to safety
           </Link>
         </div>
       );
