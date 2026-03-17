@@ -1,4 +1,5 @@
 import "./playerPage.css";
+import { usePageTitle } from "../hooks/usePageTitle";
 import { useParams } from "react-router-dom";
 import MojangDataDisplay from "./playerComponents/mojangDataDisplay";
 import QuickInfo from "./playerComponents/quickInfo";
@@ -42,6 +43,8 @@ export function PlayerPage() {
 
   const uuid: string | undefined = mojangQuery.data?.uuid;
   const mojangUsername: string | undefined = mojangQuery.data?.username;
+
+  usePageTitle(mojangQuery.data?.username);
 
   useEffect(() => {
     if (mojangQuery.isSuccess && mojangQuery.data?.username) {

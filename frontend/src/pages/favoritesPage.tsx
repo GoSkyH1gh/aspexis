@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { usePageTitle } from "../hooks/usePageTitle";
 import { getFavorites, Favorite, deleteFavorite } from "../utils/favorites";
 import { MdDeleteOutline, MdOutlineSearch } from "react-icons/md";
 import { useNavigate, Link } from "react-router-dom";
@@ -81,6 +82,7 @@ function FavoriteElement({
 }
 
 function FavoritesPage() {
+  usePageTitle("Favorites");
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   useEffect(() => {
     setFavorites(getFavorites());
