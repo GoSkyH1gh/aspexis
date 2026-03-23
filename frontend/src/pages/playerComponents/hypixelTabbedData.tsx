@@ -163,7 +163,7 @@ function HypixelTabbedData({
       )}
       {hypixelData?.guild && (
         <>
-          <div className="hypixel-guild-divider" role="separator" />
+          <div className="full-width-divider" role="separator" />
           <HypixelGuild
             hypixelData={hypixelData}
             hypixelGuildQuery={hypixelGuildQuery}

@@ -1262,7 +1262,7 @@ button {
   }
 }
 
-.hypixel-guild-divider {
+.full-width-divider {
   background-color: var(--color-surface-layer-3);
   height: 0.1rem;
   margin: 1rem;
@@ -1432,5 +1432,4 @@ button.social-button:hover {
 
 .discord-tooltip > span {
   font-size: 0.8rem;
-
 }
