@@ -41,6 +41,7 @@ function WynncraftTabbedData({
   if (wynncraftGuildData) {
     wynnGuildElements = (
       <>
+        <div className="full-width-divider" role="separator" />
         <h3>{wynncraftData.guild_name}</h3>
         <WynncraftGuild wynncraftGuildData={wynncraftGuildData} />
       </>
