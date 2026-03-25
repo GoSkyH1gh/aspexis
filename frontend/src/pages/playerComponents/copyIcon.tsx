@@ -1,33 +1,27 @@
 import { motion } from "motion/react";
 import copyIcon from "/src/assets/copy-icon.svg";
-import { Tooltip, Toast } from "radix-ui";
+import { Toast } from "radix-ui";
+import DesktopTooltip from "../../components/desktopTooltip";
 import { useState, useRef } from "react";
 
 function CopyIcon({ textToCopy }: { textToCopy: string }) {
   const [open, setOpen] = useState(false);
   return (
     <Toast.Provider swipeDirection="right">
-      <Tooltip.Root delayDuration={50}>
-        <Tooltip.Trigger asChild>
-          <motion.button
-            className="icon-button"
-            aria-label="Copy UUID to clipboard"
-            onClick={() => {
-              navigator.clipboard.writeText(textToCopy);
-              setOpen(true);
-            }}
-            whileHover={{ scale: 1 }}
-            whileTap={{ scale: 0.8 }}
-          >
-            <motion.img src={copyIcon} alt="" className="copy-icon" />
-          </motion.button>
-        </Tooltip.Trigger>
-        <Tooltip.Portal>
-          <Tooltip.Content className="TooltipContent">
-            Copy UUID
-          </Tooltip.Content>
-        </Tooltip.Portal>
-      </Tooltip.Root>
+      <DesktopTooltip delayDuration={50} content="Copy UUID">
+        <motion.button
+          className="icon-button"
+          aria-label="Copy UUID to clipboard"
+          onClick={() => {
+            navigator.clipboard.writeText(textToCopy);
+            setOpen(true);
+          }}
+          whileHover={{ scale: 1 }}
+          whileTap={{ scale: 0.8 }}
+        >
+          <motion.img src={copyIcon} alt="" className="copy-icon" />
+        </motion.button>
+      </DesktopTooltip>
       <Toast.Root
         open={open}
         onOpenChange={setOpen}

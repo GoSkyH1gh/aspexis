@@ -2,7 +2,7 @@ import { motion } from "motion/react";
 import ArrowOutward from "/src/assets/arrow-outward.svg";
 import { Popover } from "radix-ui";
 import { ReactNode } from "react";
-import { Tooltip } from "radix-ui";
+import DesktopTooltip from "../../components/desktopTooltip";
 import { Icon } from "@iconify/react";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 
@@ -80,22 +80,15 @@ function InfoCard({
                   {value}
                 </span>
               </div>
-              <Tooltip.Root delayDuration={150}>
-                <Tooltip.Trigger asChild>
-                  <div className="info-card-icon-wrapper">
-                    <Icon
-                      icon="material-symbols:query-stats-rounded"
-                      height={20}
-                      width={20}
-                    />
-                  </div>
-                </Tooltip.Trigger>
-                <Tooltip.Portal>
-                  <Tooltip.Content className="TooltipContent">
-                    View Distribution
-                  </Tooltip.Content>
-                </Tooltip.Portal>
-              </Tooltip.Root>
+              <DesktopTooltip delayDuration={150} content="View Distribution">
+                <div className="info-card-icon-wrapper">
+                  <Icon
+                    icon="material-symbols:query-stats-rounded"
+                    height={20}
+                    width={20}
+                  />
+                </div>
+              </DesktopTooltip>
             </button>
           </Popover.Trigger>
           <Popover.Portal>
@@ -117,29 +110,22 @@ function InfoCard({
   }
   if (tooltip != null) {
     return (
-      <Tooltip.Root delayDuration={50}>
-        <Tooltip.Trigger asChild>
-          <motion.li
-            className="info-card"
-            variants={{
-              hidden: { opacity: 0, y: 20 },
-              show: { opacity: 1, y: 0 },
-            }}
-          >
-            <span className="info-card-label">{label}</span>
-            <br />
-            <span className="info-card-value">
-              {onlineIndicator && <StatusDot />}
-              {value}
-            </span>
-          </motion.li>
-        </Tooltip.Trigger>
-        <Tooltip.Portal>
-          <Tooltip.Content className="TooltipContent">
-            {tooltip}
-          </Tooltip.Content>
-        </Tooltip.Portal>
-      </Tooltip.Root>
+      <DesktopTooltip delayDuration={50} content={tooltip}>
+        <motion.li
+          className="info-card"
+          variants={{
+            hidden: { opacity: 0, y: 20 },
+            show: { opacity: 1, y: 0 },
+          }}
+        >
+          <span className="info-card-label">{label}</span>
+          <br />
+          <span className="info-card-value">
+            {onlineIndicator && <StatusDot />}
+            {value}
+          </span>
+        </motion.li>
+      </DesktopTooltip>
     );
   }
 

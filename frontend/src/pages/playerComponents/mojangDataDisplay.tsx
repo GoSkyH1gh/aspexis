@@ -10,7 +10,7 @@ import {
   checkFavorite,
   deleteFavorite,
 } from "../../utils/favorites.js";
-import { Tooltip } from "radix-ui";
+import DesktopTooltip from "../../components/desktopTooltip";
 import { useEffect, useState } from "react";
 import CapeGallery from "./capeGallery.js";
 
@@ -46,44 +46,39 @@ function MojangDataDisplay({
             {mojangResponse.username}
           </h2>
 
-            <Tooltip.Root delayDuration={50}>
-              <Tooltip.Trigger asChild>
-                <motion.button
-                  className="icon-button flex"
-                  whileHover={{ scale: 1 }}
-                  whileTap={{ scale: 0.8 }}
-                  aria-label={
-                    !isFavorite
-                      ? `Add ${mojangResponse.username} to Favorites`
-                      : `Remove ${mojangResponse.username} from Favorites`
-                  }
-                  onClick={() => {
-                    if (isFavorite) {
-                      deleteFavorite(mojangResponse.uuid);
-                      setIsFavorite(false);
-                    } else {
-                      const now = new Date();
-                      addFavorite({
-                        username: mojangResponse.username,
-                        uuid: mojangResponse.uuid,
-                        addedOn: now.toISOString(),
-                      });
-                      setIsFavorite(true);
-                    }
-                  }}
-                >
-                  {isFavorite && <MdFavorite />}
-                  {!isFavorite && <MdFavoriteBorder />}
-                </motion.button>
-              </Tooltip.Trigger>
-              <Tooltip.Portal>
-                <Tooltip.Content className="TooltipContent">
-                  {!isFavorite
+            <DesktopTooltip delayDuration={50} content={
+              !isFavorite
+                ? `Add ${mojangResponse.username} to Favorites`
+                : `Remove ${mojangResponse.username} from Favorites`
+            }>
+              <motion.button
+                className="icon-button flex"
+                whileHover={{ scale: 1 }}
+                whileTap={{ scale: 0.8 }}
+                aria-label={
+                  !isFavorite
                     ? `Add ${mojangResponse.username} to Favorites`
-                    : `Remove ${mojangResponse.username} from Favorites`}
-                </Tooltip.Content>
-              </Tooltip.Portal>
-            </Tooltip.Root>
+                    : `Remove ${mojangResponse.username} from Favorites`
+                }
+                onClick={() => {
+                  if (isFavorite) {
+                    deleteFavorite(mojangResponse.uuid);
+                    setIsFavorite(false);
+                  } else {
+                    const now = new Date();
+                    addFavorite({
+                      username: mojangResponse.username,
+                      uuid: mojangResponse.uuid,
+                      addedOn: now.toISOString(),
+                    });
+                    setIsFavorite(true);
+                  }
+                }}
+              >
+                {isFavorite && <MdFavorite />}
+                {!isFavorite && <MdFavoriteBorder />}
+              </motion.button>
+            </DesktopTooltip>
         </div>
         <div className="text-icon uuid-container text-icon">
           <p className="uuid">uuid: {mojangResponse.uuid}</p>

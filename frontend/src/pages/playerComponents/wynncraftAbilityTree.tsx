@@ -5,10 +5,75 @@ import { WynncraftCharacterInfo } from "../../client";
 import LoadingIndicator from "./loadingIndicator";
 import { Icon } from "@iconify/react";
 import { AbilityTreePage } from "../../client";
-import { useState } from "react";
-import { Tooltip } from "radix-ui";
+import { useState, useRef } from "react";
+import { Popover } from "radix-ui";
 
 const ROWS_PER_PAGE = 6;
+
+function HoverableAbilityNode({ node, row }: { node: any; row: number }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
+  const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const open = isHovered || isClicked;
+
+  const handleMouseEnter = () => {
+    if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+    hoverTimeout.current = setTimeout(() => setIsHovered(true), 250);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+    setIsHovered(false);
+  };
+
+  return (
+    <div
+      className={`ability-node ${node.icon_id.split(".")[1]}`}
+      style={{
+        gridColumn: node.x,
+        gridRow: row,
+      }}
+    >
+      <Popover.Root
+        open={open}
+        onOpenChange={(o) => {
+          if (!o) {
+            setIsHovered(false);
+            setIsClicked(false);
+          }
+        }}
+      >
+        <Popover.Trigger asChild>
+          <img
+            src={node.icon_url}
+            alt={node.name}
+            draggable={false}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onClick={(e) => {
+              e.preventDefault();
+              setIsClicked(!isClicked);
+            }}
+          />
+        </Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content
+            side="top"
+            sideOffset={5}
+            className="TooltipContent AbilityTreeTooltip"
+          >
+            <div
+              className="wynn-description"
+              dangerouslySetInnerHTML={{
+                __html: `${node.pretty_name}${node.description}`,
+              }}
+            ></div>
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>
+    </div>
+  );
+}
 
 function toLocalRow(globalY: number, pageNumber: number): number {
   const row = globalY - (pageNumber - 1) * ROWS_PER_PAGE;
@@ -41,32 +106,7 @@ function AbilityPage({ page }: { page: AbilityTreePage }) {
           );
         }
         if (node.node_type == "ability" && node.description) {
-          return (
-            <div
-              key={node.node_id}
-              className={`ability-node ${node.icon_id.split(".")[1]}`}
-              style={{
-                gridColumn: node.x,
-                gridRow: row,
-              }}
-            >
-              <Tooltip.Root delayDuration={250} disableHoverableContent={true}>
-                <Tooltip.Trigger asChild>
-                  <img src={node.icon_url} alt={node.name} draggable={false} />
-                </Tooltip.Trigger>
-                <Tooltip.Portal>
-                  <Tooltip.Content className="TooltipContent AbilityTreeTooltip">
-                    <div
-                      className="wynn-description"
-                      dangerouslySetInnerHTML={{
-                        __html: `${node.pretty_name}${node.description}`,
-                      }}
-                    ></div>
-                  </Tooltip.Content>
-                </Tooltip.Portal>
-              </Tooltip.Root>
-            </div>
-          );
+          return <HoverableAbilityNode key={node.node_id} node={node} row={row} />;
         }
       })}
     </div>
