@@ -1,4 +1,5 @@
-import { Dialog, Tooltip } from "radix-ui";
+import { Dialog } from "radix-ui";
+import DesktopTooltip from "../../components/desktopTooltip";
 import { UserCapeData } from "../../client";
 import { Icon } from "@iconify/react";
 import { motion } from "motion/react";
@@ -27,31 +28,24 @@ function CapeGallery({ capeData, capeStatus }: CapeGalleryProps) {
 
   return (
     <Dialog.Root>
-      <Tooltip.Root delayDuration={50}>
-        <Tooltip.Trigger asChild>
-          <Dialog.Trigger asChild>
-            <motion.button
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{
-                duration: 0.1,
-                type: "spring",
-                delay: 0.2,
-                ease: "easeOut",
-              }}
-              className="skin-button fill-button"
-              aria-label="View Cape Gallery"
-            >
-              <Icon icon={"material-symbols:grid-view-outline-rounded"} />
-            </motion.button>
-          </Dialog.Trigger>
-        </Tooltip.Trigger>
-        <Tooltip.Portal>
-          <Tooltip.Content className="TooltipContent">
-            View Cape Gallery
-          </Tooltip.Content>
-        </Tooltip.Portal>
-      </Tooltip.Root>
+      <DesktopTooltip delayDuration={50} content="View Cape Gallery">
+        <Dialog.Trigger asChild>
+          <motion.button
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{
+              duration: 0.1,
+              type: "spring",
+              delay: 0.2,
+              ease: "easeOut",
+            }}
+            className="skin-button fill-button"
+            aria-label="View Cape Gallery"
+          >
+            <Icon icon={"material-symbols:grid-view-outline-rounded"} />
+          </motion.button>
+        </Dialog.Trigger>
+      </DesktopTooltip>
       <Dialog.Portal>
         <Dialog.Overlay className="DialogOverlay" />
         <Dialog.Content className="DialogContent cape-gallery">

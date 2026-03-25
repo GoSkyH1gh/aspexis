@@ -1,4 +1,5 @@
-import { Dialog, Tooltip, Progress } from "radix-ui";
+import { Dialog, Progress } from "radix-ui";
+import DesktopTooltip from "../../components/desktopTooltip";
 import {
   PlayerRestrictions,
   WynncraftCharacterInfo,
@@ -103,16 +104,13 @@ function CharacterGamemodes({
 
           const validGamemode = gamemode as keyof typeof modesMap;
           return (
-            <Tooltip.Root delayDuration={50}>
-              <Tooltip.Trigger asChild>
-                <img src={modesMap[validGamemode]} className="wynn-mode" />
-              </Tooltip.Trigger>
-              <Tooltip.Portal>
-                <Tooltip.Content className="TooltipContent">
-                  {modeAttributeMap[validGamemode]}
-                </Tooltip.Content>
-              </Tooltip.Portal>
-            </Tooltip.Root>
+            <DesktopTooltip
+              key={gamemode}
+              delayDuration={50}
+              content={modeAttributeMap[validGamemode]}
+            >
+              <img src={modesMap[validGamemode]} className="wynn-mode" />
+            </DesktopTooltip>
           );
         })}
       </div>
@@ -122,19 +120,10 @@ function CharacterGamemodes({
 
 function StorylineCard({ storyline }: { storyline: Storyline }) {
   return (
-    <Tooltip.Root delayDuration={150}>
-      <Tooltip.Trigger asChild>
-        <li className="horizontal-info-card-item wynn-storyline">
-          <span className="horizontal-info-card-label">{storyline.name}</span>
-          <span className="horizontal-info-card-number">
-            {storyline.quests_available === storyline.quests_completed
-              ? "✓"
-              : storyline.quests_completed + "/" + storyline.quests_available}
-          </span>
-        </li>
-      </Tooltip.Trigger>
-      <Tooltip.Portal>
-        <Tooltip.Content className="TooltipContent">
+    <DesktopTooltip
+      delayDuration={150}
+      content={
+        <>
           {storyline.quests.map((quest) => (
             <div key={quest.name} className="wynn-storylines">
               <span className="wynn-fixed-width">
@@ -143,9 +132,18 @@ function StorylineCard({ storyline }: { storyline: Storyline }) {
               {quest.name}
             </div>
           ))}
-        </Tooltip.Content>
-      </Tooltip.Portal>
-    </Tooltip.Root>
+        </>
+      }
+    >
+      <li className="horizontal-info-card-item wynn-storyline">
+        <span className="horizontal-info-card-label">{storyline.name}</span>
+        <span className="horizontal-info-card-number">
+          {storyline.quests_available === storyline.quests_completed
+            ? "✓"
+            : storyline.quests_completed + "/" + storyline.quests_available}
+        </span>
+      </li>
+    </DesktopTooltip>
   );
 }
 
@@ -160,16 +158,12 @@ function CharacterHeader({ character }: { character: WynncraftCharacterInfo }) {
       <div className="wynn-classname-c">
         <p className="em-text">
           {(character.nickname && (
-            <Tooltip.Root delayDuration={150}>
-              <Tooltip.Trigger asChild>
-                <span className="wynn-custom-name">{character.nickname}</span>
-              </Tooltip.Trigger>
-              <Tooltip.Portal>
-                <Tooltip.Content className="TooltipContent">
-                  {character.character_class}
-                </Tooltip.Content>
-              </Tooltip.Portal>
-            </Tooltip.Root>
+            <DesktopTooltip
+              delayDuration={150}
+              content={character.character_class}
+            >
+              <span className="wynn-custom-name">{character.nickname}</span>
+            </DesktopTooltip>
           )) ||
             character.character_class}
         </p>
@@ -425,43 +419,27 @@ function CharacterDetails({
                 <div className="wynn-dungeon-list">
                   {dungeon.normal_completions &&
                   dungeon.normal_completions > 0 ? (
-                    <Tooltip.Root delayDuration={0}>
-                      <Tooltip.Trigger asChild>
-                        <div className="wynn-dungeon-key">
-                          <Icon icon={"material-symbols:vpn-key"} />
-                          {dungeon.normal_completions}
-                        </div>
-                      </Tooltip.Trigger>
-                      <Tooltip.Portal>
-                        <Tooltip.Content className="TooltipContent">
-                          Normal Runs
-                        </Tooltip.Content>
-                      </Tooltip.Portal>
-                    </Tooltip.Root>
+                    <DesktopTooltip delayDuration={0} content="Normal Runs">
+                      <div className="wynn-dungeon-key">
+                        <Icon icon={"material-symbols:vpn-key"} />
+                        {dungeon.normal_completions}
+                      </div>
+                    </DesktopTooltip>
                   ) : (
                     <></>
                   )}
                   {dungeon.corrupted_completions &&
                   dungeon.corrupted_completions > 0 ? (
-                    <Tooltip.Root
+                    <DesktopTooltip
                       delayDuration={0}
                       disableHoverableContent={true}
+                      content="Corrupted Runs"
                     >
-                      <Tooltip.Trigger asChild>
-                        <div className="wynn-dungeon-key">
-                          <Icon
-                            icon={"material-symbols:vpn-key"}
-                            color="#888888"
-                          />
-                          {dungeon.corrupted_completions}
-                        </div>
-                      </Tooltip.Trigger>
-                      <Tooltip.Portal>
-                        <Tooltip.Content className="TooltipContent">
-                          Corrupted Runs
-                        </Tooltip.Content>
-                      </Tooltip.Portal>
-                    </Tooltip.Root>
+                      <div className="wynn-dungeon-key">
+                        <Icon icon={"material-symbols:vpn-key"} color="#888888" />
+                        {dungeon.corrupted_completions}
+                      </div>
+                    </DesktopTooltip>
                   ) : (
                     <></>
                   )}
@@ -509,18 +487,12 @@ export default function WynncraftCharacterModal({
           >
             <p className="em-text">
               {(character.nickname && (
-                <Tooltip.Root delayDuration={150}>
-                  <Tooltip.Trigger asChild>
-                    <span className="wynn-custom-name">
-                      {character.nickname}
-                    </span>
-                  </Tooltip.Trigger>
-                  <Tooltip.Portal>
-                    <Tooltip.Content className="TooltipContent">
-                      {character.character_class}
-                    </Tooltip.Content>
-                  </Tooltip.Portal>
-                </Tooltip.Root>
+                <DesktopTooltip
+                  delayDuration={150}
+                  content={character.character_class}
+                >
+                  <span className="wynn-custom-name">{character.nickname}</span>
+                </DesktopTooltip>
               )) ||
                 character.character_class}
             </p>

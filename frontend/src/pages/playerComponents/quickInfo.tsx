@@ -13,7 +13,7 @@ import {
   WynncraftPlayerSummary,
 } from "../../client/types.gen.js";
 import WynncraftCharacterModal from "./wynncraftCharacterModal.js";
-import { Tooltip } from "radix-ui";
+import DesktopTooltip from "../../components/desktopTooltip";
 
 type QuickInfoProps = {
   hypixelData: HypixelFullData | null | undefined;
@@ -159,23 +159,16 @@ function QuickInfo({
     }
   } else {
     lastActivityElement = (
-      <Tooltip.Root delayDuration={50}>
-        <Tooltip.Trigger asChild>
-          <li className="last-activity-card">
-            <span className="info-card-label">Last activity</span>
-            <br />
-            <span className="info-card-value">
-              {formatISOToDistance(lastJoinDate?.toISOString())}
-              {lastJoinServer && <> on {lastJoinServer}</>}
-            </span>
-          </li>
-        </Tooltip.Trigger>
-        <Tooltip.Portal>
-          <Tooltip.Content className="TooltipContent">
-            {formatISOTimestamp(lastJoinDate?.toISOString())}
-          </Tooltip.Content>
-        </Tooltip.Portal>
-      </Tooltip.Root>
+      <DesktopTooltip delayDuration={50} content={formatISOTimestamp(lastJoinDate?.toISOString())}>
+        <li className="last-activity-card">
+          <span className="info-card-label">Last activity</span>
+          <br />
+          <span className="info-card-value">
+            {formatISOToDistance(lastJoinDate?.toISOString())}
+            {lastJoinServer && <> on {lastJoinServer}</>}
+          </span>
+        </li>
+      </DesktopTooltip>
     );
   }
 

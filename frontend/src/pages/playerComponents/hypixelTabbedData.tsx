@@ -1,6 +1,7 @@
 import InfoCard from "./infoCard";
 import { formatValue, formatISOToDistance } from "../../utils/utils";
-import { Dialog, Tooltip } from "radix-ui";
+import { Dialog, ToggleGroup } from "radix-ui";
+import DesktopTooltip from "../../components/desktopTooltip";
 import "./dialog.css";
 import { toProperCase, formatISOTimestamp } from "../../utils/utils";
 import { motion } from "motion/react";
@@ -57,52 +58,42 @@ function HypixelTabbedData({
           return (
             <CopyToastWrapper key={social_name}>
               {(handleCopy) => (
-                <Tooltip.Root delayDuration={50}>
-                  <Tooltip.Trigger asChild>
-                    <button
-                      className="social-button"
-                      onClick={() => handleCopy(social_value)}
-                    >
-                      <Icon icon={socialsIcons[social_name]} />
-                    </button>
-                  </Tooltip.Trigger>
-                  <Tooltip.Portal>
-                    <Tooltip.Content className="TooltipContent discord-tooltip">
-                      Discord - {social_value}{<br />}
-                      <span>(click to copy)</span>
-                    </Tooltip.Content>
-                  </Tooltip.Portal>
-                </Tooltip.Root>
+                <DesktopTooltip delayDuration={50} content={
+                  <div className="discord-tooltip">
+                    Discord - {social_value}{<br />}
+                    <span>(click to copy)</span>
+                  </div>
+                }>
+                  <button
+                    className="social-button"
+                    onClick={() => handleCopy(social_value)}
+                  >
+                    <Icon icon={socialsIcons[social_name]} />
+                  </button>
+                </DesktopTooltip>
               )}
             </CopyToastWrapper>
           );
         }
         return (
-          <Tooltip.Root delayDuration={50}>
-            <Tooltip.Trigger asChild>
-              <a
-                className="social-button"
-                target="_blank"
-                rel="noopener noreferrer"
-                href={
-                  social_value.startsWith("http://") ||
+          <DesktopTooltip delayDuration={50} content={toProperCase(social_name.replace("_", " "))}>
+            <a
+              className="social-button"
+              target="_blank"
+              rel="noopener noreferrer"
+              href={
+                social_value.startsWith("http://") ||
                   social_value.startsWith("https://")
-                    ? social_value
-                    : `https://${social_value}`
-                  // if link starts with www. instead of https:// it doesnt work properly
-                }
-              >
-                <Icon
-                  icon={socialsIcons[social_name as keyof typeof socialsIcons]}
-                />
-              </a>
-            </Tooltip.Trigger>
-            <Tooltip.Portal>
-              <Tooltip.Content className="TooltipContent">
-                {toProperCase(social_name.replace("_", " "))}
-              </Tooltip.Content>
-            </Tooltip.Portal>
-          </Tooltip.Root>
+                  ? social_value
+                  : `https://${social_value}`
+                // if link starts with www. instead of https:// it doesnt work properly
+              }
+            >
+              <Icon
+                icon={socialsIcons[social_name as keyof typeof socialsIcons]}
+              />
+            </a>
+          </DesktopTooltip>
         );
       },
     );
@@ -277,35 +268,35 @@ function HypixelBedwarsPopup({ bedwarsData }: { bedwarsData: BedwarsProfile }) {
                   <td className="bedwars-stat-value">
                     {formatValue(
                       bedwarsData.overall_stats[
-                        stat as keyof typeof bedwarsData.overall_stats
+                      stat as keyof typeof bedwarsData.overall_stats
                       ],
                     )}
                   </td>
                   <td className="bedwars-stat-value">
                     {formatValue(
                       bedwarsData.solo_stats[
-                        stat as keyof typeof bedwarsData.overall_stats
+                      stat as keyof typeof bedwarsData.overall_stats
                       ],
                     )}
                   </td>
                   <td className="bedwars-stat-value">
                     {formatValue(
                       bedwarsData.duo_stats[
-                        stat as keyof typeof bedwarsData.overall_stats
+                      stat as keyof typeof bedwarsData.overall_stats
                       ],
                     )}
                   </td>
                   <td className="bedwars-stat-value">
                     {formatValue(
                       bedwarsData.trio_stats[
-                        stat as keyof typeof bedwarsData.overall_stats
+                      stat as keyof typeof bedwarsData.overall_stats
                       ],
                     )}
                   </td>
                   <td className="bedwars-stat-value">
                     {formatValue(
                       bedwarsData.quad_stats[
-                        stat as keyof typeof bedwarsData.overall_stats
+                      stat as keyof typeof bedwarsData.overall_stats
                       ],
                     )}
                   </td>
@@ -443,20 +434,27 @@ function HypixelGuild({ hypixelData, hypixelGuildQuery }: HypixelDataProps) {
         <h3>Members</h3>
         <div className="flex">
           Display as
-          <div className="select-container">
-            <button
-              onClick={() => setDisplayMode("card")}
+          <ToggleGroup.Root
+            type="single"
+            value={displayMode}
+            onValueChange={(value) => {
+              if (value) setDisplayMode(value as "card" | "list");
+            }}
+            className="select-container"
+          >
+            <ToggleGroup.Item
+              value="card"
               className={`select-button-left select-button ${displayMode === "card" && "select-button-active"}`}
             >
               Card
-            </button>
-            <button
-              onClick={() => setDisplayMode("list")}
+            </ToggleGroup.Item>
+            <ToggleGroup.Item
+              value="list"
               className={`select-button-right select-button ${displayMode === "list" && "select-button-active"}`}
             >
               List
-            </button>
-          </div>
+            </ToggleGroup.Item>
+          </ToggleGroup.Root>
         </div>
       </div>
       <ul
