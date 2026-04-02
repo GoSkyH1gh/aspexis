@@ -231,7 +231,7 @@ function HypixelBedwarsPopup({ bedwarsData }: { bedwarsData: BedwarsProfile }) {
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="DialogOverlay" />
-        <Dialog.Content className="BedwarsOverlay">
+        <Dialog.Content className="BedwarsOverlay DialogContent">
           <div className="skin-viewer-header">
             <Dialog.Title className="gallery-title-text">
               Bedwars Stats

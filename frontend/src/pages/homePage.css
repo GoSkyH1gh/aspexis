@@ -62,7 +62,6 @@
 }
 
 .info-card-container {
-  backdrop-filter: blur(100px);
   background-color: var(--color-surface-layer-1);
   border: 1px solid var(--color-surface-layer-2);
   box-shadow: 0 4px 30px var(--color-shadow);
@@ -71,7 +70,6 @@
 }
 
 .guild-members-container {
-  backdrop-filter: blur(100px);
   background-color: var(--color-surface-layer-1);
   border: 1px solid var(--color-surface-layer-2);
   box-shadow: 0 4px 30px var(--color-shadow);

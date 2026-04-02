@@ -89,7 +89,6 @@ button {
 
 button:hover {
   background: rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(2px);
 }
 
 .search-button {
@@ -189,7 +188,6 @@ button:hover {
 .guild-list-item {
   display: block;
   background-color: var(--color-surface-layer-2);
-  backdrop-filter: blur(10px);
   box-shadow: 0 4px 30px var(--color-shadow);
   border-radius: 5px;
   padding: 10px;
@@ -200,7 +198,6 @@ button:hover {
 .guild-list-item:hover {
   cursor: pointer;
   background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(2px);
 }
 
 .guild-list,
@@ -230,7 +227,6 @@ button:hover {
 
 .info-card {
   display: block;
-  backdrop-filter: blur(10px);
   background-color: var(--color-surface-layer-2);
   border: 1px solid var(--color-surface-layer-2);
   box-shadow: 0 4px 30px var(--color-shadow);
@@ -268,7 +264,6 @@ button:hover {
 button {
   color: var(--text-primary);
   background-color: var(--color-surface-layer-2);
-  backdrop-filter: blur(10px);
   box-shadow: 0 4px 30px var(--color-shadow);
   transition: 0.2s;
 }
@@ -308,7 +303,7 @@ button {
 }
 
 .loading-container {
-  backdrop-filter: blur(100px);
+  backdrop-filter: blur(10px);
   background-color: var(--color-surface-layer-1);
   border: 1px solid var(--color-surface-layer-2);
   box-shadow: 0 4px 30px var(--color-shadow);
@@ -1093,7 +1088,7 @@ button {
   flex-wrap: wrap;
   align-items: center;
   gap: 0.4rem;
-  backdrop-filter: blur(10px);
+  background-color: var(--color-surface-layer-2);
   border-radius: 6px;
   border: 1px solid var(--color-surface-layer-2);
   padding: 10px;
@@ -1271,7 +1266,6 @@ button {
 
 .hypixel-guild-card {
   display: block;
-  backdrop-filter: blur(10px);
   background-color: var(--color-surface-layer-2);
   border: 1px solid var(--color-surface-layer-2);
   box-shadow: 0 4px 30px var(--color-shadow);
@@ -1395,7 +1389,6 @@ button {
   height: 4rem;
   width: 4rem;
   display: block;
-  backdrop-filter: blur(10px);
   background-color: var(--color-surface-layer-2);
   border: 1px solid var(--color-surface-layer-2);
   box-shadow: 0 4px 30px var(--color-shadow);
