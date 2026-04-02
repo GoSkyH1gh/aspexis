@@ -5,6 +5,7 @@ import {
   ProfessionInfo,
   PlayerRestrictions,
   MaxContent,
+  ProfessionLevel,
 } from "../../client";
 import { Select } from "radix-ui";
 import WynncraftCharacterModal from "./wynncraftCharacterModal";
@@ -31,7 +32,7 @@ function WynncraftCharacters({
       return 0;
     }
     return Object.values(professions).reduce(
-      (sum: number, level: number) => sum + level,
+      (sum: number, level: ProfessionLevel) => sum + level.level,
       0,
     );
   };
