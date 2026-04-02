@@ -478,6 +478,7 @@
 
 .wynn-storyline {
   cursor: help;
+  flex-direction: row;
 }
 
 .wynn-progress-label {

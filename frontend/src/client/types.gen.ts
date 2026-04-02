@@ -782,54 +782,32 @@ export type PlayerStatus = {
  * ProfessionInfo
  */
 export type ProfessionInfo = {
+    fishing: ProfessionLevel;
+    woodcutting: ProfessionLevel;
+    mining: ProfessionLevel;
+    farming: ProfessionLevel;
+    scribing: ProfessionLevel;
+    jeweling: ProfessionLevel;
+    alchemism: ProfessionLevel;
+    cooking: ProfessionLevel;
+    weaponsmithing: ProfessionLevel;
+    tailoring: ProfessionLevel;
+    woodworking: ProfessionLevel;
+    armouring: ProfessionLevel;
+};
+
+/**
+ * ProfessionLevel
+ */
+export type ProfessionLevel = {
     /**
-     * Fishing
+     * Level
      */
-    fishing: number;
+    level: number;
     /**
-     * Woodcutting
+     * Xp Percent
      */
-    woodcutting: number;
-    /**
-     * Mining
-     */
-    mining: number;
-    /**
-     * Farming
-     */
-    farming: number;
-    /**
-     * Scribing
-     */
-    scribing: number;
-    /**
-     * Jeweling
-     */
-    jeweling: number;
-    /**
-     * Alchemism
-     */
-    alchemism: number;
-    /**
-     * Cooking
-     */
-    cooking: number;
-    /**
-     * Weaponsmithing
-     */
-    weaponsmithing: number;
-    /**
-     * Tailoring
-     */
-    tailoring: number;
-    /**
-     * Woodworking
-     */
-    woodworking: number;
-    /**
-     * Armouring
-     */
-    armouring: number;
+    xp_percent: number;
 };
 
 /**
