@@ -153,19 +153,24 @@ class Storyline(BaseModel):
     quests: list[StorylineQuest]
 
 
+class ProfessionLevel(BaseModel):
+    level: int
+    xp_percent: float
+
+
 class ProfessionInfo(BaseModel):
-    fishing: int
-    woodcutting: int
-    mining: int
-    farming: int
-    scribing: int
-    jeweling: int
-    alchemism: int
-    cooking: int
-    weaponsmithing: int
-    tailoring: int
-    woodworking: int
-    armouring: int
+    fishing: ProfessionLevel
+    woodcutting: ProfessionLevel
+    mining: ProfessionLevel
+    farming: ProfessionLevel
+    scribing: ProfessionLevel
+    jeweling: ProfessionLevel
+    alchemism: ProfessionLevel
+    cooking: ProfessionLevel
+    weaponsmithing: ProfessionLevel
+    tailoring: ProfessionLevel
+    woodworking: ProfessionLevel
+    armouring: ProfessionLevel
 
 
 class WynncraftCharacterSkillPoints(BaseModel):
@@ -281,11 +286,13 @@ def get_character_professions(selected_character: dict) -> ProfessionInfo:
     # {'fishing': '100', 'mining': 33, ...}
     for profession in PROFESSION_NAMES:
         try:
-            profession_args[profession] = selected_character["professions"][profession][
-                "level"
-            ]
+            level = selected_character["professions"][profession]["level"]
+            xp_percent = selected_character["professions"][profession]["xpPercent"]
+            profession_args[profession] = ProfessionLevel(
+                level=level, xp_percent=xp_percent
+            )
         except Exception:
-            profession_args[profession] = 0
+            profession_args[profession] = ProfessionLevel(level=0, xp_percent=0)
 
     return ProfessionInfo(**profession_args)
 
