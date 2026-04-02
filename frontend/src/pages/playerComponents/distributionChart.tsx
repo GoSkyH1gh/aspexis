@@ -139,11 +139,12 @@ function DistributionChart({
                   />
                   <Tooltip
                     contentStyle={{
-                      borderRadius: "15px",
-                      color: "#F4EAE3",
-                      backdropFilter: "blur(20px)",
-                      backgroundColor: "#bbb4",
-                      border: "var(--color-surfact-layer-2) 2px solid",
+                      borderRadius: "10px",
+                      padding: "4px 8px",
+                      backdropFilter: "blur(15px)",
+                      backgroundColor: "#333a",
+                      border: "1px solid var(--color-surface-layer-3)",
+                      boxShadow: "0 4px 30px var(--color-shadow)",
                     }}
                     cursor={{ fill: "#A130F645", radius: 5 }}
                     labelStyle={{ fontWeight: 600, color: "#F4EAE3" }}

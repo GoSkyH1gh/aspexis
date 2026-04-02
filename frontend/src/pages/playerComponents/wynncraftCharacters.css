@@ -26,7 +26,6 @@
 
 .wynncraft-character-item:hover {
   background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(2px);
 }
 
 .wynncraft-character-item.expanded {
@@ -142,7 +141,6 @@
 
 .wynn-guild-member-item:hover {
   background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(2px);
 }
 
 .wynn-guild-member-item {
@@ -443,7 +441,7 @@
   justify-content: center;
   align-items: center;
   min-width: 13rem;
-  backdrop-filter: blur(10px);
+  background-color: var(--color-surface-layer-2);
   border-radius: 6px;
   border: 1px solid var(--color-surface-layer-2);
   padding: 10px;

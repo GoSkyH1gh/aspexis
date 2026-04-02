@@ -172,7 +172,7 @@ button:focus-visible {
 .sidebar {
   width: 4rem;
   min-width: 50px;
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(10px);
   background-color: var(--color-surface-layer-3);
   border: 1px solid var(--color-surface-layer-3);
   box-shadow: 0 4px 30px var(--color-shadow);
@@ -252,7 +252,7 @@ button:focus-visible {
 @media screen and (width < 750px) {
   .sidebar {
     width: auto;
-    backdrop-filter: blur(100px);
+    backdrop-filter: blur(10px);
     background-color: var(--color-surface-layer-1);
     box-shadow: 0 4px 30px var(--color-shadow);
     border-radius: 15px;
