@@ -1169,6 +1169,10 @@ export type WynncraftPlayerSummary = {
      * Guild Prefix
      */
     guild_prefix: string | null;
+    /**
+     * Guild Rank
+     */
+    guild_rank: string | null;
     player_stats: WynncraftPlayerStats | null;
     /**
      * Rankings

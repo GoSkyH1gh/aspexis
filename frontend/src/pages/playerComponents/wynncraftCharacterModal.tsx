@@ -287,11 +287,12 @@ function CharacterDetails({
             <Progress.Indicator
               className="ProgressIndicator"
               style={{
-                transform: `translateX(-${100 -
+                transform: `translateX(-${
+                  100 -
                   ((character.content.content_completed || 0) /
                     (wynncraftMaxContent?.content || 1133)) *
-                  100
-                  }%)`,
+                    100
+                }%)`,
               }}
             />
           </Progress.Root>
@@ -368,7 +369,7 @@ function CharacterDetails({
                 label={toProperCase(skill)}
                 value={
                   character.skill_points![
-                  skill as keyof WynncraftCharacterSkillPoints
+                    skill as keyof WynncraftCharacterSkillPoints
                   ]
                 }
                 imageSrc={getSkillPointUrl(skill)}
@@ -418,7 +419,7 @@ function CharacterDetails({
                 </div>
                 <div className="wynn-dungeon-list">
                   {dungeon.normal_completions &&
-                    dungeon.normal_completions > 0 ? (
+                  dungeon.normal_completions > 0 ? (
                     <DesktopTooltip delayDuration={0} content="Normal Runs">
                       <div className="wynn-dungeon-key">
                         <Icon icon={"material-symbols:vpn-key"} />
@@ -429,14 +430,17 @@ function CharacterDetails({
                     <></>
                   )}
                   {dungeon.corrupted_completions &&
-                    dungeon.corrupted_completions > 0 ? (
+                  dungeon.corrupted_completions > 0 ? (
                     <DesktopTooltip
                       delayDuration={0}
                       disableHoverableContent={true}
                       content="Corrupted Runs"
                     >
                       <div className="wynn-dungeon-key">
-                        <Icon icon={"material-symbols:vpn-key"} color="#888888" />
+                        <Icon
+                          icon={"material-symbols:vpn-key"}
+                          color="#888888"
+                        />
                         {dungeon.corrupted_completions}
                       </div>
                     </DesktopTooltip>

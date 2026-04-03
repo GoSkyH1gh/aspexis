@@ -46,7 +46,7 @@ function CapeShowcase({
           onMouseLeave={handleMouseLeave}
         />
         <div>
-          <p className="info-card-label cape-name-label">Cape name</p>
+          <p className="info-card-label cape-name-label">Cape</p>
           <p className="cape-name">{cape_name}</p>
         </div>
       </motion.div>

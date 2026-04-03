@@ -106,7 +106,9 @@ function AbilityPage({ page }: { page: AbilityTreePage }) {
           );
         }
         if (node.node_type == "ability" && node.description) {
-          return <HoverableAbilityNode key={node.node_id} node={node} row={row} />;
+          return (
+            <HoverableAbilityNode key={node.node_id} node={node} row={row} />
+          );
         }
       })}
     </div>

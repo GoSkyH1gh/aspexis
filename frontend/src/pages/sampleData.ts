@@ -290,6 +290,7 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
   last_login: "2023-06-20T19:09:49.005000Z",
   guild_name: "WynnContentTeam",
   guild_prefix: "WCT",
+  guild_rank: "OWNER",
   player_stats: {
     wars: 0,
     mobs_killed: 3713,
@@ -298,6 +299,7 @@ const sampleWynncraftResponse: WynncraftPlayerSummary = {
     raids_completed: 0,
     playtime_hours: 381.92,
   },
+  rankings: [],
   characters: [
     {
       character_uuid: "c5b32af2-d3d3-4e7d-8f7a-2dcf794406e2",

@@ -294,6 +294,7 @@ class WynncraftPlayerSummary(BaseModel):
     last_login: str | None
     guild_name: str | None
     guild_prefix: str | None
+    guild_rank: str | None
     player_stats: WynncraftPlayerStats | None
     rankings: list[WynncraftRanking]
     characters: list[WynncraftCharacterInfo]
@@ -565,9 +566,11 @@ async def get_wynncraft_player_data(
         if wynn_response["guild"] is not None:
             player_guild = wynn_response["guild"]["name"]
             guild_prefix = wynn_response["guild"]["prefix"]
+            guild_rank = wynn_response["guild"]["rank"]
         else:
             player_guild = None
             guild_prefix = None
+            guild_rank = None
 
         if wynn_response["rank"] != "Player":
             player_rank = wynn_response["rank"]
@@ -629,6 +632,7 @@ async def get_wynncraft_player_data(
             characters=pydantic_characters,
             guild_name=player_guild,
             guild_prefix=guild_prefix,
+            guild_rank=guild_rank,
             restrictions=restrictions,
             player_stats=player_stats,
         )

@@ -842,7 +842,6 @@ button {
   cursor: pointer;
   transition: all 0.2s;
   font-weight: 450;
-  
 }
 
 .distribution-tab[aria-selected="true"] {
@@ -1105,7 +1104,6 @@ button {
   align-items: center;
   gap: 0.4rem;
   flex-grow: 1;
-  
 }
 
 .horizontal-info-card-full-width {
