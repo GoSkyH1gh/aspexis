@@ -110,7 +110,7 @@ function InfoCard({
   }
   if (tooltip != null) {
     return (
-      <DesktopTooltip delayDuration={50} content={tooltip}>
+      <DesktopTooltip delayDuration={250} content={tooltip}>
         <motion.li
           className="info-card"
           variants={{
