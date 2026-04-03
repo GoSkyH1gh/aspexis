@@ -834,19 +834,23 @@ button {
 }
 
 .distribution-tab {
-  background: none;
+  background: var(--color-surface-layer-2);
   border: none;
   border-bottom: 2px solid transparent;
-  color: #bbb;
-  padding: 0.25rem 0.5rem;
+  color: var(--text-primary);
+  padding: 0.25rem 0.75rem;
   cursor: pointer;
-  font-weight: 600;
   transition: all 0.2s;
+  font-weight: 450;
+  
 }
 
 .distribution-tab[aria-selected="true"] {
-  border-bottom: 2px solid #a130f6;
-  color: #f4eae3;
+  background-color: var(--color-selected);
+  color: var(--color-text-on-accent);
+}
+.distribution-tab[aria-selected="true"]:hover {
+  background-color: var(--color-selected-hover);
 }
 
 .leaderboard-list {
