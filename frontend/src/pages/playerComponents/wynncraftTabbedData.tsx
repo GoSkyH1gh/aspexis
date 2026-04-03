@@ -55,37 +55,38 @@ function WynncraftTabbedData({
         wynncraftData.restrictions.character_data_access ||
         wynncraftData.restrictions.character_build_access ||
         wynncraftData.restrictions.online_status) && (
-        <div className="wynn-restrictions">
-          {wynncraftData.restrictions.main_access && (
-            <p>
-              Warning: This player has disabled API access to their{" "}
-              <strong>main stats</strong>
-            </p>
-          )}
-          {wynncraftData.restrictions.character_data_access && (
-            <p>
-              Warning: This player has disabled API access to their{" "}
-              <strong>characters</strong>
-            </p>
-          )}
-          {wynncraftData.restrictions.character_build_access && (
-            <p>
-              Warning: This player has disabled API access to their{" "}
-              <strong>build information</strong>
-            </p>
-          )}
-          {wynncraftData.restrictions.online_status && (
-            <p>
-              Warning: This player has disabled API access to their{" "}
-              <strong>online status</strong>
-            </p>
-          )}
-        </div>
-      )}
+          <div className="wynn-restrictions">
+            {wynncraftData.restrictions.main_access && (
+              <p>
+                Warning: This player has disabled API access to their{" "}
+                <strong>main stats</strong>
+              </p>
+            )}
+            {wynncraftData.restrictions.character_data_access && (
+              <p>
+                Warning: This player has disabled API access to their{" "}
+                <strong>characters</strong>
+              </p>
+            )}
+            {wynncraftData.restrictions.character_build_access && (
+              <p>
+                Warning: This player has disabled API access to their{" "}
+                <strong>build information</strong>
+              </p>
+            )}
+            {wynncraftData.restrictions.online_status && (
+              <p>
+                Warning: This player has disabled API access to their{" "}
+                <strong>online status</strong>
+              </p>
+            )}
+          </div>
+        )}
       <h2 className="wynn-nametag">
         {wynncraftData.guild_prefix && "[" + wynncraftData.guild_prefix + "]"}
         <span className="wynn-username">{wynncraftData.username}</span>
       </h2>
+      
       <ul className="info-card-list">
         <InfoCard
           onClick={() => setSelectedMetric("wynncraft_hours_played")}

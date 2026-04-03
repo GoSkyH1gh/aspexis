@@ -115,6 +115,57 @@ LEGACY_DUNGEONS = [
     "Lost Sanctuary",
 ]
 
+RANKING_MAP = {
+    # Gamemode
+    "hicContent": {"name": "HIC Content", "category": "gamemode"},
+    "huicContent": {"name": "HUIC Content", "category": "gamemode"},
+    "hichContent": {"name": "HICH Content", "category": "gamemode"},
+    "huichContent": {"name": "HUICH Content", "category": "gamemode"},
+    "hardcoreContent": {"name": "Hardcore Content", "category": "gamemode"},
+    "ironmanContent": {"name": "Ironman Content", "category": "gamemode"},
+    "ultimateIronmanContent": {
+        "name": "Ultimate Ironman Content",
+        "category": "gamemode",
+    },
+    "craftsmanContent": {"name": "Craftsman Content", "category": "gamemode"},
+    "huntedContent": {"name": "Hunted Content", "category": "gamemode"},
+    "hardcoreLegacyLevel": {"name": "Legacy Hardcore", "category": "gamemode"},
+    # Content
+    "playerContent": {"name": "Player Content", "category": "content"},
+    "globalPlayerContent": {"name": "Global Player Content", "category": "content"},
+    "warsCompletion": {"name": "Wars", "category": "content"},
+    # Level
+    "totalGlobalLevel": {"name": "Total Global Level", "category": "level"},
+    "totalSoloLevel": {"name": "Total Solo Level", "category": "level"},
+    "combatGlobalLevel": {"name": "Global Combat", "category": "level"},
+    "combatSoloLevel": {"name": "Solo Combat", "category": "level"},
+    "professionsGlobalLevel": {"name": "Global Professions", "category": "level"},
+    "professionsSoloLevel": {"name": "Solo Professions", "category": "level"},
+    # Profession
+    "weaponsmithingLevel": {"name": "Weaponsmithing", "category": "profession"},
+    "armouringLevel": {"name": "Armouring", "category": "profession"},
+    "woodworkingLevel": {"name": "Woodworking", "category": "profession"},
+    "woodcuttingLevel": {"name": "Woodcutting", "category": "profession"},
+    "miningLevel": {"name": "Mining", "category": "profession"},
+    "fishingLevel": {"name": "Fishing", "category": "profession"},
+    "farmingLevel": {"name": "Farming", "category": "profession"},
+    "alchemismLevel": {"name": "Alchemism", "category": "profession"},
+    "cookingLevel": {"name": "Cooking", "category": "profession"},
+    "scribingLevel": {"name": "Scribing", "category": "profession"},
+    "tailoringLevel": {"name": "Tailoring", "category": "profession"},
+    "jewelingLevel": {"name": "Jeweling", "category": "profession"},
+    # Raids
+    "grootslangCompletion": {"name": "NOTG Completion", "category": "raids"},
+    "grootslangSrPlayers": {"name": "NOTG Score", "category": "raids"},
+    "orphionCompletion": {"name": "NOL Completion", "category": "raids"},
+    "orphionSrPlayers": {"name": "NOL Score", "category": "raids"},
+    "colossusCompletion": {"name": "TCC Completion", "category": "raids"},
+    "colossusSrPlayers": {"name": "TCC Score", "category": "raids"},
+    "namelessCompletion": {"name": "TNA Completion", "category": "raids"},
+    "namelessSrPlayers": {"name": "TNA Score", "category": "raids"},
+    "guildRaids": {"name": "Guild Raids", "category": "raids"},
+}
+
 
 class PlayerRestrictions(BaseModel):
     main_access: bool
@@ -226,6 +277,13 @@ class WynncraftPlayerStats(BaseModel):
     playtime_hours: float
 
 
+class WynncraftRanking(BaseModel):
+    name: str | None
+    internal_name: str
+    category: str | None
+    position: int
+
+
 class WynncraftPlayerSummary(BaseModel):
     username: str
     uuid: str
@@ -237,6 +295,7 @@ class WynncraftPlayerSummary(BaseModel):
     guild_name: str | None
     guild_prefix: str | None
     player_stats: WynncraftPlayerStats | None
+    rankings: list[WynncraftRanking]
     characters: list[WynncraftCharacterInfo]
     restrictions: PlayerRestrictions
 
@@ -546,12 +605,25 @@ async def get_wynncraft_player_data(
                 playtime_hours=wynn_response["playtime"],
             )
 
+        rankings = []
+
+        for ranking_name, ranking_value in wynn_response["ranking"].items():
+            rankings.append(
+                WynncraftRanking(
+                    name=RANKING_MAP.get(ranking_name, {}).get("name", None),
+                    category=RANKING_MAP.get(ranking_name, {}).get("category", None),
+                    internal_name=ranking_name,
+                    position=ranking_value,
+                )
+            )
+
         player_summary = WynncraftPlayerSummary(
             username=wynn_response["username"],
             uuid=undashify_uuid(wynn_response["uuid"]),
             online=wynn_response["online"],
             rank=player_rank,
             rank_badge=wynn_response["rankBadge"],
+            rankings=rankings,
             first_login=first_login,
             last_login=last_login,
             characters=pydantic_characters,
