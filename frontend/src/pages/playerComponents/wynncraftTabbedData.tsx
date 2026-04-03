@@ -11,6 +11,7 @@ import DistributionChartWrapper from "./distributionChartWrapper";
 import {
   WynncraftPlayerSummary,
   WynncraftGuildInfo,
+  WynncraftRanking,
   MaxContent,
 } from "../../client";
 import { useQuery } from "@tanstack/react-query";
@@ -22,6 +23,71 @@ type WynncraftProps = {
   wynncraftMaxContent: MaxContent | null | undefined;
   uuid: string;
 };
+
+
+function WynncraftRankings({ rankings }: { rankings: WynncraftRanking[] }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const sortedRankings = rankings.sort((ranking1, ranking2) => ranking1.position - ranking2.position);
+  const previewRankings = sortedRankings.filter(ranking => ranking.position < 1000).slice(0, 3);
+
+  if (sortedRankings.length === 0) return null;
+
+  if (!isExpanded) {
+    const previewElements = previewRankings.map(ranking => (
+      <div key={ranking.internal_name} className={`wynn-ranking-item ${ranking.position <= 10 ? "wynn-high-ranking" : ""}`}>
+        {`#${ranking.position} ${ranking.name}`}
+      </div>
+    ));
+
+    return (
+      <div key="unexpanded" className="wynn-ranking-container">
+        {previewElements}
+        {sortedRankings.length > previewRankings.length && (
+          <button className="wynn-ranking-button" onClick={() => setIsExpanded(true)}>
+            {previewRankings.length === 0 ? "See rankings" : "See more"} {'>'}
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  const groupedRankings = sortedRankings.reduce((acc, ranking) => {
+    const categoryKey = ranking.category || "uncategorized";
+    if (!acc[categoryKey]) acc[categoryKey] = [];
+    acc[categoryKey].push(ranking);
+    return acc;
+  }, {} as Record<string, WynncraftRanking[]>);
+
+  const categories = Object.keys(groupedRankings).sort(
+    (a, b) => groupedRankings[b].length - groupedRankings[a].length
+  );
+
+  return (
+    <div key="expanded" className="wynn-ranking-expanded-container">
+      <div className="wynn-ranking-expanded-grid">
+        {categories.map(category => (
+          <div key={category} className="wynn-ranking-category-column">
+            <h4 className="wynn-ranking-category-title">
+              {category === "gamemode" ? "Gamemode" : category.charAt(0).toUpperCase() + category.slice(1)}
+            </h4>
+            <div className="wynn-ranking-category-list">
+              {groupedRankings[category].map(ranking => (
+                <div key={ranking.internal_name} className={`wynn-ranking-item ${ranking.position <= 10 ? "wynn-high-ranking" : ""}`}>
+                  <span className="wynn-ranking-number">#{ranking.position}</span>
+                  <span className="wynn-ranking-name">{ranking.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      <button className="wynn-ranking-button wynn-ranking-button-less" onClick={() => setIsExpanded(false)}>
+        See less {'<'}
+      </button>
+    </div>
+  );
+}
 
 function WynncraftTabbedData({
   wynncraftData,
@@ -86,7 +152,7 @@ function WynncraftTabbedData({
         {wynncraftData.guild_prefix && "[" + wynncraftData.guild_prefix + "]"}
         <span className="wynn-username">{wynncraftData.username}</span>
       </h2>
-      
+      <WynncraftRankings rankings={wynncraftData.rankings} />
       <ul className="info-card-list">
         <InfoCard
           onClick={() => setSelectedMetric("wynncraft_hours_played")}

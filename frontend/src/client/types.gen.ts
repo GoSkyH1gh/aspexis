@@ -1171,10 +1171,36 @@ export type WynncraftPlayerSummary = {
     guild_prefix: string | null;
     player_stats: WynncraftPlayerStats | null;
     /**
+     * Rankings
+     */
+    rankings: Array<WynncraftRanking>;
+    /**
      * Characters
      */
     characters: Array<WynncraftCharacterInfo>;
     restrictions: PlayerRestrictions;
+};
+
+/**
+ * WynncraftRanking
+ */
+export type WynncraftRanking = {
+    /**
+     * Name
+     */
+    name: string | null;
+    /**
+     * Internal Name
+     */
+    internal_name: string;
+    /**
+     * Category
+     */
+    category: string | null;
+    /**
+     * Position
+     */
+    position: number;
 };
 
 export type RootGetData = {
