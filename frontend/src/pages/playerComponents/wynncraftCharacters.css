@@ -35,10 +35,10 @@
 .wynn-nametag {
   /*color: var(--wynn-green);*/
   font-family: "Google Sans Code", monospace;
-}
-
-.wynn-username {
-  margin-left: 6px;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  gap: 0.4rem;
 }
 
 .profession-list {
@@ -479,6 +479,7 @@
 .wynn-storyline {
   cursor: help;
   flex-direction: row;
+  align-items: center;
 }
 
 .wynn-progress-label {
@@ -513,7 +514,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-
 }
 
 .wynn-ranking-item,
@@ -568,7 +568,7 @@
   gap: 0.5rem;
   background-color: var(--color-surface-layer-2);
   padding: 0.8rem;
-  border-radius: 10px;
+  border-radius: 5px;
   border: 1px solid var(--color-surface-layer-2);
 }
 
@@ -613,4 +613,49 @@
 
 .wynn-ranking-button-less {
   align-self: flex-start;
+}
+
+.wynn-secondary-paragraph {
+  margin: 0;
+}
+
+.wynn-player-header,
+.wynn-privacy-card {
+  background-color: var(--color-surface-layer-2);
+  border-radius: 5px;
+  border: 1px solid var(--color-surface-layer-2);
+  margin-top: 1rem;
+  padding: 10px;
+  margin-bottom: 1rem;
+}
+
+.wynn-header-activity {
+  display: block;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.wynn-privacy-card {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.wynn-privacy-card svg {
+  height: 2.5rem;
+  width: 2.5rem;
+}
+
+.wynn-privacy-card-characters svg {
+  height: 3rem;
+  width: 3rem;
+}
+
+.wynn-privacy-card-characters {
+  width: fit-content;
+  margin: 0 auto;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
