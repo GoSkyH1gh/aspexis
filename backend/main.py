@@ -41,9 +41,8 @@ from wynncraft_content_max import (
     get_wynncraft_content_max,
 )
 
-from slowapi.util import get_remote_address
-from slowapi import Limiter
-from slowapi.middleware import SlowAPIMiddleware
+from fastapi.responses import JSONResponse
+from rate_limiter import limiter, RateLimit, get_client_ip
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from contextlib import asynccontextmanager
@@ -87,6 +86,11 @@ async def lifespan(app: FastAPI):
         next_run_time=datetime.datetime.now() + datetime.timedelta(seconds=10),
         args=[await get_client(), await get_redis()],
     )
+    scheduler.add_job(
+        limiter.cleanup,
+        trigger="interval",
+        minutes=10,
+    )
     scheduler.start()
     yield
     # Shutdown
@@ -114,26 +118,6 @@ app = FastAPI(
 )
 
 
-# limiter
-
-
-def get_client_ip(request: Request) -> str:
-    forwarded = request.headers.get("x-forwarded-for")
-    if forwarded:
-        return forwarded.split(",")[0].strip()
-    return get_remote_address(request)
-
-
-limiter = Limiter(
-    key_func=get_client_ip,
-    strategy="moving-window",
-    application_limits=["1000/10 minutes", "10000/day"],
-    default_limits=["180/minute"],
-)
-
-app.state.limiter = limiter
-app.add_middleware(SlowAPIMiddleware)
-
 origins = [
     "https://aspexis.netlify.app",
     "http://localhost:5173",
@@ -146,6 +130,38 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["Authorization", "Content-Type"],
 )
+
+
+@app.middleware("http")
+async def global_rate_limit_middleware(request: Request, call_next):
+    if request.url.path == "/healthz":
+        return await call_next(request)
+
+    ip = get_client_ip(request)
+    _429 = {"description": "Too Many Requests", "detail": "Rate limit exceeded"}
+
+    # 180/minute — broad per-minute ceiling for every IP
+    allowed, retry_after = limiter.check_limit(f"{ip}:global_1m", 180, 60)
+    if not allowed:
+        return JSONResponse(
+            status_code=429, content=_429, headers={"Retry-After": str(retry_after)}
+        )
+
+    # 1000/10 minutes
+    allowed, retry_after = limiter.check_limit(f"{ip}:global_10m", 1000, 600)
+    if not allowed:
+        return JSONResponse(
+            status_code=429, content=_429, headers={"Retry-After": str(retry_after)}
+        )
+
+    # 10000/day
+    allowed, retry_after = limiter.check_limit(f"{ip}:global_1d", 10000, 86400)
+    if not allowed:
+        return JSONResponse(
+            status_code=429, content=_429, headers={"Retry-After": str(retry_after)}
+        )
+
+    return await call_next(request)
 
 
 @app.middleware("http")
@@ -163,15 +179,17 @@ async def telemetry_middleware(request: Request, call_next):
         # Call_next didn't complete — still record telemetry
         raise
     finally:
-        latency_ms = int((time.time() - start) * 1000)
-        asyncio.create_task(
-            add_telemetry_event(
-                request.url.path,
-                request.url.path.split("/")[-1],
-                latency_ms,
-                status_code,
+        # Skip telemetry for rate-limited requests — no useful signal and wastes DB writes
+        if status_code != 429:
+            latency_ms = int((time.time() - start) * 1000)
+            asyncio.create_task(
+                add_telemetry_event(
+                    request.url.path,
+                    request.url.path.split("/")[-1],
+                    latency_ms,
+                    status_code,
+                )
             )
-        )
 
 
 @app.get(
@@ -191,7 +209,6 @@ def root():
     name="Health Check",
     description="Basic endpoint to check if the API is up and running.",
 )
-@limiter.exempt
 def health_check():
     return {"status": "ok"}
 
@@ -202,10 +219,10 @@ def health_check():
     tags=["Minecraft"],
     response_model=MojangData,
     name="Get Mojang Profile",
-    description="Fetches Minecraft profile data (UUID, name, skin) from Mojang servers.\
-         The identifier can be a username or uuid.",
+    description="Fetches Minecraft profile data (UUID, name, skin) from Mojang servers. \
+        The identifier can be a username or uuid. Rate limit: 40/min.",
+    dependencies=[Depends(RateLimit(40, 60))],
 )
-@limiter.limit("40/minute")
 async def get_profile(
     request: Request,
     identifier,
@@ -229,7 +246,8 @@ async def get_profile(
     response_model=List[UserCapeData],
     responses=COMMON_ERROR_RESPONSES,
     name="Get Player Capes",
-    description="Retrieves all available capes for a specific Minecraft player UUID from various providers.",
+    description="Retrieves all available capes for a specific Minecraft player UUID from various providers. Rate limit: 60/min.",
+    dependencies=[Depends(RateLimit(60, 60))],
 )
 async def get_capes(
     uuid: str,
@@ -246,9 +264,9 @@ async def get_capes(
     tags=["Hypixel"],
     response_model=HypixelFullData,
     name="Get Hypixel Stats",
-    description="Fetches comprehensive Hypixel player statistics and overall progress.",
+    description="Fetches comprehensive Hypixel player statistics and overall progress. Rate limit: 60/min.",
+    dependencies=[Depends(RateLimit(60, 60))],
 )
-@limiter.limit("60/minute")
 async def get_hypixel(
     request: Request,
     uuid: str,
@@ -268,7 +286,8 @@ async def get_hypixel(
     responses=COMMON_ERROR_RESPONSES,
     response_model=List[HypixelGuildMemberFull],
     name="Get Hypixel Guild Members",
-    description="Retrieves a list of members for a specific Hypixel guild with pagination.",
+    description="Retrieves a list of members for a specific Hypixel guild with pagination. Rate limit: 30/min.",
+    dependencies=[Depends(RateLimit(30, 60))],
 )
 async def get_guild(
     id,
@@ -295,7 +314,8 @@ async def get_guild(
     response_model=PlayerStatus,
     responses=COMMON_ERROR_RESPONSES,
     name="Get Player Online Status",
-    description="Checks if a player is currently online on supported Minecraft servers.",
+    description="Checks if a player is currently online on supported Minecraft servers. Rate limit: 60/min.",
+    dependencies=[Depends(RateLimit(60, 60))],
 )
 async def get_player_status(uuid: str) -> PlayerStatus:
     uuid = normalize_uuid(uuid)
@@ -311,7 +331,8 @@ async def get_player_status(uuid: str) -> PlayerStatus:
     tags=["Wynncraft"],
     response_model=WynncraftPlayerSummary,
     name="Get Wynncraft Stats",
-    description="Fetches detailed Wynncraft player statistics and account summary.",
+    description="Fetches detailed Wynncraft player statistics and account summary. Rate limit: 60/min.",
+    dependencies=[Depends(RateLimit(60, 60))],
 )
 async def get_wynncraft(
     uuid: str,
@@ -330,7 +351,8 @@ async def get_wynncraft(
     responses=COMMON_ERROR_RESPONSES,
     response_model=WynncraftGuildInfo,
     name="Get Wynncraft Guild Data",
-    description="Retrieves detailed information about a Wynncraft guild using its prefix.",
+    description="Retrieves detailed information about a Wynncraft guild using its prefix. Rate limit: 30/min.",
+    dependencies=[Depends(RateLimit(30, 60))],
 )
 async def get_wynncraft_guild(
     prefix,
@@ -354,7 +376,8 @@ ClassType = Literal[
     tags=["Wynncraft"],
     response_model=List[AbilityTreePage],
     name="Get Wynncraft Character Ability Tree",
-    description="Fetches the ability tree configuration for a specific Wynncraft character.",
+    description="Fetches the ability tree configuration for a specific Wynncraft character. Rate limit: 30/min.",
+    dependencies=[Depends(RateLimit(30, 60))],
 )
 async def get_wynncraft_character_ability_tree(
     uuid: str,
@@ -378,7 +401,8 @@ async def get_wynncraft_character_ability_tree(
     responses=COMMON_ERROR_RESPONSES,
     tags=["Wynncraft"],
     response_model=MaxContent,
-    description="Fetches the max Wynncraft content available.",
+    description="Fetches the max Wynncraft content available. Rate limit: 60/min.",
+    dependencies=[Depends(RateLimit(60, 60))],
 )
 async def get_wynncraft_max_content(
     http_client: httpx.AsyncClient = Depends(get_client),
@@ -394,7 +418,8 @@ async def get_wynncraft_max_content(
     response_model=DonutPlayerStats,
     responses=COMMON_ERROR_RESPONSES,
     name="Get DonutSMP Stats",
-    description="Retrieves player statistics for the DonutSMP server.",
+    description="Retrieves player statistics for the DonutSMP server. Rate limit: 60/min.",
+    dependencies=[Depends(RateLimit(60, 60))],
 )
 async def get_donut(
     username: str,
@@ -417,7 +442,8 @@ async def get_donut(
     responses=COMMON_ERROR_RESPONSES,
     response_model=MCCIPlayer,
     name="Get MCC Island Stats",
-    description="Fetches player statistics and progress from the MCC Island server.",
+    description="Fetches player statistics and progress from the MCC Island server. Rate limit: 60/min.",
+    dependencies=[Depends(RateLimit(60, 60))],
 )
 async def get_mcc_island(
     uuid: str,
@@ -434,7 +460,8 @@ async def get_mcc_island(
     response_model=HistogramData,
     responses=COMMON_ERROR_RESPONSES,
     name="Get Metric Distribution",
-    description="Retrieves statistical distribution data for a specific player metric.",
+    description="Retrieves statistical distribution data for a specific player metric. Rate limit: 60/min.",
+    dependencies=[Depends(RateLimit(60, 60))],
 )
 async def get_metric(metric_key: str, player_uuid: str) -> HistogramData:
     player_uuid = normalize_uuid(player_uuid)
@@ -446,7 +473,8 @@ async def get_metric(metric_key: str, player_uuid: str) -> HistogramData:
     "/v1/tracker/{uuid}/status",
     tags=["Tracker"],
     name="Track Player Online Status",
-    description="Establishes a real-time SSE connection to track a player's online status.",
+    description="Establishes a real-time SSE connection to track a player's online status. Rate limit: 5/min.",
+    dependencies=[Depends(RateLimit(5, 60))],
 )
 async def track_player(uuid: str, request: Request):
     uuid = normalize_uuid(uuid)

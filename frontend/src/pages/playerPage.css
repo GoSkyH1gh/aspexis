@@ -719,6 +719,7 @@ button {
   margin: 0;
   padding: 0px;
   gap: 20px;
+  margin-bottom: 1rem;
 }
 
 .favorites-list > li {
