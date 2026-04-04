@@ -9,6 +9,7 @@ import exceptions
 from redis.asyncio import Redis
 import json
 from redis_manager import get_redis
+import re
 
 load_dotenv()
 
@@ -383,6 +384,15 @@ async def fetch_player_structure(
     return processed_pages
 
 
+def join_description(parts: list[str]) -> str:
+    joined = "<br>".join(parts)
+    # Replace </br> with <br> for consistency
+    joined = joined.replace("</br>", "<br>")
+    # Collapse 3 or more consecutive <br> tags (with optional whitespace) to 2
+    joined = re.sub(r"(<br>\s*){3,}", "<br><br>", joined)
+    return joined
+
+
 async def fetch_tree_abilities(
     class_type: str, http_client: httpx.AsyncClient
 ) -> list[AbilityTreePage]:
@@ -412,7 +422,7 @@ async def fetch_tree_abilities(
                     node_type="ability",
                     name=node,
                     pretty_name=node_info["name"],
-                    description=str.join("", node_info["description"]),
+                    description=join_description(node_info["description"]),
                     x=node_info["coordinates"]["x"],
                     y=node_info["coordinates"]["y"],
                     connector_type=None,

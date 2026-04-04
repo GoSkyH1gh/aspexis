@@ -318,7 +318,7 @@
 }
 
 .wynn-description > span {
-  display: block;
+  display: inline;
 }
 
 @font-face {
@@ -343,6 +343,11 @@
   font-weight: normal;
   font-style: normal;
   font-display: block;
+}
+
+.AbilityTreeTooltip,
+.wynn-description {
+  line-height: 1.35;
 }
 
 .AbilityTreeTooltip {
@@ -658,4 +663,8 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+div[class*="ultimate"] {
+  transform: scale(1.7);
 }
