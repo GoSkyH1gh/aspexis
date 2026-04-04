@@ -12,7 +12,7 @@ import {
   HistogramData,
   MaxContent,
 } from "../client";
-import { InvalidArgumentsError } from "./errors";
+import { InvalidArgumentsError, RateLimitError } from "./errors";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
@@ -43,6 +43,9 @@ export async function fetchMojang(
   if (response.status === 404) {
     return null;
   }
+  if (response.status === 429) {
+    throw new RateLimitError();
+  }
   if (!response.ok) {
     throw new Error("Server error");
   }
@@ -58,6 +61,9 @@ export async function fetchStatus(
   }
   const response = await fetch(statusUrl + encodeURIComponent(uuid));
 
+  if (response.status === 429) {
+    throw new RateLimitError();
+  }
   if (!response.ok) {
     throw new Error("Server error");
   }
@@ -77,6 +83,9 @@ export async function fetchHypixelData(
     return null;
   }
 
+  if (response.status === 429) {
+    throw new RateLimitError();
+  }
   if (!response.ok) {
     throw new Error("Server error");
   }
@@ -96,6 +105,9 @@ export async function fetchHypixelGuild(
   const url = `${baseUrl}/v1/hypixel/guilds/${guildId}?limit=${limit}&offset=${offset}`;
   const response = await fetch(url);
 
+  if (response.status === 429) {
+    throw new RateLimitError();
+  }
   if (!response.ok) {
     throw new Error("Server error");
   }
@@ -115,6 +127,9 @@ export async function fetchWynncraftData(
     return null;
   }
 
+  if (response.status === 429) {
+    throw new RateLimitError();
+  }
   if (!response.ok) {
     throw new Error("Server error");
   }
@@ -132,6 +147,9 @@ export async function fetchWynncraftGuildData(
     wynncraftGuildUrl + encodeURIComponent(guildPrefix),
   );
 
+  if (response.status === 429) {
+    throw new RateLimitError();
+  }
   if (!response.ok) {
     throw new Error("Server error");
   }
@@ -152,6 +170,9 @@ export async function fetchWynncraftAbilityTree(
     `${wynncraftAbilityTreeUrl}${uuid}/characters/${character_uuid}/ability-tree?class=${class_type}`,
   );
 
+  if (response.status === 429) {
+    throw new RateLimitError();
+  }
   if (!response.ok) {
     throw new Error("Server error");
   }
@@ -171,6 +192,9 @@ export async function fetchDonutSMP(
     return null;
   }
 
+  if (response.status === 429) {
+    throw new RateLimitError();
+  }
   if (!response.ok) {
     throw new Error("Server error");
   }
@@ -190,6 +214,9 @@ export async function fetchMCCI(
     return null;
   }
 
+  if (response.status === 429) {
+    throw new RateLimitError();
+  }
   if (!response.ok) {
     throw new Error("Server error");
   }
@@ -209,6 +236,9 @@ export async function fetchCapes(
     return null;
   }
 
+  if (response.status === 429) {
+    throw new RateLimitError();
+  }
   if (!response.ok) {
     throw new Error("Server error");
   }
@@ -231,6 +261,9 @@ export async function fetchMetric(
     return null;
   }
 
+  if (response.status === 429) {
+    throw new RateLimitError();
+  }
   if (!response.ok) {
     throw new Error("Server error");
   }
@@ -241,6 +274,9 @@ export async function fetchMetric(
 export async function fetchWynncraftMaxContent(): Promise<MaxContent | null> {
   const response = await fetch(wynncraftMaxContentUrl);
 
+  if (response.status === 429) {
+    throw new RateLimitError();
+  }
   if (!response.ok) {
     throw new Error("Server error");
   }
