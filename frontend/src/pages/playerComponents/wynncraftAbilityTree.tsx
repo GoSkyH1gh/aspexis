@@ -65,7 +65,7 @@ function HoverableAbilityNode({ node, row }: { node: any; row: number }) {
             <div
               className="wynn-description"
               dangerouslySetInnerHTML={{
-                __html: `${node.pretty_name}${node.description}`,
+                __html: `${node.pretty_name}<br>${node.description}`,
               }}
             ></div>
           </Popover.Content>
