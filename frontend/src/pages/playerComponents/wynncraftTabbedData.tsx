@@ -217,7 +217,7 @@ function WynncraftTabbedData({
             <InfoCard
               onClick={() => setSelectedMetric("wynncraft_hours_played")}
               hasStats={true}
-              label="Total playtime"
+              label="Playtime"
               value={
                 formatValue(wynncraftData.player_stats?.playtime_hours, false) +
                 " hours"
@@ -252,7 +252,7 @@ function WynncraftTabbedData({
             <InfoCard
               onClick={() => setSelectedMetric("wynncraft_dungeons_completed")}
               hasStats={true}
-              label="Dungeons completed"
+              label="Dungeons"
               value={formatValue(
                 wynncraftData.player_stats?.dungeons_completed,
               )}
@@ -262,7 +262,7 @@ function WynncraftTabbedData({
             <InfoCard
               onClick={() => setSelectedMetric("wynncraft_raids_completed")}
               hasStats={true}
-              label="Raids completed"
+              label="Raids"
               value={formatValue(wynncraftData.player_stats?.raids_completed)}
             >
               <DistributionChartWrapper metricQuery={metricQuery} />

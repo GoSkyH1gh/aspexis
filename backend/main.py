@@ -32,7 +32,7 @@ from hypixel_manager import (
 from minecraft_manager import get_minecraft_data, update_player_history
 from typing import List, Annotated, Literal, Any
 import time
-from telemetry_manager import add_telemetry_event
+from telemetry_queue import TelemetryEvent, enqueue, run_worker
 from capes import get_capes_for_user, UserCapeData
 from wynncraft_ability_tree import get_ability_tree, AbilityTreePage
 from wynncraft_content_max import (
@@ -92,8 +92,10 @@ async def lifespan(app: FastAPI):
         minutes=10,
     )
     scheduler.start()
+    telemetry_worker = asyncio.create_task(run_worker())
     yield
     # Shutdown
+    telemetry_worker.cancel()
     scheduler.shutdown()
     await client.aclose()
 
@@ -182,12 +184,12 @@ async def telemetry_middleware(request: Request, call_next):
         # Skip telemetry for rate-limited requests — no useful signal and wastes DB writes
         if status_code != 429:
             latency_ms = int((time.time() - start) * 1000)
-            asyncio.create_task(
-                add_telemetry_event(
-                    request.url.path,
-                    request.url.path.split("/")[-1],
-                    latency_ms,
-                    status_code,
+            enqueue(
+                TelemetryEvent(
+                    path=request.url.path,
+                    provider=request.url.path.split("/")[-1],
+                    latency_ms=latency_ms,
+                    status_code=status_code,
                 )
             )
 
@@ -317,9 +319,12 @@ async def get_guild(
     description="Checks if a player is currently online on supported Minecraft servers. Rate limit: 60/min.",
     dependencies=[Depends(RateLimit(60, 60))],
 )
-async def get_player_status(uuid: str) -> PlayerStatus:
+async def get_player_status(
+    uuid: str,
+    http_client: httpx.AsyncClient = Depends(get_client),
+) -> PlayerStatus:
     uuid = normalize_uuid(uuid)
-    return await get_status(uuid)
+    return await get_status(uuid, http_client)
 
 
 # wynncraft endpoints
@@ -476,9 +481,13 @@ async def get_metric(metric_key: str, player_uuid: str) -> HistogramData:
     description="Establishes a real-time SSE connection to track a player's online status. Rate limit: 5/min.",
     dependencies=[Depends(RateLimit(5, 60))],
 )
-async def track_player(uuid: str, request: Request):
+async def track_player(
+    uuid: str,
+    request: Request,
+    http_client: httpx.AsyncClient = Depends(get_client),
+):
     uuid = normalize_uuid(uuid)
-    queue = await subscribe(uuid)
+    queue = await subscribe(uuid, http_client)
 
     async def event_generator():
         try:

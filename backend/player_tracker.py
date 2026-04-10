@@ -67,12 +67,12 @@ subscribers: Dict[str, Set[asyncio.Queue]] = {}  # uuid, queue
 ignored_sources: Dict[str, Set[str]] = {}  # uuid, set["wynncraft", "hypixel"]
 
 
-async def poller(uuid: str):
+async def poller(uuid: str, http_client: httpx.AsyncClient):
     print(f"poller started for {uuid}")
     try:
         while True:
             try:
-                data = await get_status(uuid)
+                data = await get_status(uuid, http_client)
                 message = f"event: data\ndata: {data.model_dump_json()}\n\n"
             except:
                 message = "event: error\ndata: {}\n\n"
@@ -87,7 +87,7 @@ async def poller(uuid: str):
         print(f"something went wrong in poller: {e}")
 
 
-async def subscribe(uuid: str):
+async def subscribe(uuid: str, http_client: httpx.AsyncClient):
     queue = asyncio.Queue()
 
     if uuid not in subscribers:
@@ -99,7 +99,7 @@ async def subscribe(uuid: str):
         ignored_sources[uuid] = set()
 
     if uuid not in trackers:
-        task = asyncio.create_task(poller(uuid))
+        task = asyncio.create_task(poller(uuid, http_client))
         trackers[uuid] = task
 
     return queue
@@ -121,14 +121,13 @@ def unsubscribe(uuid: str, queue: asyncio.Queue):
             del trackers[uuid]
 
 
-async def get_status(uuid) -> PlayerStatus:
+async def get_status(uuid: str, http_client: httpx.AsyncClient) -> PlayerStatus:
     print(f"ignored sources: {ignored_sources[uuid]}")
-    async with httpx.AsyncClient() as session:
-        results = await asyncio.gather(
-            get_wynncraft_status(session, uuid),
-            get_hypixel_status(session, uuid),
-            return_exceptions=True,
-        )
+    results = await asyncio.gather(
+        get_wynncraft_status(http_client, uuid),
+        get_hypixel_status(http_client, uuid),
+        return_exceptions=True,
+    )
     wynncraft_response = results[0]
     hypixel_response = results[1]
 
