@@ -69,13 +69,12 @@ if hypixel_api_key is None:
     raise Exception("No Hypixel API Key found while getting status")
 
 
-async def get_status(uuid: str) -> PlayerStatus:
-    async with httpx.AsyncClient() as session:
-        wynncraft_raw, hypixel_raw = await asyncio.gather(
-            get_wynncraft_status(session, uuid),
-            get_hypixel_status(session, uuid),
-            return_exceptions=True,
-        )
+async def get_status(uuid: str, http_client: httpx.AsyncClient) -> PlayerStatus:
+    wynncraft_raw, hypixel_raw = await asyncio.gather(
+        get_wynncraft_status(http_client, uuid),
+        get_hypixel_status(http_client, uuid),
+        return_exceptions=True,
+    )
 
     # ---- Type narrowing: after this block, both vars are dict | None ----
     wynncraft_response: Optional[Dict[str, Any]] = None

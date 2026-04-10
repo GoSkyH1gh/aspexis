@@ -25,6 +25,10 @@ async def get_redis():
 
         redis = Redis.from_url(
             url=prod_url,
+            socket_timeout=5.0,
+            socket_connect_timeout=5.0,
+            socket_keepalive=True,
+            health_check_interval=30,
         )
     else:
         redis = Redis(
