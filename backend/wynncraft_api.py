@@ -101,6 +101,24 @@ STORYLINES = [
         "name": "Silent Expanse",
         "quests": ["A Journey Beyond", "A Journey Further", "A Hunter's Calling"],
     },
+    {
+        "name": "Fruma",
+        "quests": [
+            "Queen's Recruit",
+            "A Journey Home",
+            "A New Beginning",
+            "The Cursed One",
+            "Revelations in Fall",
+            "Solidarity of Steel",
+            "The Price of Ingenuity",
+            "Echoes of Change",
+            "Shrouded in Mist",
+            "True Colours",
+            "Overture to Despair",
+            "Ensemble of Hope",
+            "Apotheosis",
+        ],
+    },
 ]
 
 LEGACY_DUNGEONS = [

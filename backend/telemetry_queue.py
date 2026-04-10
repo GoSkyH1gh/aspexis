@@ -35,6 +35,8 @@ class TelemetryEvent:
     status_code: Optional[int] = None
     cache_hit: Optional[bool] = None
     properties: Optional[dict] = None
+    request_id: Optional[str] = None
+    user_agent: Optional[str] = None
 
 
 # Module-level queue — populated by the middleware, drained by the worker.
@@ -62,6 +64,8 @@ async def _flush_batch(batch: list[TelemetryEvent]) -> None:
             "latency_ms": e.latency_ms,
             "cache_hit": e.cache_hit,
             "properties": e.properties,
+            "request_id": e.request_id,
+            "user_agent": e.user_agent,
         }
         for e in batch
     ]
@@ -70,14 +74,16 @@ async def _flush_batch(batch: list[TelemetryEvent]) -> None:
             text(
                 """
                 INSERT INTO telemetry_events
-                    (path, provider, status_code, latency_ms, cache_hit, properties)
+                    (path, provider, status_code, latency_ms, cache_hit, properties, request_id, user_agent)
                 SELECT
                     e->>'path',
                     e->>'provider',
                     (e->>'status_code')::int,
                     (e->>'latency_ms')::int,
                     (e->>'cache_hit')::boolean,
-                    (e->'properties')
+                    (e->'properties'),
+                    e->>'request_id',
+                    e->>'user_agent'
                 FROM jsonb_array_elements(CAST(:rows AS jsonb)) AS e
                 """
             ),

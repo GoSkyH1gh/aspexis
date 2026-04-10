@@ -32,6 +32,7 @@ from hypixel_manager import (
 from minecraft_manager import get_minecraft_data, update_player_history
 from typing import List, Annotated, Literal, Any
 import time
+import uuid
 from telemetry_queue import TelemetryEvent, enqueue, run_worker
 from capes import get_capes_for_user, UserCapeData
 from wynncraft_ability_tree import get_ability_tree, AbilityTreePage
@@ -168,14 +169,20 @@ async def global_rate_limit_middleware(request: Request, call_next):
 
 @app.middleware("http")
 async def telemetry_middleware(request: Request, call_next):
+    req_id = str(uuid.uuid4())
+    request.state.request_id = req_id
+
     if request.url.path == "/healthz":
         # Just process the request and return, DON'T touch the DB
-        return await call_next(request)
+        response = await call_next(request)
+        response.headers["X-Request-ID"] = req_id
+        return response
     start = time.time()
     status_code = 500
     try:
         response = await call_next(request)
         status_code = response.status_code
+        response.headers["X-Request-ID"] = req_id
         return response
     except Exception:
         # Call_next didn't complete — still record telemetry
@@ -184,12 +191,15 @@ async def telemetry_middleware(request: Request, call_next):
         # Skip telemetry for rate-limited requests — no useful signal and wastes DB writes
         if status_code != 429:
             latency_ms = int((time.time() - start) * 1000)
+            user_agent = request.headers.get("user-agent")
             enqueue(
                 TelemetryEvent(
                     path=request.url.path,
                     provider=request.url.path.split("/")[-1],
                     latency_ms=latency_ms,
                     status_code=status_code,
+                    request_id=req_id,
+                    user_agent=user_agent,
                 )
             )
 

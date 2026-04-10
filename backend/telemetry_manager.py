@@ -14,7 +14,9 @@ async def init_telemetry_manager() -> None:
             status_code INT NULL,
             latency_ms INT NULL,
             cache_hit BOOLEAN NULL,
-            properties JSONB NULL DEFAULT '{}'
+            properties JSONB NULL DEFAULT '{}',
+            request_id TEXT NULL,
+            user_agent TEXT NULL
             );"""
             )
         )
@@ -28,14 +30,16 @@ async def add_telemetry_event(
     status_code: int | None = None,
     cache_hit: bool | None = None,
     properties: dict | None = None,
+    request_id: str | None = None,
+    user_agent: str | None = None,
 
 ) -> None:
     async with AsyncSessionLocal() as session:
         await session.execute(
             text(
                 """
-                INSERT INTO telemetry_events (path, provider, status_code, latency_ms, cache_hit, properties)
-                VALUES (:path, :provider, :status_code, :latency_ms, :cache_hit, :properties);
+                INSERT INTO telemetry_events (path, provider, status_code, latency_ms, cache_hit, properties, request_id, user_agent)
+                VALUES (:path, :provider, :status_code, :latency_ms, :cache_hit, :properties, :request_id, :user_agent);
                 """
             ),
             {
@@ -45,6 +49,8 @@ async def add_telemetry_event(
                 "latency_ms": latency_ms,
                 "cache_hit": cache_hit,
                 "properties": properties,
+                "request_id": request_id,
+                "user_agent": user_agent,
             },
         )
         await session.commit()
