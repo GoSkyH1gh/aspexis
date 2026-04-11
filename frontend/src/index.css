@@ -443,3 +443,59 @@ footer {
   font-size: 1.5rem;
   margin-top: 3rem;
 }
+
+/* PWA Reload Prompt */
+.reload-prompt-container {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 10000;
+  background-color: var(--color-surface-layer-2);
+  border: 1px solid var(--color-surface-layer-2);
+  backdrop-filter: blur(10px) brightness(0.7);
+  padding: 1rem;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.reload-prompt-message {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.reload-prompt-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.reload-prompt-button {
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.reload-prompt-button-primary {
+  background-color: var(--color-selected);
+  color: var(--color-text-on-accent);
+}
+
+.reload-prompt-button-primary:hover {
+  background-color: var(--color-selected-hover);
+}
+
+.reload-prompt-button-secondary {
+  background-color: var(--color-surface-layer-2);
+  color: var(--text-primary);
+}
+
+.reload-prompt-button-secondary:hover {
+  background-color: var(--color-surface-layer-3);
+}
