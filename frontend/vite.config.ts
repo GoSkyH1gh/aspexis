@@ -11,7 +11,7 @@ export default defineConfig({
       },
     }),
     VitePWA({
-      registerType: "autoUpdate",
+      registerType: "prompt",
       workbox: {
         navigateFallbackDenylist: [/^\/sitemap\.xml$/, /^\/robots\.txt$/],
       },

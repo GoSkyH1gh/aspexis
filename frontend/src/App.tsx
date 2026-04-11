@@ -8,6 +8,7 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { Tooltip } from "radix-ui";
 import { ThemeProvider } from "./pages/playerComponents/themeContext";
 import NotFoundPage from "./pages/notFoundPage";
+import { ReloadPrompt } from "./components/reloadPrompt";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,6 +25,7 @@ function App() {
     <Tooltip.Provider>
       <ThemeProvider>
         <QueryClientProvider client={queryClient}>
+          <ReloadPrompt />
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route path="/" element={<HomePage />} />
