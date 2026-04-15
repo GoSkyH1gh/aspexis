@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
+import { visualizer } from "rollup-plugin-visualizer";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -40,5 +41,18 @@ export default defineConfig({
         ],
       },
     }),
+    visualizer({ open: false, json: true, filename: "stats.json" }) as any,
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('@radix-ui') || id.includes('radix-ui')) return 'vendor-radix';
+            if (id.includes('framer-motion') || id.includes('motion/react') || id.includes('motion-utils') || id.includes('motion-dom')) return 'vendor-motion';
+          }
+        }
+      }
+    }
+  }
 });
