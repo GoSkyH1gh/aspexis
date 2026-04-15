@@ -20,10 +20,10 @@ import {
   fetchWynncraftData,
   fetchWynncraftGuildData,
 } from "../utils/queries";
-import { Toast } from "radix-ui";
 import { useSearchHistory } from "../hooks/useSearchHistory";
 import { useEffect } from "react";
 import { fetchWynncraftMaxContent } from "../utils/queries";
+import { useToast } from "../components/ToastProvider";
 
 export function PlayerPage() {
   const { username } = useParams();
@@ -117,6 +117,53 @@ export function PlayerPage() {
     mcciQuery.data && "mcci",
   ].filter(Boolean) as string[];
 
+  const { addToast } = useToast();
+
+  useEffect(() => {
+    if (hypixelQuery.isError)
+      addToast({
+        message: `Couldn't fetch Hypixel Data due to ${hypixelQuery.error.message}`,
+        type: "error",
+        duration: 7500,
+      });
+  }, [hypixelQuery.isError, hypixelQuery.error, addToast]);
+
+  useEffect(() => {
+    if (wynncraftQuery.isError)
+      addToast({
+        message: `Couldn't fetch Wynncraft Data due to ${wynncraftQuery.error.message}`,
+        type: "error",
+        duration: 7500,
+      });
+  }, [wynncraftQuery.isError, wynncraftQuery.error, addToast]);
+
+  useEffect(() => {
+    if (donutSMPQuery.isError)
+      addToast({
+        message: `Couldn't fetch Donut SMP Data due to ${donutSMPQuery.error.message}`,
+        type: "error",
+        duration: 7500,
+      });
+  }, [donutSMPQuery.isError, donutSMPQuery.error, addToast]);
+
+  useEffect(() => {
+    if (mcciQuery.isError)
+      addToast({
+        message: `Couldn't fetch MCC Island Data due to ${mcciQuery.error.message}`,
+        type: "error",
+        duration: 7500,
+      });
+  }, [mcciQuery.isError, mcciQuery.error, addToast]);
+
+  useEffect(() => {
+    if (capesQuery.isError)
+      addToast({
+        message: `Couldn't fetch Capes data due to ${capesQuery.error.message}`,
+        type: "error",
+        duration: 7500,
+      });
+  }, [capesQuery.isError, capesQuery.error, addToast]);
+
   return (
     <>
       <SearchRow disabled={mojangQuery.isLoading} urlToNavigate="/player" />
@@ -137,82 +184,6 @@ export function PlayerPage() {
           </div>
         </div>
       )}
-      <Toast.Provider swipeDirection="right">
-        {hypixelQuery.isError && (
-          <>
-            <Toast.Root duration={7500} className="ToastRoot ToastError">
-              <Toast.Title className="ToastTitle">
-                Coudn't fetch Hypixel Data
-              </Toast.Title>
-              due to {hypixelQuery.error.message}
-            </Toast.Root>
-            <Toast.Viewport
-              className="ToastViewport"
-              style={{ position: "fixed", bottom: 20, right: 20, zIndex: 100 }}
-            />
-          </>
-        )}
-
-        {wynncraftQuery.isError && (
-          <>
-            <Toast.Root duration={7500} className="ToastRoot ToastError">
-              <Toast.Title className="ToastTitle">
-                Coudn't fetch Wynncraft Data
-              </Toast.Title>
-              due to {wynncraftQuery.error.message}
-            </Toast.Root>
-            <Toast.Viewport
-              className="ToastViewport"
-              style={{ position: "fixed", bottom: 20, right: 20, zIndex: 100 }}
-            />
-          </>
-        )}
-
-        {donutSMPQuery.isError && (
-          <>
-            <Toast.Root duration={7500} className="ToastRoot ToastError">
-              <Toast.Title className="ToastTitle">
-                Coudn't fetch Donut SMP Data
-              </Toast.Title>
-              due to {donutSMPQuery.error.message}
-            </Toast.Root>
-            <Toast.Viewport
-              className="ToastViewport"
-              style={{ position: "fixed", bottom: 20, right: 20, zIndex: 100 }}
-            />
-          </>
-        )}
-
-        {mcciQuery.isError && (
-          <>
-            <Toast.Root duration={7500} className="ToastRoot ToastError">
-              <Toast.Title className="ToastTitle">
-                Coudn't fetch MCC Island Data
-              </Toast.Title>
-              due to {mcciQuery.error.message}
-            </Toast.Root>
-            <Toast.Viewport
-              className="ToastViewport"
-              style={{ position: "fixed", bottom: 20, right: 20, zIndex: 100 }}
-            />
-          </>
-        )}
-
-        {capesQuery.isError && (
-          <>
-            <Toast.Root duration={7500} className="ToastRoot ToastError">
-              <Toast.Title className="ToastTitle">
-                Coudn't fetch Capes data
-              </Toast.Title>
-              due to {capesQuery.error.message}
-            </Toast.Root>
-            <Toast.Viewport
-              className="ToastViewport"
-              style={{ position: "fixed", bottom: 20, right: 20, zIndex: 100 }}
-            />
-          </>
-        )}
-      </Toast.Provider>
 
       {!username && <p>Enter a player to search</p>}
       {mojangQuery.data === null && (

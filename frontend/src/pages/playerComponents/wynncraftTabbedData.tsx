@@ -274,6 +274,7 @@ function WynncraftTabbedData({
         <WynncraftCharacters
           characterList={wynncraftData.characters}
           uuid={uuid}
+          playerName={wynncraftData.username}
           restrictions={wynncraftData.restrictions}
           wynncraftMaxContent={wynncraftMaxContent}
         />

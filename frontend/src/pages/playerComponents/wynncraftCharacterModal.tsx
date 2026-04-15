@@ -470,6 +470,7 @@ function CharacterDetails({
 export default function WynncraftCharacterModal({
   character,
   uuid,
+  playerName,
   restrictions,
   wynncraftMaxContent,
   smallVersion = false,
@@ -477,6 +478,7 @@ export default function WynncraftCharacterModal({
 }: {
   character: WynncraftCharacterInfo;
   uuid: string;
+  playerName?: string;
   restrictions: PlayerRestrictions;
   wynncraftMaxContent: MaxContent | null | undefined;
   smallVersion?: boolean;
@@ -518,7 +520,7 @@ export default function WynncraftCharacterModal({
               <CharacterHeader character={character} />
               <div className="wynn-header-close">
                 {!restrictions.character_build_access && (
-                  <WynncraftAbilityTree character={character} uuid={uuid} />
+                  <WynncraftAbilityTree character={character} uuid={uuid} playerName={playerName} />
                 )}
                 <Dialog.Close asChild>
                   <button className="wynn-dialog-close">
@@ -573,7 +575,7 @@ export default function WynncraftCharacterModal({
             <CharacterHeader character={character} />
             <div className="wynn-header-close">
               {!restrictions.character_build_access && (
-                <WynncraftAbilityTree character={character} uuid={uuid} />
+                <WynncraftAbilityTree character={character} uuid={uuid} playerName={playerName} />
               )}
               <Dialog.Close asChild>
                 <button className="wynn-dialog-close">

@@ -9,6 +9,7 @@ import { Tooltip } from "radix-ui";
 import { ThemeProvider } from "./pages/playerComponents/themeContext";
 import NotFoundPage from "./pages/notFoundPage";
 import { ReloadPrompt } from "./components/reloadPrompt";
+import { GlobalToastProvider } from "./components/ToastProvider";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,20 +25,25 @@ function App() {
   return (
     <Tooltip.Provider>
       <ThemeProvider>
-        <QueryClientProvider client={queryClient}>
-          <ReloadPrompt />
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/player/" element={<PlayerPage />} />
-              <Route path="/player/:username" element={<PlayerPage />} />
-              <Route path="/track/player" element={<TrackerPage />} />
-              <Route path="/track/player/:username" element={<TrackerPage />} />
-              <Route path="/favorites" element={<FavoritesPage />} />
-              <Route path="*" element={<NotFoundPage />} />
-            </Route>
-          </Routes>
-        </QueryClientProvider>
+        <GlobalToastProvider>
+          <QueryClientProvider client={queryClient}>
+            <ReloadPrompt />
+            <Routes>
+              <Route path="/" element={<Layout />}>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/player/" element={<PlayerPage />} />
+                <Route path="/player/:username" element={<PlayerPage />} />
+                <Route path="/track/player" element={<TrackerPage />} />
+                <Route
+                  path="/track/player/:username"
+                  element={<TrackerPage />}
+                />
+                <Route path="/favorites" element={<FavoritesPage />} />
+                <Route path="*" element={<NotFoundPage />} />
+              </Route>
+            </Routes>
+          </QueryClientProvider>
+        </GlobalToastProvider>
       </ThemeProvider>
     </Tooltip.Provider>
   );
