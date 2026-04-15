@@ -1,4 +1,28 @@
-import { format, parseISO, formatDistanceToNowStrict } from "date-fns";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import updateLocale from "dayjs/plugin/updateLocale";
+
+dayjs.extend(relativeTime);
+dayjs.extend(updateLocale);
+
+dayjs.updateLocale('en', {
+  relativeTime: {
+    future: "in %s",
+    past: "%s ago",
+    s: 'a few seconds',
+    m: "1 minute",
+    mm: "%d minutes",
+    h: "1 hour",
+    hh: "%d hours",
+    d: "1 day",
+    dd: "%d days",
+    M: "1 month",
+    MM: "%d months",
+    y: "1 year",
+    yy: "%d years"
+  }
+});
+
 
 function formatISOTimestamp(timestamp: string | null | undefined) {
   // Convert string to Date object
@@ -7,10 +31,10 @@ function formatISOTimestamp(timestamp: string | null | undefined) {
   }
 
   let readableDate;
-  let date;
   try {
-    date = parseISO(timestamp);
-    readableDate = format(date, "d MMM yyyy");
+    const d = dayjs(timestamp);
+    if (!d.isValid()) throw new Error("Invalid date");
+    readableDate = d.format("D MMM YYYY");
   } catch {
     readableDate = "Unknown";
   }
@@ -42,8 +66,9 @@ const formatISOToDistance = (isoDate: string | null | undefined) => {
     return "Unknown";
   }
   try {
-    const date = parseISO(isoDate);
-    return formatDistanceToNowStrict(date, { addSuffix: true });
+    const d = dayjs(isoDate);
+    if (!d.isValid()) throw new Error("Invalid date");
+    return d.fromNow();
   } catch (error) {
     console.error("Error parsing ISO date:", error);
     return "Unknown";
@@ -54,14 +79,15 @@ const formatSinceLastUpdate = (date: Date) => {
   if (!date) {
     return "unknown";
   }
-  return "updated " + formatDistanceToNowStrict(date) + " ago";
+  // formatDistanceToNowStrict gives "X minutes ago", dayjs "fromNow()" does the same
+  return "updated " + dayjs(date).fromNow();
 };
 
 const formatLogTime = (date: Date) => {
   if (!date) {
     return "unknown";
   }
-  return format(date, "KK:mm a");
+  return dayjs(date).format("hh:mm A");
 };
 
 function toProperCase(str: string) {
@@ -78,7 +104,8 @@ const parseUnknownISO = (str: string | null | undefined) => {
   if (!str) {
     return null;
   } else {
-    return parseISO(str);
+    const d = dayjs(str);
+    return d.isValid() ? d.toDate() : null;
   }
 };
 
