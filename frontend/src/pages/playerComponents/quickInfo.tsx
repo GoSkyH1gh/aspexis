@@ -216,6 +216,7 @@ function QuickInfo({
                     character={activeWynncraftCharacter}
                     restrictions={wynncraftData.restrictions}
                     uuid={wynncraftData.uuid}
+                    playerName={wynncraftData.username}
                     smallVersion={true}
                     wynncraftMaxContent={wynncraftMaxContent}
                   />

@@ -13,11 +13,13 @@ import WynncraftCharacterModal from "./wynncraftCharacterModal";
 function WynncraftCharacters({
   characterList,
   uuid,
+  playerName,
   restrictions,
   wynncraftMaxContent,
 }: {
   characterList: WynncraftCharacterInfo[];
   uuid: string;
+  playerName: string;
   restrictions: PlayerRestrictions;
   wynncraftMaxContent: MaxContent | null | undefined;
 }) {
@@ -148,6 +150,7 @@ function WynncraftCharacters({
             character={char}
             key={char.character_uuid}
             uuid={uuid}
+            playerName={playerName}
             restrictions={restrictions}
             wynncraftMaxContent={wynncraftMaxContent}
             renderTrigger={sort}

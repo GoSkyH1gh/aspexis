@@ -12,6 +12,7 @@
   "dependencies": {
     "@tanstack/react-query": "^5.90.16",
     "dayjs": "^1.11.20",
+    "html-to-image": "^1.11.13",
     "motion": "^12.19.2",
     "radix-ui": "^1.4.3",
     "react": "^19.1.0",
