@@ -98,6 +98,19 @@
   --color-border-subtle: rgba(0, 0, 0, 0.08);
 }
 
+*:focus-visible {
+  outline: 3px dashed var(--color-accent-gradient-end);
+  outline-offset: 3px;
+}
+
+.SelectItem:focus-visible {
+  outline-offset: 0px;
+}
+
+.sidebar-row:focus-visible {
+  outline-offset: -5px;
+}
+
 /* 1. Rubik (Primary - Body, Links, Hero) */
 @font-face {
   font-family: "Rubik";
@@ -143,6 +156,7 @@ a:hover {
 
 html {
   max-width: 100%;
+  scrollbar-gutter: stable;
 }
 
 @media screen and (width < 750px) {
@@ -157,10 +171,6 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   max-width: 100%;
-}
-
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
 }
 
 .app-container {

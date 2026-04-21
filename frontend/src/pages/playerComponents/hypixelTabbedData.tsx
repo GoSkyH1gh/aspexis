@@ -338,7 +338,7 @@ function HypixelGuild({ hypixelData, hypixelGuildQuery }: HypixelDataProps) {
     if (displayMode === "card") {
       return (
         <li key={`${member.uuid}:card`}>
-          <Link to={`/player/${member.uuid}`}>
+          <Link to={`/player/${member.uuid}`} className="guild-list-item-container">
             <motion.div
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
@@ -377,7 +377,7 @@ function HypixelGuild({ hypixelData, hypixelGuildQuery }: HypixelDataProps) {
     if (displayMode === "list") {
       return (
         <li key={`${member.uuid}:list`}>
-          <Link to={`/player/${member.uuid}`}>
+          <Link to={`/player/${member.uuid}`} className="guild-list-item-container">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

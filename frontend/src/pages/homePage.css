@@ -210,10 +210,6 @@
   color: var(--color-text-on-accent);
 }
 
-.hero-searchbar > input:focus {
-  border: 1px solid #ddda;
-}
-
 .hero-searchbar > input:hover {
   background: linear-gradient(to right, #f4eae3 0%, #e8d5fd 40%);
   box-shadow: #a130f620 1px 1px 15px;

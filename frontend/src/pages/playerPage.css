@@ -183,6 +183,7 @@ button:hover {
 
 .guild-list-item-container {
   display: block;
+  border-radius: 5px;
 }
 
 .guild-list-item {
@@ -421,7 +422,7 @@ button {
 }
 
 .icon-button:focus-visible {
-  border-color: var(--color-accent-gradient-end);
+  outline: dashed var(--color-accent-gradient-end);
 }
 
 .center {
