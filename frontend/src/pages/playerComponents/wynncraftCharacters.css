@@ -209,7 +209,7 @@
 }
 
 .wynn-char-modal {
-  max-width: min(60rem, 90vw);
+  max-width: min(60rem, 90vw) !important;
   overflow-y: auto;
 }
 

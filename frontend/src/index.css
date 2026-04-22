@@ -159,6 +159,28 @@ html {
   scrollbar-gutter: stable;
 }
 
+@supports (scrollbar-gutter: stable) {
+  /* Radix uses react-remove-scroll-bar, which injects !important runtime rules.
+     With stable gutter, that compensation is redundant and causes a 15px shift. */
+  body[data-scroll-locked][data-scroll-locked] {
+    margin-right: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  body.with-scroll-bars-hidden[data-scroll-locked][data-scroll-locked] {
+    margin-right: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .width-before-scroll-bar {
+    margin-right: 0 !important;
+  }
+
+  .right-scroll-bar-position {
+    right: 0 !important;
+  }
+}
+
 @media screen and (width < 750px) {
   html {
     overflow-x: clip;
