@@ -58,11 +58,15 @@ CAPE_MAP = {
     "26b546a54d519e6a3ff01efa01acce81": "Cobalt",
     "e926b997d5e66c86483dfb1e031aee95": "Turtle",
     "3a37ff2a14c2d157c659a07810b1bdca": "Copper",
+    "2fe5700365c09cf45d0d156ea9396551": "Mojira Moderator",
+    "e8802d947f669de93d6ec4b9354a436b": "Zombie Horse",
 }
 
 
 class GetMojangAPIData:
-    def __init__(self, client: httpx.AsyncClient, username: str | None, uuid: str | None = None):
+    def __init__(
+        self, client: httpx.AsyncClient, username: str | None, uuid: str | None = None
+    ):
         self.username = username
         self.uuid = uuid
         self.skin_url = None
@@ -220,7 +224,9 @@ class GetMojangAPIData:
         try:
             # Execute fetches concurrently
             if cape_task:
-                response_skin, response_cape = await asyncio.gather(skin_task, cape_task)
+                response_skin, response_cape = await asyncio.gather(
+                    skin_task, cape_task
+                )
             else:
                 response_skin = await skin_task
                 response_cape = None
@@ -235,7 +241,9 @@ class GetMojangAPIData:
                 self.skin_showcase = full_skin_image.crop(crop_area)  # base skin face
 
                 crop_area = (40, 8, 48, 16)
-                skin_showcase_overlay = full_skin_image.crop(crop_area)  # skin face overlay
+                skin_showcase_overlay = full_skin_image.crop(
+                    crop_area
+                )  # skin face overlay
                 _, _, _, alpha_mask = skin_showcase_overlay.split()
 
                 paste_area = (0, 0)
@@ -267,7 +275,9 @@ class GetMojangAPIData:
                     crop_area = (12, 1, 22, 17)
                     self.cape_back = full_cape_image.crop(crop_area)
                 except Exception as e:
-                    logger.error(f"something went wrong while cropping back of cape: {e}")
+                    logger.error(
+                        f"something went wrong while cropping back of cape: {e}"
+                    )
 
                 self.cape_showcase_b64 = pillow_to_b64(self.cape_showcase)
                 self.cape_back_b64 = pillow_to_b64(self.cape_back)
@@ -281,7 +291,11 @@ class GetMojangAPIData:
                     logger.warning("Cape not regonized")
                     self.cape_name = "Unknown cape"
 
-                return self.skin_showcase_b64, self.cape_showcase_b64, self.cape_back_b64
+                return (
+                    self.skin_showcase_b64,
+                    self.cape_showcase_b64,
+                    self.cape_back_b64,
+                )
 
             else:
                 logger.info(f"no cape for user {self.username}")
@@ -289,8 +303,8 @@ class GetMojangAPIData:
 
         except Exception as e:
             logger.error(f"something went wrong in get_skin_images: {e}")
-            # If main skin fails we probably should return something or raise, 
-            # but strict preservation of behavior suggests swallowing 
+            # If main skin fails we probably should return something or raise,
+            # but strict preservation of behavior suggests swallowing
             # (though the original code swallowed exceptions somewhat liberally)
 
 

@@ -107,6 +107,7 @@ button:hover {
 .search-row {
   display: flex;
   gap: 15px;
+  width: fit-content;
 }
 
 .skin-showcase {

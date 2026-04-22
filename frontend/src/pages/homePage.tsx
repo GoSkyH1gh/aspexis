@@ -494,7 +494,7 @@ function HomePage() {
                   <div className="home-skin-shell">
                     <div className="home-skin-header">
                       <div>
-                        <h4>Grian</h4>
+                        <p className="home-skin-name">Grian</p>
                         <p>
                           <span className="home-skin-uuid-row">
                             uuid: <code>{sampleMojangResponse.uuid}</code>
@@ -716,7 +716,7 @@ function HomePage() {
                               gridColumn: node.x,
                               gridRow: node.y,
                             }}
-                            aria-label="Ability tree connector"
+                            aria-hidden="true"
                           >
                             <img
                               src={node.icon_url}

@@ -254,7 +254,7 @@ function WynncraftAbilityTree({
         <button className="wynn-ability-tree-open">Open Ability Tree</button>
       </Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Overlay className="DialogOverlay AbilityTreeOverlay" />
+        <Dialog.Overlay className="AbilityTreeOverlay" />
         <Dialog.Content className="AbilityTreeContent">
           {wynncraftAbilityTreeQuery.isLoading && (
             <>

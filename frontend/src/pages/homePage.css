@@ -350,6 +350,9 @@
 .home-bento-card--live {
   grid-column: 7 / span 6;
   grid-row: span 2;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
 }
 
 .home-bento-card--histogram {
@@ -457,9 +460,9 @@
   gap: 12px;
 }
 
-.home-skin-header h4 {
+.home-skin-name {
   margin: 0;
-  font-size: 18px;
+  font-size: 1.2rem;
   line-height: 1.1;
   font-weight: 600;
 }
@@ -467,7 +470,6 @@
 .home-skin-header p {
   margin: 6px 0 0;
   color: rgba(255, 255, 255, 0.8);
-  font-size: 13px;
 }
 
 .home-snapshot-open {
@@ -688,11 +690,13 @@
 
 .home-live-timeline-line {
   width: 2px;
-  height: 100%;
+  height: calc(100% + 8px);
   min-height: 38px;
   background: rgba(255, 255, 255, 0.32);
   position: relative;
   justify-self: center;
+  margin-top: -4px;
+  margin-bottom: -4px;
 }
 
 .home-live-timeline-line::before {
@@ -702,9 +706,17 @@
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.92);
   position: absolute;
-  top: 7px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
+}
+
+.home-live-timeline-row:first-child .home-live-timeline-line {
+  margin-top: 0;
+}
+
+.home-live-timeline-row:last-child .home-live-timeline-line {
+  margin-bottom: 0;
 }
 
 .home-live-timeline-row > div {
@@ -1350,9 +1362,14 @@
   }
 }
 
-@media (width <= 1024px) {
-  .home-skin-open-profile,
+@media screen and (width <= 1700px) {
   .home-snapshot-open {
+    display: none;
+  }
+}
+
+@media (width <= 1024px) {
+  .home-skin-open-profile {
     display: none;
   }
 
@@ -1451,10 +1468,6 @@
 
   .home-skin-shell {
     padding: 10px;
-  }
-
-  .home-skin-header h4 {
-    font-size: 18px;
   }
 
   .home-skin-header p {
