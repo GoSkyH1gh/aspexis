@@ -1,15 +1,33 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
+import {
+  FormEvent,
+  PointerEvent,
+  Suspense,
+  lazy,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { MdKeyboardArrowDown, MdSearch } from "react-icons/md";
 import { Popover } from "radix-ui";
+import {
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useSpring,
+} from "motion/react";
+import type { AbilityTreeNode, AbilityTreePage } from "../client";
 import "./homePage.css";
 import { usePageTitle } from "../hooks/usePageTitle";
 import CopyIcon from "./playerComponents/copyIcon.js";
-import SkinView from "./playerComponents/skinViewer";
 import CapeShowcase from "./playerComponents/capeShowcase.js";
 import BedwarsHeroIcon from "/src/assets/bedwars.png";
-import { sampleHypixelResponse, sampleMojangResponse } from "./sampleData";
-import sampleWynncraftAbilityTree from "../assets/sample-wynncraft-ability-tree.json";
+import {
+  sampleHypixelBedwars,
+  sampleMojangResponse,
+} from "./homePageSampleData";
+
+const SkinView = lazy(() => import("./playerComponents/skinViewer"));
 
 const LIVE_ROWS = [
   { time: "00:51 AM", header: "Offline", description: "" },
@@ -26,6 +44,7 @@ const LIVE_ROWS = [
     description: "playing SkyBlock • Dwarven Mines",
   },
 ];
+const HERO_SUGGESTIONS = ["Grian", "Avoma", "Technoblade", "HellCastleBTW"];
 
 const SOURCE_COVERAGE_ROWS = [
   { source: "Mojang", fields: "uuid • skin/cape • favorites" },
@@ -41,7 +60,7 @@ const LAST_ACTIVITY_PREVIEW = {
   firstSeenLabel: "First seen on",
   firstSeenValue: "May 22, 2020",
 };
-const BEDWARS_PREVIEW = sampleHypixelResponse.player.bedwars;
+const BEDWARS_PREVIEW = sampleHypixelBedwars;
 const BEDWARS_WINRATE =
   BEDWARS_PREVIEW.overall_stats.games_played > 0
     ? (
@@ -69,18 +88,7 @@ const LEADERBOARD_ROWS = [
 
 type PercentileView = "distribution" | "leaderboard";
 
-type AbilityPreviewNode = {
-  node_id: string;
-  node_type: "ability" | "connector";
-  icon_url: string;
-  x: number;
-  y: number;
-  unlocked: boolean;
-  pretty_name: string | null;
-  description: string | null;
-};
-
-function HomeHoverableAbilityNode({ node }: { node: AbilityPreviewNode }) {
+function HomeHoverableAbilityNode({ node }: { node: AbilityTreeNode }) {
   const [isHovered, setIsHovered] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
   const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -152,12 +160,10 @@ function HomeHoverableAbilityNode({ node }: { node: AbilityPreviewNode }) {
             onOpenAutoFocus={(event) => event.preventDefault()}
             onCloseAutoFocus={(event) => event.preventDefault()}
           >
-            <div
-              className="wynn-description home-ability-tree-tooltip__content"
-              dangerouslySetInnerHTML={{
-                __html: `${node.pretty_name ?? ""}<br>${node.description ?? ""}`,
-              }}
-            />
+            <div className="wynn-description home-ability-tree-tooltip__content">
+              <strong>{stripHtmlToText(node.pretty_name)}</strong>
+              <p>{stripHtmlToText(node.description)}</p>
+            </div>
           </Popover.Content>
         </Popover.Portal>
       </Popover.Root>
@@ -176,52 +182,53 @@ function stripHtmlToText(html: string | null): string {
     .trim();
 }
 
-const TREE_PREVIEW_NODES: AbilityPreviewNode[] = (() => {
-  const selectedPage = (sampleWynncraftAbilityTree as any)?.[1] ?? null;
-  const selectedPageNodes = selectedPage?.nodes ?? [];
-  const pageNumber = selectedPage?.page_number ?? 2;
-  return selectedPageNodes
-    .map((node: any) => {
-      const localRow = node.y - (pageNumber - 1) * 6;
-      return {
-        node_id: node.node_id,
-        node_type: node.node_type,
-        icon_url: node.icon_url,
-        x: node.x,
-        y: localRow,
-        unlocked: Boolean(node.unlocked),
-        pretty_name: node.pretty_name,
-        description: node.description,
-      };
-    })
-    .sort((a: AbilityPreviewNode, b: AbilityPreviewNode) => {
-      if (a.unlocked === b.unlocked) return 0;
-      return a.unlocked ? 1 : -1;
-    });
-})();
-
 function HomePage() {
   usePageTitle();
 
   const navigate = useNavigate();
+  const heroRef = useRef<HTMLElement | null>(null);
+  const bentoRef = useRef<HTMLDivElement | null>(null);
   const featuresRef = useRef<HTMLElement | null>(null);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const [treePreviewNodes, setTreePreviewNodes] = useState<AbilityTreeNode[]>(
+    [],
+  );
   const [username, setUsername] = useState("");
-  const [showScrollCue, setShowScrollCue] = useState(true);
   const [percentileView, setPercentileView] =
     useState<PercentileView>("distribution");
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollCue(window.scrollY < window.innerHeight * 0.35);
-    };
+  const [heroSuggestionIndex, setHeroSuggestionIndex] = useState(0);
+  const meshTargetX = useMotionValue(50);
+  const meshTargetY = useMotionValue(58);
+  const meshX = useSpring(meshTargetX, {
+    stiffness: 160,
+    damping: 26,
+    mass: 0.45,
+  });
+  const meshY = useSpring(meshTargetY, {
+    stiffness: 160,
+    damping: 26,
+    mass: 0.45,
+  });
 
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+  const heroSuggestion = HERO_SUGGESTIONS[heroSuggestionIndex];
+  const meshDistortMask = useMotionTemplate`radial-gradient(
+    210px circle at ${meshX}% ${meshY}%,
+    rgba(0, 0, 0, 0.95) 0%,
+    rgba(0, 0, 0, 0.6) 46%,
+    transparent 78%
+  )`;
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setHeroSuggestionIndex((value) => (value + 1) % HERO_SUGGESTIONS.length);
+    }, 3200);
+
+    return () => window.clearInterval(intervalId);
   }, []);
 
   useEffect(() => {
-    const cards = document.querySelectorAll<HTMLElement>(".home-bento-card");
+    const cards =
+      bentoRef.current?.querySelectorAll<HTMLElement>(".home-bento-card") ?? [];
     if (cards.length === 0) {
       return;
     }
@@ -246,6 +253,41 @@ function HomePage() {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    import("../assets/sample-wynncraft-ability-tree.json").then((module) => {
+      if (!isMounted) return;
+
+      const treeData = module.default as AbilityTreePage[];
+
+      const selectedPage = treeData[0];
+      if (!selectedPage) {
+        setTreePreviewNodes([]);
+        return;
+      }
+
+      const nodes = selectedPage.nodes
+        .map((node) => {
+          const localRow = node.y - (selectedPage.page_number - 1) * 6;
+          return {
+            ...node,
+            y: localRow,
+          } satisfies AbilityTreeNode;
+        })
+        .sort((a, b) => {
+          if (a.unlocked === b.unlocked) return 0;
+          return a.unlocked ? 1 : -1;
+        });
+
+      setTreePreviewNodes(nodes);
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const handleSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const trimmed = username.trim();
@@ -260,14 +302,44 @@ function HomePage() {
     featuresRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const handleHeroPointerMove = (event: PointerEvent<HTMLElement>) => {
+    const heroElement = heroRef.current;
+    if (!heroElement) return;
+
+    const rect = heroElement.getBoundingClientRect();
+    const xPercent = ((event.clientX - rect.left) / rect.width) * 100;
+    const yPercent = ((event.clientY - rect.top) / rect.height) * 100;
+    meshTargetX.set(Math.max(0, Math.min(100, xPercent)));
+    meshTargetY.set(Math.max(0, Math.min(100, yPercent)));
+  };
+
+  const handleHeroPointerLeave = () => {
+    meshTargetX.set(50);
+    meshTargetY.set(58);
+  };
+
   return (
     <div className="homepage-shell">
       <main className="homepage-main">
-        <section className="homepage-hero">
+        <section
+          className="homepage-hero"
+          ref={heroRef}
+          onPointerMove={handleHeroPointerMove}
+          onPointerLeave={handleHeroPointerLeave}
+        >
           <div className="homepage-hero__glow" aria-hidden="true" />
-          <div className="homepage-hero__noise" aria-hidden="true" />
+          <motion.div className="homepage-hero__mesh" aria-hidden="true" />
+          <motion.div
+            className="homepage-hero__mesh-distort"
+            style={{
+              maskImage: meshDistortMask,
+              WebkitMaskImage: meshDistortMask,
+            }}
+            aria-hidden="true"
+          />
 
           <div className="homepage-hero__content">
+            <p className="homepage-hero__brand">Aspexis</p>
             <h1 className="homepage-hero__title">Player stats, one search.</h1>
             <p className="homepage-hero__subtitle">
               Search a username to open the full profile view across Hypixel,
@@ -304,18 +376,29 @@ function HomePage() {
               <button type="submit">Search</button>
             </form>
 
-            <p className="homepage-hero__helper">
-              Try `Technoblade` or `Notch`
-            </p>
+            <div className="homepage-hero__helper">
+              <span>Try searching</span>
+              <button
+                className="homepage-hero__helper-button"
+                type="button"
+                key={heroSuggestion}
+                onClick={() => {
+                  setUsername(heroSuggestion);
+                  searchInputRef.current?.focus();
+                }}
+              >
+                {heroSuggestion}
+              </button>
+            </div>
           </div>
 
           <button
             type="button"
-            className={`homepage-scroll-indicator${showScrollCue ? "" : " is-hidden"}`}
+            className="homepage-scroll-indicator"
             aria-label="Scroll to features"
             onClick={scrollToFeatures}
           >
-            <span />
+            <span>Explore features</span>
             <MdKeyboardArrowDown />
           </button>
         </section>
@@ -325,7 +408,7 @@ function HomePage() {
             <h2>Built for depth</h2>
           </div>
 
-          <div className="homepage-bento">
+          <div className="homepage-bento" ref={bentoRef}>
             <article className="home-bento-card home-bento-card--skin">
               <div className="home-bento-preview home-bento-preview--skin">
                 <div />
@@ -365,11 +448,22 @@ function HomePage() {
                         />
                       </div>
                       <div className="home-skin-actions">
-                        <SkinView
-                          skinUrl={sampleMojangResponse.skin_url}
-                          capeUrl={sampleMojangResponse.cape_url}
-                          username={sampleMojangResponse.username}
-                        />
+                        <Suspense
+                          fallback={
+                            <button
+                              className="home-skin-action-button"
+                              disabled
+                            >
+                              Loading 3D
+                            </button>
+                          }
+                        >
+                          <SkinView
+                            skinUrl={sampleMojangResponse.skin_url}
+                            capeUrl={sampleMojangResponse.cape_url}
+                            username={sampleMojangResponse.username}
+                          />
+                        </Suspense>
                       </div>
                     </div>
                   </div>
@@ -391,7 +485,6 @@ function HomePage() {
               >
                 <div className="home-live-header">
                   <p>Tracking GoSkyHigh</p>
-                  <span>updated 6 seconds ago</span>
                 </div>
                 <div className="home-live-status">Offline</div>
                 <div className="home-live-timeline">
@@ -528,7 +621,7 @@ function HomePage() {
                   </div>
                   <div className="home-tree-shell__body">
                     <div className="home-tree-preview">
-                      {TREE_PREVIEW_NODES.map((node) => {
+                      {treePreviewNodes.map((node) => {
                         if (node.node_type === "ability") {
                           return (
                             <HomeHoverableAbilityNode
@@ -572,14 +665,17 @@ function HomePage() {
             <article className="home-bento-card home-bento-card--bedwars">
               <div className="home-bedwars-split">
                 <div className="home-bento-preview home-bento-preview--bedwars">
-                  <div className="home-bedwars-card" aria-label="Bedwars preview">
+                  <div
+                    className="home-bedwars-card"
+                    aria-label="Bedwars preview"
+                  >
                     <div className="home-bedwars-top-row">
                       <img src={BedwarsHeroIcon} alt="" aria-hidden="true" />
                       <span>Bedwars</span>
                     </div>
                     <p className="home-bedwars-main-line">
-                      {BEDWARS_PREVIEW.overall_stats.games_played} games played •
-                      Level {BEDWARS_PREVIEW.level}
+                      {BEDWARS_PREVIEW.overall_stats.games_played} games played
+                      • Level {BEDWARS_PREVIEW.level}
                     </p>
                     <div className="home-bedwars-stats">
                       <span>
@@ -594,7 +690,9 @@ function HomePage() {
                       </span>
                       <span>
                         <small>Winstreak</small>
-                        <strong>{BEDWARS_PREVIEW.overall_stats.winstreak}</strong>
+                        <strong>
+                          {BEDWARS_PREVIEW.overall_stats.winstreak}
+                        </strong>
                       </span>
                     </div>
                     <p className="home-bedwars-see-more">
@@ -607,8 +705,8 @@ function HomePage() {
                   <p className="home-bento-copy__label">Hypixel game stats</p>
                   <h3>Detailed Bedwars profile view</h3>
                   <p>
-                    Preview core performance stats, then drill into mode
-                    splits, ratios, and full Bedwars tables in the player view.
+                    Preview core performance stats, then drill into mode splits,
+                    ratios, and full Bedwars tables in the player view.
                   </p>
                 </div>
               </div>
