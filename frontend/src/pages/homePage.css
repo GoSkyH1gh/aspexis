@@ -251,7 +251,7 @@
   color: rgba(255, 255, 255, 0.86);
   min-height: 24px;
   padding: 0 10px;
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   font-size: 12px;
   transition:
     background-color 180ms ease,
@@ -300,7 +300,7 @@
 }
 
 .homepage-features {
-  padding: var(--space-3xl) 0;
+  padding: var(--space-3xl) 0 var(--space-xl) 0;
 }
 
 .homepage-section-heading {

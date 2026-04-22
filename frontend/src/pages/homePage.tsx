@@ -161,8 +161,13 @@ function HomeHoverableAbilityNode({ node }: { node: AbilityTreeNode }) {
             onCloseAutoFocus={(event) => event.preventDefault()}
           >
             <div className="wynn-description home-ability-tree-tooltip__content">
-              <strong>{stripHtmlToText(node.pretty_name)}</strong>
-              <p>{stripHtmlToText(node.description)}</p>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: sanitizeWynnTooltipHtml(
+                    `${node.pretty_name ?? ""}<br>${node.description ?? ""}`,
+                  ),
+                }}
+              />
             </div>
           </Popover.Content>
         </Popover.Portal>
@@ -180,6 +185,78 @@ function stripHtmlToText(html: string | null): string {
     .replace(/<[^>]+>/g, "")
     .replace(/&nbsp;/g, " ")
     .trim();
+}
+
+function sanitizeWynnTooltipHtml(html: string | null): string {
+  if (!html) {
+    return "";
+  }
+
+  if (typeof window === "undefined") {
+    return stripHtmlToText(html);
+  }
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(`<div>${html}</div>`, "text/html");
+  const root = doc.body.firstElementChild as HTMLElement | null;
+  if (!root) {
+    return "";
+  }
+
+  const allowedTags = new Set(["span", "br"]);
+  const walker = doc.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+  const toReplace: Element[] = [];
+
+  while (walker.nextNode()) {
+    const current = walker.currentNode as Element;
+    if (!allowedTags.has(current.tagName.toLowerCase())) {
+      toReplace.push(current);
+      continue;
+    }
+
+    const attrs = Array.from(current.attributes);
+    attrs.forEach((attribute) => {
+      const name = attribute.name.toLowerCase();
+      if (name !== "class" && name !== "style") {
+        current.removeAttribute(attribute.name);
+      }
+    });
+
+    const styleValue = current.getAttribute("style");
+    if (styleValue) {
+      const sanitizedStyle = styleValue
+        .split(";")
+        .map((rule) => rule.trim())
+        .filter(Boolean)
+        .filter((rule) => {
+          const [prop, value = ""] = rule.split(":");
+          const key = prop?.trim().toLowerCase();
+          const val = value.trim().toLowerCase();
+          if (!key) return false;
+          if (val.includes("url(") || val.includes("expression(")) return false;
+          return (
+            key === "color" ||
+            key === "font-weight" ||
+            key === "margin-left" ||
+            key === "text-decoration"
+          );
+        })
+        .join("; ");
+
+      if (sanitizedStyle) {
+        current.setAttribute("style", sanitizedStyle);
+      } else {
+        current.removeAttribute("style");
+      }
+    }
+  }
+
+  toReplace.forEach((element) => {
+    const textNode = doc.createTextNode(element.textContent ?? "");
+    element.replaceWith(textNode);
+  });
+
+  return root.innerHTML;
 }
 
 function HomePage() {
