@@ -147,11 +147,11 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--color-selected);
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: var(--link-hover);
 }
 
 html {

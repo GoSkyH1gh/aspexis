@@ -7,7 +7,8 @@ function Sidebar() {
   const location = useLocation();
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const isHomePage = location.pathname === "/";
+  // const isHomePage = location.pathname === "/";
+  const isHomePage = false;
 
   const isExpanded = isHovered || isFocused;
 
