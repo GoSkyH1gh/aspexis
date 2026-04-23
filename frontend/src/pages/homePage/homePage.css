@@ -1332,6 +1332,7 @@
   .homepage-hero__subtitle,
   .homepage-search,
   .homepage-hero__helper,
+  .homepage-hero__helper-button,
   .home-bento-card,
   .homepage-scroll-indicator {
     animation: none;
@@ -1502,5 +1503,18 @@
 }
 
 .homepage-hero__helper-button {
-  min-width: 8rem;
+  min-width: 13ch;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.homepage-hero__helper-button-label-wrap {
+  display: grid;
+  place-items: center;
+}
+
+.homepage-hero__helper-button-label {
+  grid-area: 1 / 1;
+  will-change: opacity;
 }
