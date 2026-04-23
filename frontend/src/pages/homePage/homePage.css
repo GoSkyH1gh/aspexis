@@ -496,6 +496,8 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  font-size: 0.8em;
+  flex-wrap: wrap;
 }
 
 .home-skin-header code {
@@ -521,9 +523,11 @@
 }
 
 .home-skin-content {
+  --home-skin-media-size: clamp(92px, 10vw, 118px);
+  --home-skin-cape-width: clamp(150px, 28vw, 210px);
   margin-top: 14px;
-  display: grid;
-  grid-template-columns: 96px 150px 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
@@ -535,8 +539,9 @@
 
 .home-skin-tile--face {
   background: rgba(0, 0, 0, 0.18);
-  aspect-ratio: 1 / 1;
-  align-self: start;
+  flex: 0 0 var(--home-skin-media-size);
+  width: var(--home-skin-media-size);
+  height: var(--home-skin-media-size);
 }
 
 .home-skin-tile--face img {
@@ -548,7 +553,11 @@
 
 .home-skin-tile--cape {
   display: flex;
-  min-height: 96px;
+  flex: 0 0 auto;
+  width: var(--home-skin-cape-width);
+  min-width: 150px;
+  max-width: 100%;
+  height: var(--home-skin-media-size);
   border: 0;
   background: transparent;
 }
@@ -556,34 +565,38 @@
 .home-skin-tile--cape .cape-section {
   width: 100%;
   height: 100%;
-  min-height: 96px;
   margin: 0;
   box-shadow: none;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background-color: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: stretch;
 }
 
 .home-skin-tile--cape .cape-showcase {
-  width: auto;
   height: 100%;
+  width: auto;
+  image-rendering: pixelated;
+  border-radius: 4px;
 }
 
 .home-skin-tile--cape .cape-name-label {
-  padding: 10px 8px 0;
+  padding: 10px 10px 0;
   color: rgba(255, 255, 255, 0.82);
 }
 
 .home-skin-tile--cape .cape-name {
-  padding: 0 8px;
+  margin: 0;
+  padding: 0 10px;
   color: rgba(255, 255, 255, 0.96);
-  font-size: 1rem;
+  font-size: 1.1em;
+  font-family: var(--font-mono);
 }
 
 .home-skin-actions {
   display: flex;
-  min-height: 96px;
-  width: min-content;
+  min-height: 54px;
 }
 
 .home-skin-action-button {
@@ -601,7 +614,7 @@
   font-weight: 600;
 }
 
-.home-skin-actions .skin-button {
+.skin-button {
   width: 100%;
   height: 100%;
   border-radius: 10px;
@@ -612,7 +625,7 @@
   justify-content: center;
 }
 
-.home-skin-actions .skin-button img {
+.skin-button img {
   width: 22px;
   height: 22px;
 }
@@ -1363,7 +1376,7 @@
   }
 }
 
-@media screen and (width <= 1700px) {
+@media screen and (width <= 1400px) {
   .home-snapshot-open {
     display: none;
   }
@@ -1475,12 +1488,7 @@
     font-size: 11px;
   }
 
-  .home-skin-content {
-    grid-template-columns: 1fr 1fr;
-  }
-
   .home-skin-actions {
-    grid-column: span 2;
     min-height: 44px;
   }
 
