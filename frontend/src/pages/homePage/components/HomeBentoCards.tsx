@@ -1,4 +1,4 @@
-import { Suspense, lazy } from "react";
+import SkinView from "../../playerComponents/skinViewer";
 import { Link } from "react-router-dom";
 import type { AbilityTreeNode } from "../../../client";
 import CopyIcon from "../../playerComponents/copyIcon.js";
@@ -17,8 +17,6 @@ import {
 } from "../homePageSampleData";
 import type { PercentileView } from "../homePageData";
 import { HomeHoverableAbilityNode } from "./HomeHoverableAbilityNode";
-
-const SkinView = lazy(() => import("../../playerComponents/skinViewer"));
 
 type HomeBentoCardsProps = {
   percentileView: PercentileView;
@@ -75,19 +73,11 @@ function SkinBentoCard() {
                 />
               </div>
               <div className="home-skin-actions">
-                <Suspense
-                  fallback={
-                    <button className="home-skin-action-button" disabled>
-                      Loading 3D
-                    </button>
-                  }
-                >
-                  <SkinView
-                    skinUrl={sampleMojangResponse.skin_url}
-                    capeUrl={sampleMojangResponse.cape_url}
-                    username={sampleMojangResponse.username}
-                  />
-                </Suspense>
+                <SkinView
+                  skinUrl={sampleMojangResponse.skin_url}
+                  capeUrl={sampleMojangResponse.cape_url}
+                  username={sampleMojangResponse.username}
+                />
               </div>
             </div>
           </div>

@@ -1,8 +1,8 @@
 import SkinShowcase from "./skinShowcase.js";
 import CapeShowcase from "./capeShowcase.js";
 import CopyIcon from "./copyIcon.js";
+import SkinView from "./skinViewer.js";
 import { motion } from "motion/react";
-import { lazy, Suspense } from "react";
 import { MojangData, UserCapeData } from "../../client/types.gen.js";
 import { MdFavoriteBorder, MdFavorite } from "react-icons/md";
 import {
@@ -13,8 +13,6 @@ import {
 import DesktopTooltip from "../../components/desktopTooltip";
 import { useEffect, useState } from "react";
 import CapeGallery from "./capeGallery.js";
-
-const SkinView = lazy(() => import("./skinViewer.js"));
 
 type MojangProps = {
   mojangResponse: MojangData;
@@ -96,20 +94,12 @@ function MojangDataDisplay({
           cape_name={mojangResponse.cape_name}
         />
         <motion.div className="skin-options-container">
-          <Suspense
-            fallback={
-              <button className="skin-button" disabled>
-                Loading 3D
-              </button>
-            }
-          >
-            <SkinView
-              skinUrl={mojangResponse.skin_url}
-              capeUrl={mojangResponse.cape_url}
-              username={mojangResponse.username}
-              key={"skin-view"}
-            />
-          </Suspense>
+          <SkinView
+            skinUrl={mojangResponse.skin_url}
+            capeUrl={mojangResponse.cape_url}
+            username={mojangResponse.username}
+            key={"skin-view"}
+          />
           {capeStatus === "success" && capeData !== null && (
             <CapeGallery
               capeData={capeData}

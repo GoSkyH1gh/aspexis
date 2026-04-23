@@ -32,7 +32,6 @@ export function PlayerPage() {
   // Prefetch heavy components in the background after page loads
   usePrefetch([
     () => import("./playerComponents/distributionChart"),
-    () => import("./playerComponents/skinViewer"),
   ]);
 
   const mojangQuery = useQuery({
