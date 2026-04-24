@@ -1,46 +1,76 @@
 # Aspexis
 
-A full‑stack Minecraft player lookup tool that
-combines data from multiple servers into one clean interface.
+Player stats, one search. Aspexis pulls Hypixel, Wynncraft, MCC Island, DonutSMP, and Mojang data into a single fast profile.
 
-**See it live at: [aspexis.netlify.app](https://aspexis.netlify.app/)**
+Try it here: **https://aspexis.netlify.app/**
 
-![Aspexis demo](assets/readme-hero.gif)
+![Aspexis preview](assets/aspexis-hero-v2.gif)
+
 
 ## Features
 
-🔎 Unified player stats from Hypixel, Wynncraft, MCC Island, and DonutSMP  
-⚖️ Compare players' stats and see how they stack up across servers  
-🎯 Live player status and activity tracking  
-⭐ Save favorite players for quick access  
-⚡ Fast responses with caching and an optimized backend
+- Search any player by username or UUID
+- View Hypixel stats with Bedwars mode splits and full guild data
+- Explore Wynncraft characters, completion progress, and an interactive ability tree
+- See percentile rankings alongside raw stats
+- Track player online/offline status in real time
+- Favorite players for quick access later
 
-## Screenshots
+## Stats and percentiles
 
-### Player overview and stats
-![Player stats](assets/readme-player-stats.png)
+Raw numbers don't mean much without context. When a player is looked up, their stats are recorded, building a pool of real player data over time. This powers distribution curves and percentile rankings, so instead of just seeing a raw score you can see how it compares to everyone else.
 
-### Stat comparison
-![Stat comparison](assets/readme-stat-compare.png)
+<table style="border: none;">
+  <tr>
+    <td><img src="assets/readme-v2-player-stats.png" width="500" alt="Percentile chart"></td>
+    <td><img src="assets/readme-v2-stats-leaderboard.png" width="500" alt="Stat Leaderboard"></td>
+  </tr>
+</table>
 
-## How to use
 
-1. Enter a Minecraft username or UUID
-2. Instantly view stats across supported servers
-3. Switch servers or compare players to explore detailed stats
+## Wynncraft integration
+
+Wynncraft support goes deeper than a stat summary. Each player profile includes character listings with class icons, level data, and completion progress across quests, dungeons, and discoveries, calculated against live game-wide maximums so percentages are always accurate.
+
+The standout feature is a fully interactive ability tree, browsable with hover tooltips, rich ability descriptions, and one-click PNG export.
+
+![Wynncraft ability tree](assets/aspexis-atree-v2.gif)
+
 
 ## Tech stack
 
-Frontend: React (TypeScript)  
-Backend: FastAPI  
-Database: PostgreSQL  
-Caching: Redis  
+### Frontend
 
-Data sources: Mojang, Hypixel, Wynncraft, MCC Island,
-DonutSMP, capes.me APIs  
+[![React](https://img.shields.io/badge/React-20232a?style=for-the-badge&logo=react&logoColor=61dafb)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-1f2937?style=for-the-badge&logo=typescript&logoColor=3178c6)](https://www.typescriptlang.org)
+[![Vite](https://img.shields.io/badge/Vite-111827?style=for-the-badge&logo=vite&logoColor=646cff)](https://vite.dev)
 
-Built as a personal project with a focus on performance,
-clean UI, and real-time data aggregation.
+### Backend
+
+[![FastAPI](https://img.shields.io/badge/FastAPI-0f172a?style=for-the-badge&logo=fastapi&logoColor=009688)](https://fastapi.tiangolo.com)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-1e293b?style=for-the-badge&logo=postgresql&logoColor=4169e1)](https://www.postgresql.org)
+[![Redis](https://img.shields.io/badge/Redis-1f2937?style=for-the-badge&logo=redis&logoColor=ff4438)](https://redis.io)
+
+
+## Architecture
+
+Aspexis uses a React/Vite frontend with a FastAPI backend. Redis handles caching and rate limiting. PostgreSQL stores player data accumulated from lookups, which powers the percentile and distribution features.
+
+Provider failures are isolated, if one service is down or rate-limited, the rest of the profile still loads.
+
+```text
+React + Vite frontend
+        │
+        ▼
+FastAPI backend
+        │
+        ├── Redis cache / rate limits
+        ├── PostgreSQL player data / metrics
+        │
+        └── Mojang, Hypixel, Wynncraft, MCC Island, DonutSMP, capes.me
+```
+
+Want to run your own instance? See [self-hosting guide](self-hosting.md).
 
 ## License
 
