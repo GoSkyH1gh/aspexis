@@ -169,15 +169,46 @@ class GetMojangAPIData:
             player_profile_raw.raise_for_status()
 
         except httpx.HTTPStatusError as e:
+            body_preview = (e.response.text or "")[:400].replace("\n", " ").strip()
+            debug_headers = {}
+            for key in [
+                "x-minecraft-rate-limit-result",
+                "x-azure-ref",
+                "cf-ray",
+                "retry-after",
+                "x-cache",
+                "server",
+                "date",
+            ]:
+                value = e.response.headers.get(key) if e.response else None
+                if value is not None:
+                    debug_headers[key] = value
+            logger.error(
+                "Mojang sessionserver HTTP error | uuid=%s status=%s url=%s headers=%s body_preview=%s",
+                self.uuid,
+                e.response.status_code if e.response else "unknown",
+                str(e.request.url) if e.request else "unknown",
+                debug_headers,
+                body_preview,
+            )
             if e.response.status_code == 404:
                 raise exceptions.NotFound()
-            logger.error(f"HTTP error occurred: {e}")
             raise exceptions.UpstreamError()
         except httpx.TimeoutException as e:
-            logger.error(f"Request timed out: {e}")
+            logger.error(
+                "Mojang sessionserver timeout | uuid=%s url=%s error=%s",
+                self.uuid,
+                f"https://sessionserver.mojang.com/session/minecraft/profile/{self.uuid}",
+                repr(e),
+            )
             raise exceptions.UpstreamTimeoutError()
         except httpx.RequestError as e:
-            logger.error(f"Request exception occurred: {e}")
+            logger.error(
+                "Mojang sessionserver request exception | uuid=%s url=%s error=%s",
+                self.uuid,
+                str(e.request.url) if e.request else "unknown",
+                repr(e),
+            )
             raise exceptions.UpstreamError()
         except Exception as e:
             logger.warning(

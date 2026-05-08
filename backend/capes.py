@@ -1,6 +1,7 @@
 from redis.asyncio import Redis
 from dotenv import load_dotenv
 import httpx
+import os
 import json
 from pydantic import BaseModel
 import exceptions
@@ -16,7 +17,11 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 BROWSER_HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    "User-Agent": os.getenv(
+        "MOJANG_USER_AGENT",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    ),
+    "Accept": "application/json",
 }
 
 GENERIC_CAPES_KEY = "aspexis:cape:generic"

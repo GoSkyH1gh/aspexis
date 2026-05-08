@@ -11,6 +11,8 @@ from wynncraft_api import (
 )
 from online_status import get_status, PlayerStatus
 from dotenv import load_dotenv
+import os
+import logging
 from minecraft_api import MojangData
 from donut_api import get_donut_stats, DonutPlayerStats, add_donut_stats_to_db
 from mcci_api import MCCIPlayer, get_mcci_data
@@ -55,6 +57,23 @@ from redis.asyncio import Redis
 
 
 load_dotenv()
+logger = logging.getLogger(__name__)
+
+DEFAULT_BROWSER_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+_configured_browser_ua = os.getenv("BROWSER_USER_AGENT", "").strip()
+if _configured_browser_ua:
+    logger.info("Using BROWSER_USER_AGENT from environment for upstream requests.")
+    _effective_browser_ua = _configured_browser_ua
+else:
+    logger.warning(
+        "BROWSER_USER_AGENT is empty or missing; falling back to default browser User-Agent."
+    )
+    _effective_browser_ua = DEFAULT_BROWSER_USER_AGENT
+
+BROWSER_HEADERS = {
+    "User-Agent": _effective_browser_ua,
+    "Accept": "application/json",
+}
 
 COMMON_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
     400: {"model": ErrorResponse, "description": "Bad Request"},
@@ -78,6 +97,7 @@ async def lifespan(app: FastAPI):
     global client
     client = httpx.AsyncClient(
         timeout=httpx.Timeout(10.0, connect=5.0),
+        headers=BROWSER_HEADERS,
     )
     scheduler = AsyncIOScheduler()
     scheduler.add_job(
