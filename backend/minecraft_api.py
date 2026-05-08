@@ -137,7 +137,35 @@ class GetMojangAPIData:
         except httpx.HTTPStatusError as e:
             if e.response.status_code in [400, 404]:
                 raise exceptions.NotFound()
-            logger.error(f"HTTP error occurred: {e}")
+            body_preview = (e.response.text or "").replace("\n", " ").strip()
+            headers_debug = {
+                k: v
+                for k, v in {
+                    "x-minecraft-rate-limit-result": e.response.headers.get(
+                        "x-minecraft-rate-limit-result"
+                    ),
+                    "x-azure-ref": e.response.headers.get("x-azure-ref"),
+                    "cf-ray": e.response.headers.get("cf-ray"),
+                    "retry-after": e.response.headers.get("retry-after"),
+                    "x-cache": e.response.headers.get("x-cache"),
+                    "server": e.response.headers.get("server"),
+                    "date": e.response.headers.get("date"),
+                }.items()
+                if v is not None
+            }
+            logger.error(
+                "MinecraftServices lookup HTTP error | username=%s status=%s url=%s",
+                self.username,
+                e.response.status_code,
+                str(e.request.url) if e.request else "unknown",
+            )
+            logger.error("MinecraftServices lookup headers=%s", headers_debug)
+            for i in range(0, len(body_preview), 300):
+                logger.error(
+                    "MinecraftServices lookup body_preview_chunk_%s=%s",
+                    (i // 300) + 1,
+                    body_preview[i : i + 300],
+                )
             raise exceptions.UpstreamError()
         except httpx.TimeoutException as e:
             logger.error(f"Request timed out: {e}")
@@ -169,28 +197,35 @@ class GetMojangAPIData:
             player_profile_raw.raise_for_status()
 
         except httpx.HTTPStatusError as e:
-            body_preview = (e.response.text or "")[:400].replace("\n", " ").strip()
-            debug_headers = {}
-            for key in [
-                "x-minecraft-rate-limit-result",
-                "x-azure-ref",
-                "cf-ray",
-                "retry-after",
-                "x-cache",
-                "server",
-                "date",
-            ]:
-                value = e.response.headers.get(key) if e.response else None
-                if value is not None:
-                    debug_headers[key] = value
+            body_preview = (e.response.text or "").replace("\n", " ").strip()
+            headers_debug = {
+                k: v
+                for k, v in {
+                    "x-minecraft-rate-limit-result": e.response.headers.get(
+                        "x-minecraft-rate-limit-result"
+                    ),
+                    "x-azure-ref": e.response.headers.get("x-azure-ref"),
+                    "cf-ray": e.response.headers.get("cf-ray"),
+                    "retry-after": e.response.headers.get("retry-after"),
+                    "x-cache": e.response.headers.get("x-cache"),
+                    "server": e.response.headers.get("server"),
+                    "date": e.response.headers.get("date"),
+                }.items()
+                if v is not None
+            }
             logger.error(
-                "Mojang sessionserver HTTP error | uuid=%s status=%s url=%s headers=%s body_preview=%s",
+                "Mojang sessionserver HTTP error | uuid=%s status=%s url=%s",
                 self.uuid,
-                e.response.status_code if e.response else "unknown",
+                e.response.status_code,
                 str(e.request.url) if e.request else "unknown",
-                debug_headers,
-                body_preview,
             )
+            logger.error("Mojang sessionserver headers=%s", headers_debug)
+            for i in range(0, len(body_preview), 300):
+                logger.error(
+                    "Mojang sessionserver body_preview_chunk_%s=%s",
+                    (i // 300) + 1,
+                    body_preview[i : i + 300],
+                )
             if e.response.status_code == 404:
                 raise exceptions.NotFound()
             raise exceptions.UpstreamError()
