@@ -8,7 +8,7 @@ import React, {
 // Define the shape of our context
 const ThemeContext = createContext({
   theme: "dark",
-  setTheme: (theme: string) => {},
+  setTheme: (_theme: string) => {},
 });
 
 export const ThemeProvider = ({
@@ -53,4 +53,5 @@ script in index.html
 
 */
 
+/* eslint-disable react-refresh/only-export-components */
 export const useTheme = () => useContext(ThemeContext);

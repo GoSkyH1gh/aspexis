@@ -6,7 +6,12 @@ import { Popover } from "radix-ui";
 import { useSearchHistory } from "../../hooks/useSearchHistory";
 
 // Forward ref to allow Popover.Anchor to work
-const SearchInput = React.forwardRef<HTMLInputElement, any>(
+const SearchInput = React.forwardRef<HTMLInputElement, {
+  handleInputChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  inputValue: string;
+  handleKeyPress: (_e: React.KeyboardEvent) => void;
+  onFocus: () => void;
+}>(
   ({ handleInputChange, inputValue, handleKeyPress, onFocus }, ref) => {
     return (
       <>

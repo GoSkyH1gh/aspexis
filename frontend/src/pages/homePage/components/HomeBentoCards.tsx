@@ -20,7 +20,7 @@ import { HomeHoverableAbilityNode } from "./HomeHoverableAbilityNode";
 
 type HomeBentoCardsProps = {
   percentileView: PercentileView;
-  onPercentileViewChange: (view: PercentileView) => void;
+  onPercentileViewChange: (_view: PercentileView) => void;
   treePreviewNodes: AbilityTreeNode[];
 };
 
@@ -145,7 +145,7 @@ function PercentileBentoCard({
   onPercentileViewChange,
 }: {
   percentileView: PercentileView;
-  onPercentileViewChange: (view: PercentileView) => void;
+  onPercentileViewChange: (_view: PercentileView) => void;
 }) {
   return (
     <article className="home-bento-card home-bento-card--histogram">

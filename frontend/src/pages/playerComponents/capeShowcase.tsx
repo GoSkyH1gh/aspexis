@@ -20,7 +20,7 @@ function CapeShowcase({
 
   useEffect(() => {
     setCurrentImage(defaultCapePath);
-  }, [cape_showcase_b64, cape_back_b64]);
+  }, [cape_showcase_b64, cape_back_b64, defaultCapePath]);
 
   const handleMouseEnter = () => {
     setCurrentImage(hoveredCapePath);

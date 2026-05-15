@@ -4,7 +4,7 @@ import { fetchWynncraftAbilityTree } from "../../utils/queries";
 import { WynncraftCharacterInfo } from "../../client";
 import LoadingIndicator from "./loadingIndicator";
 import { Icon } from "@iconify/react";
-import { AbilityTreePage } from "../../client";
+import { AbilityTreePage, AbilityTreeNode } from "../../client";
 import { useState, useRef } from "react";
 import { Popover } from "radix-ui";
 import { downloadElementScreenshot } from "../../utils/screenshot";
@@ -12,7 +12,7 @@ import { useToast } from "../../components/ToastProvider";
 
 const ROWS_PER_PAGE = 6;
 
-function HoverableAbilityNode({ node, row }: { node: any; row: number }) {
+function HoverableAbilityNode({ node, row }: { node: AbilityTreeNode; row: number }) {
   const [isHovered, setIsHovered] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
   const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -162,10 +162,11 @@ function AbilityTree({
         message: "Screenshot saved successfully!",
         type: "success",
       });
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : "Unknown error";
       console.error(e);
       addToast({
-        message: `Screenshot Error: ${e.message || "Unknown error"}`,
+        message: `Screenshot Error: ${message}`,
         type: "error",
       });
     } finally {

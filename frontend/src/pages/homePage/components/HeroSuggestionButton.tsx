@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { HERO_SUGGESTIONS } from "../homePageData";
 
 type HeroSuggestionButtonProps = {
-  onSelect: (suggestion: string) => void;
+  onSelect: (_suggestion: string) => void;
 };
 
 const HeroSuggestionButton = memo(function HeroSuggestionButton({

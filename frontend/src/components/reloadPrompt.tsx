@@ -6,7 +6,7 @@ export function ReloadPrompt() {
     needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker,
   } = useRegisterSW({
-    onRegistered(r: any) {
+    onRegistered(r: ServiceWorkerRegistration | undefined) {
       // Check for updates
       if (r) {
         setInterval(

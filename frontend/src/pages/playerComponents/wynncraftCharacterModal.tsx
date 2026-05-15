@@ -482,7 +482,7 @@ export default function WynncraftCharacterModal({
   restrictions: PlayerRestrictions;
   wynncraftMaxContent: MaxContent | null | undefined;
   smallVersion?: boolean;
-  renderTrigger?: any;
+  renderTrigger?: React.ReactNode;
 }) {
   if (smallVersion) {
     return (

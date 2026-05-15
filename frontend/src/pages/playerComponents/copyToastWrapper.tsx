@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { useToast } from "../../components/ToastProvider";
 
 type CopyToastWrapperProps = {
-  children: (handleCopy: (text: string) => void) => ReactNode;
+  children: (_handleCopy: (_text: string) => void) => ReactNode;
   toastMessage?: string;
 };
 

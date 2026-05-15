@@ -5,6 +5,7 @@ import DonutTabbedData from "./donutTabbedData";
 import McciTabbedData from "./mcciTabbedData";
 import HypixelTabbedData from "./hypixelTabbedData";
 import LoadingIndicator from "./loadingIndicator";
+import { UseInfiniteQueryResult, InfiniteData } from "@tanstack/react-query";
 import {
   HypixelFullData,
   WynncraftPlayerSummary,
@@ -12,12 +13,13 @@ import {
   DonutPlayerStats,
   McciPlayer,
   MaxContent,
+  HypixelGuildMemberFull,
 } from "../../client";
 
 type AdvancedInfoProps = {
   hypixelData: HypixelFullData | null | undefined;
   hypixelStatus: "error" | "success" | "pending";
-  hypixelGuildQuery: any; // UseInfiniteQueryResult with InfiniteData wrapper
+  hypixelGuildQuery: UseInfiniteQueryResult<InfiniteData<HypixelGuildMemberFull[]>>;
   wynncraftData: WynncraftPlayerSummary | undefined | null;
   wynncraftStatus: "pending" | "error" | "success";
   wynncraftGuildData: WynncraftGuildInfo | null | undefined;
@@ -101,6 +103,7 @@ function AdvancedInfoTabs({
     }, 100); // sweet spot: 100–150ms
 
     return () => clearTimeout(timeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadedTabs]);
 
   let tabContents;

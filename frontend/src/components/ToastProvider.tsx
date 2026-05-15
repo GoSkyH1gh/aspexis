@@ -9,11 +9,12 @@ export type ToastMessage = {
 };
 
 interface ToastContextType {
-  addToast: (toast: Omit<ToastMessage, "id">) => void;
+  addToast: (_toast: Omit<ToastMessage, "id">) => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
+/* eslint-disable react-refresh/only-export-components */
 export function useToast() {
   const context = useContext(ToastContext);
   if (!context) {

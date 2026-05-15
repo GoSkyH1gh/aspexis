@@ -14,14 +14,14 @@ import {
 } from "../../client";
 import DistributionChartWrapper from "./distributionChartWrapper";
 import { Icon } from "@iconify/react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, UseInfiniteQueryResult, InfiniteData } from "@tanstack/react-query";
 import { fetchMetric } from "../../utils/queries";
 import { Link } from "react-router-dom";
 import CopyToastWrapper from "./copyToastWrapper";
 
 type HypixelDataProps = {
   hypixelData: HypixelFullData;
-  hypixelGuildQuery: any; // UseInfiniteQueryResult with InfiniteData wrapper
+  hypixelGuildQuery: UseInfiniteQueryResult<InfiniteData<HypixelGuildMemberFull[]>>;
 };
 
 const socialsIcons = {
@@ -310,6 +310,8 @@ function HypixelBedwarsPopup({ bedwarsData }: { bedwarsData: BedwarsProfile }) {
 }
 
 function HypixelGuild({ hypixelData, hypixelGuildQuery }: HypixelDataProps) {
+  const [displayMode, setDisplayMode] = useState<"card" | "list">("card");
+
   if (!hypixelGuildQuery) {
     return <p>No guild members to show</p>;
   }
@@ -317,8 +319,6 @@ function HypixelGuild({ hypixelData, hypixelGuildQuery }: HypixelDataProps) {
   if (!hypixelData.guild) {
     return <p>No guild to show</p>;
   }
-
-  const [displayMode, setDisplayMode] = useState<"card" | "list">("card");
 
   // Access the pages from the infinite query data
   const guildMembers: HypixelGuildMemberFull[] =

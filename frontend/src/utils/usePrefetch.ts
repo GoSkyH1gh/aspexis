@@ -7,7 +7,7 @@ import { useEffect } from 'react';
  * @param modules - Array of dynamic import functions to prefetch
  * @param delay - Milliseconds to wait before prefetching (default: 1500ms)
  */
-export function usePrefetch(modules: Array<() => Promise<any>>, delay = 1500) {
+export function usePrefetch(modules: Array<() => Promise<unknown>>, delay = 1500) {
   useEffect(() => {
     const timer = setTimeout(() => {
       modules.forEach(module => {
@@ -19,5 +19,5 @@ export function usePrefetch(modules: Array<() => Promise<any>>, delay = 1500) {
     }, delay);
     
     return () => clearTimeout(timer);
-  }, [delay]);
+  }, [delay, modules]);
 }

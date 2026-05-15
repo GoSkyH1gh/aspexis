@@ -31,6 +31,7 @@ function getSnapshot() {
   return isTouchCache;
 }
 
+/* eslint-disable react-refresh/only-export-components */
 export function useIsTouchDevice() {
   return useSyncExternalStore(subscribe, getSnapshot);
 }
