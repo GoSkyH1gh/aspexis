@@ -13,8 +13,15 @@ function Footer() {
           <img src={GitHubIcon} alt="GitHub Logo" />
           GitHub
         </a>
-        <a href="https://stats.uptimerobot.com/4SlpKHo4uS" target="_blank" className="social-link">
-          <Icon icon={"material-symbols:browse-activity-outline-rounded"} color="#FFF"/>
+        <a
+          href="https://stats.uptimerobot.com/4SlpKHo4uS"
+          target="_blank"
+          className="social-link"
+        >
+          <Icon
+            icon={"material-symbols:browse-activity-outline-rounded"}
+            color="#FFF"
+          />
           Status
         </a>
       </div>

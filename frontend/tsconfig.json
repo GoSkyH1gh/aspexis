@@ -6,7 +6,8 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
-    "target": "esnext"
+    "target": "esnext",
+    "skipLibCheck": true
   },
   "include": [
     "src/**/*.ts",
@@ -14,6 +15,14 @@
     "src/**/*.d.ts",
     "src/pages/playerComponents/donutTabbedData.tsx",
     "src/pages/homePage.tsx",
-    "src/pages/playerComponents/distributionChart.tsx"
-, "src/pages/playerComponents/trackPlayer.tsx", "src/main.tsx", "src/App.tsx"  ]
+    "src/pages/playerComponents/distributionChart.tsx",
+    "src/pages/playerComponents/trackPlayer.tsx",
+    "src/main.tsx",
+    "src/App.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/node_modules/*"
+  ]
 }

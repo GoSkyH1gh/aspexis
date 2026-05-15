@@ -11,11 +11,11 @@ function WynncraftGuild({
 }: {
   wynncraftGuildData: WynncraftGuildInfo | null;
 }) {
+  const [displayMode, setDisplayMode] = useState<"card" | "list">("card");
+
   if (wynncraftGuildData === null) {
     return <>No Guild Data to show</>;
   }
-
-  const [displayMode, setDisplayMode] = useState<"card" | "list">("card");
 
   const guildMemberElements = wynncraftGuildData.members.map((member) => {
     if (displayMode === "card") {

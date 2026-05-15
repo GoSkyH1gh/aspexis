@@ -76,7 +76,7 @@ function CharacterGamemodes({
   character: WynncraftCharacterInfo;
 }) {
   const gamemodes = character.gamemodes;
-  let sortedGamemodes: string[] = [];
+  const sortedGamemodes: string[] = [];
   gamemodeSortOrder.forEach(
     (gamemode) =>
       gamemodes.includes(gamemode) && sortedGamemodes.push(gamemode),
@@ -482,7 +482,7 @@ export default function WynncraftCharacterModal({
   restrictions: PlayerRestrictions;
   wynncraftMaxContent: MaxContent | null | undefined;
   smallVersion?: boolean;
-  renderTrigger?: any;
+  renderTrigger?: React.ReactNode;
 }) {
   if (smallVersion) {
     return (
@@ -520,7 +520,11 @@ export default function WynncraftCharacterModal({
               <CharacterHeader character={character} />
               <div className="wynn-header-close">
                 {!restrictions.character_build_access && (
-                  <WynncraftAbilityTree character={character} uuid={uuid} playerName={playerName} />
+                  <WynncraftAbilityTree
+                    character={character}
+                    uuid={uuid}
+                    playerName={playerName}
+                  />
                 )}
                 <Dialog.Close asChild>
                   <button className="wynn-dialog-close">
@@ -575,7 +579,11 @@ export default function WynncraftCharacterModal({
             <CharacterHeader character={character} />
             <div className="wynn-header-close">
               {!restrictions.character_build_access && (
-                <WynncraftAbilityTree character={character} uuid={uuid} playerName={playerName} />
+                <WynncraftAbilityTree
+                  character={character}
+                  uuid={uuid}
+                  playerName={playerName}
+                />
               )}
               <Dialog.Close asChild>
                 <button className="wynn-dialog-close">

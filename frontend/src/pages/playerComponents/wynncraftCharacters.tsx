@@ -23,11 +23,8 @@ function WynncraftCharacters({
   restrictions: PlayerRestrictions;
   wynncraftMaxContent: MaxContent | null | undefined;
 }) {
-  if (characterList.length === 0) {
-    return <p>This player has no characters.</p>;
-  }
-
-  let removedStats = characterList[0].removed_stats;
+  const removedStats =
+    characterList.length > 0 ? characterList[0].removed_stats : [];
 
   const getTotalProfessionLevel = (professions: ProfessionInfo | null) => {
     if (professions === null) {
@@ -47,6 +44,10 @@ function WynncraftCharacters({
   }
 
   const [sort, setSort] = useState<string>(defaultSort);
+
+  if (characterList.length === 0) {
+    return <p>This player has no characters.</p>;
+  }
   let characters;
 
   switch (sort) {

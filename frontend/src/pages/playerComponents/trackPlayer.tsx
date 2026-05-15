@@ -29,20 +29,21 @@ function TrackPlayer({
   mojangData: MojangData | null | undefined;
   setTrackStatus: React.Dispatch<React.SetStateAction<"search" | "track">>;
 }) {
-  if (!mojangData) {
-    return <p>No mojang data here!</p>;
-  }
   const [history, setHistory] = useState<HistoryEvent[]>([]);
   const [status, setStatus] = useState<"error" | null | SSEData>(null);
   const baseUrl = import.meta.env.VITE_API_URL;
-  const trackerUrl = `${baseUrl}/v1/tracker/${mojangData.uuid}/status`;
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [tick, setTick] = useState(0);
   const [historyMode, setHistoryMode] = useState<"log" | "timeline">(
     "timeline",
   );
 
+  const trackerUrl = mojangData
+    ? `${baseUrl}/v1/tracker/${mojangData.uuid}/status`
+    : "";
+
   useEffect(() => {
+    if (!mojangData) return;
     const eventSource = new EventSource(trackerUrl);
 
     eventSource.addEventListener("data", (event) => {
@@ -58,13 +59,13 @@ function TrackPlayer({
       });
       setStatus(data);
     });
-    eventSource.addEventListener("error", (event) => {
+    eventSource.addEventListener("error", () => {
       setStatus("error");
     });
     return () => {
       eventSource.close();
     };
-  }, [mojangData.uuid]);
+  }, [mojangData, trackerUrl]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -72,6 +73,10 @@ function TrackPlayer({
     }, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  if (!mojangData) {
+    return <p>No mojang data here!</p>;
+  }
 
   let onlineText = "Offline";
   let descriptionText = "";
@@ -115,7 +120,10 @@ function TrackPlayer({
     <div className="player-tracker">
       <div className="track-header">
         <h2 className="compact-paragraph">Tracking {mojangData.username}</h2>
-        <DesktopTooltip delayDuration={100} content={<>Stop Tracking {mojangData.username}</>}>
+        <DesktopTooltip
+          delayDuration={100}
+          content={<>Stop Tracking {mojangData.username}</>}
+        >
           <button
             onClick={() => setTrackStatus("search")}
             className="track-stop-button"
@@ -125,7 +133,7 @@ function TrackPlayer({
         </DesktopTooltip>
       </div>
       <p className="compact-paragraph track-subheader">
-        {formatSinceLastUpdate(lastUpdate)}
+        {formatSinceLastUpdate(lastUpdate, tick)}
       </p>
       <div className="tracker-live-data">
         <h3>{onlineText}</h3>
@@ -134,7 +142,10 @@ function TrackPlayer({
       <div className="track-history-header">
         <h3>History</h3>
         <div className="select-container">
-          <DesktopTooltip delayDuration={100} content="View history as a Timeline">
+          <DesktopTooltip
+            delayDuration={100}
+            content="View history as a Timeline"
+          >
             <button
               className="select-button-left select-button"
               onClick={() => setHistoryMode("timeline")}

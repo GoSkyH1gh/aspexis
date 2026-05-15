@@ -16,7 +16,7 @@ function getFavorites() {
 }
 
 function addFavorite(newFavorite: Favorite) {
-  let favorites = getFavorites();
+  const favorites = getFavorites();
   let favoriteExists = false;
   favorites.forEach((favorite) => {
     if (favorite.uuid === newFavorite.uuid) {
@@ -31,9 +31,9 @@ function addFavorite(newFavorite: Favorite) {
 }
 
 function deleteFavorite(uuid: string) {
-  let favorites = getFavorites();
+  const favorites = getFavorites();
   const favoriteIndexToDelete = favorites.findIndex(
-    (favorite) => favorite.uuid === uuid
+    (favorite) => favorite.uuid === uuid,
   );
   if (favoriteIndexToDelete > -1) {
     favorites.splice(favoriteIndexToDelete, 1);
@@ -42,12 +42,12 @@ function deleteFavorite(uuid: string) {
 }
 
 function checkFavorite(uuid: string) {
-  let favorites = getFavorites();
+  const favorites = getFavorites();
   const favoriteIndex = favorites.findIndex(
-    (favorite) => favorite.uuid === uuid
+    (favorite) => favorite.uuid === uuid,
   );
   if (favoriteIndex > -1) {
-    return true
+    return true;
   }
   return false;
 }

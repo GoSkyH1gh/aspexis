@@ -1,0 +1,6 @@
+**/*.gen.ts
+**/*.gen.tsx
+dist/
+node_modules/
+tsconfig.tsbuildinfo
+stats.json

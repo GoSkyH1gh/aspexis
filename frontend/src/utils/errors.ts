@@ -14,9 +14,11 @@ class InvalidArgumentsError extends Error {
 
 class RateLimitError extends Error {
   constructor(message?: string) {
-    super(message || "Rate limit exceeded. Please wait a minute and try again.");
+    super(
+      message || "Rate limit exceeded. Please wait a minute and try again.",
+    );
     this.name = "RateLimitError";
   }
 }
 
-export { NotFoundError, InvalidArgumentsError, RateLimitError }
+export { NotFoundError, InvalidArgumentsError, RateLimitError };

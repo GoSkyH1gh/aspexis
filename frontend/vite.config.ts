@@ -41,7 +41,8 @@ export default defineConfig({
         ],
       },
     }),
-    visualizer({ open: false, json: true, filename: "stats.json" }) as any,
+    // @ts-expect-error visualizer plugin type mismatch
+    visualizer({ open: false, json: true, filename: "stats.json" }),
   ],
   build: {
     rollupOptions: {

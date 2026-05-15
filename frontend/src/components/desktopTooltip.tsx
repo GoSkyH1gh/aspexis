@@ -31,6 +31,7 @@ function getSnapshot() {
   return isTouchCache;
 }
 
+/* eslint-disable react-refresh/only-export-components */
 export function useIsTouchDevice() {
   return useSyncExternalStore(subscribe, getSnapshot);
 }
@@ -61,9 +62,7 @@ export default function DesktopTooltip({
     >
       <Tooltip.Trigger asChild={asChild}>{children}</Tooltip.Trigger>
       <Tooltip.Portal>
-        <Tooltip.Content className="TooltipContent">
-          {content}
-        </Tooltip.Content>
+        <Tooltip.Content className="TooltipContent">{content}</Tooltip.Content>
       </Tooltip.Portal>
     </Tooltip.Root>
   );

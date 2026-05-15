@@ -13,7 +13,7 @@ function McciTabbedData({
 }: {
   mcciData: McciPlayer | null | undefined;
 }) {
-  let navigator = useNavigate();
+  const navigator = useNavigate();
   if (!mcciData) {
     return <p>No MCC Island data to show</p>;
   }

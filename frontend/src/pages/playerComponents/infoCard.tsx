@@ -1,5 +1,4 @@
 import { motion } from "motion/react";
-import ArrowOutward from "/src/assets/arrow-outward.svg";
 import { Popover } from "radix-ui";
 import { ReactNode } from "react";
 import DesktopTooltip from "../../components/desktopTooltip";

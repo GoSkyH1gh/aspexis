@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, ReactNode, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useCallback,
+} from "react";
 import { Toast } from "radix-ui";
 
 export type ToastMessage = {
@@ -9,11 +15,12 @@ export type ToastMessage = {
 };
 
 interface ToastContextType {
-  addToast: (toast: Omit<ToastMessage, "id">) => void;
+  addToast: (_toast: Omit<ToastMessage, "id">) => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
+/* eslint-disable react-refresh/only-export-components */
 export function useToast() {
   const context = useContext(ToastContext);
   if (!context) {
@@ -38,7 +45,9 @@ export function GlobalToastProvider({ children }: { children: ReactNode }) {
           <Toast.Root
             key={toast.id}
             duration={toast.duration || 5000}
-            className={toast.type === "error" ? "ToastRoot ToastError" : "ToastRoot"}
+            className={
+              toast.type === "error" ? "ToastRoot ToastError" : "ToastRoot"
+            }
             onOpenChange={(open) => {
               if (!open) {
                 setTimeout(() => {
@@ -50,7 +59,9 @@ export function GlobalToastProvider({ children }: { children: ReactNode }) {
             <Toast.Title className="sr-only">
               {toast.type === "error" ? "Error" : "Notification"}
             </Toast.Title>
-            <Toast.Description className="ToastTitle">{toast.message}</Toast.Description>
+            <Toast.Description className="ToastTitle">
+              {toast.message}
+            </Toast.Description>
           </Toast.Root>
         ))}
         <Toast.Viewport
