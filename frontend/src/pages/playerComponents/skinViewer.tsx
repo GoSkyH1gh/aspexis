@@ -56,7 +56,20 @@ function SkinView({ skinUrl, capeUrl, username }: SkinViewProps) {
             transition={{ delay: 0.1, ease: "easeInOut", duration: 0.3 }}
             className="skin-container"
           >
-            <Suspense fallback={<div style={{ height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading 3D viewer...</div>}>
+            <Suspense
+              fallback={
+                <div
+                  style={{
+                    height: "300px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  Loading 3D viewer...
+                </div>
+              }
+            >
               <ReactSkinview3d
                 skinUrl={skinUrl}
                 capeUrl={capeUrl || undefined}

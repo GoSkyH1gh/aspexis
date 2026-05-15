@@ -19,7 +19,9 @@ import {
 type AdvancedInfoProps = {
   hypixelData: HypixelFullData | null | undefined;
   hypixelStatus: "error" | "success" | "pending";
-  hypixelGuildQuery: UseInfiniteQueryResult<InfiniteData<HypixelGuildMemberFull[]>>;
+  hypixelGuildQuery: UseInfiniteQueryResult<
+    InfiniteData<HypixelGuildMemberFull[]>
+  >;
   wynncraftData: WynncraftPlayerSummary | undefined | null;
   wynncraftStatus: "pending" | "error" | "success";
   wynncraftGuildData: WynncraftGuildInfo | null | undefined;

@@ -1,9 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-} from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 // Define the shape of our context
 const ThemeContext = createContext({
@@ -11,17 +6,12 @@ const ThemeContext = createContext({
   setTheme: (_theme: string) => {},
 });
 
-export const ThemeProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [theme, setTheme] = useState(() => {
     // Check local storage or system preference on initial load
     const saved = localStorage.getItem("theme");
     if (saved) return saved;
-    return window.matchMedia("(prefers-color-scheme: light)")
-      .matches
+    return window.matchMedia("(prefers-color-scheme: light)").matches
       ? "dark" // this should be light once implemented
       : "dark";
   });

@@ -159,7 +159,10 @@ function QuickInfo({
     }
   } else {
     lastActivityElement = (
-      <DesktopTooltip delayDuration={50} content={formatISOTimestamp(lastJoinDate?.toISOString())}>
+      <DesktopTooltip
+        delayDuration={50}
+        content={formatISOTimestamp(lastJoinDate?.toISOString())}
+      >
         <li className="last-activity-card">
           <span className="info-card-label">Last activity</span>
           <br />

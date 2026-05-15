@@ -6,38 +6,39 @@ import { Popover } from "radix-ui";
 import { useSearchHistory } from "../../hooks/useSearchHistory";
 
 // Forward ref to allow Popover.Anchor to work
-const SearchInput = React.forwardRef<HTMLInputElement, {
-  handleInputChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
-  inputValue: string;
-  handleKeyPress: (_e: React.KeyboardEvent) => void;
-  onFocus: () => void;
-}>(
-  ({ handleInputChange, inputValue, handleKeyPress, onFocus }, ref) => {
-    return (
-      <>
-        <label className="visually-hidden" htmlFor="search">
-          Search by username or UUID
-        </label>
-        <motion.input
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
-          type="text"
-          id="search"
-          placeholder="search by username or UUID"
-          className="searchbar"
-          name="search"
-          onChange={handleInputChange}
-          value={inputValue}
-          onKeyDown={handleKeyPress}
-          onFocus={onFocus}
-          ref={ref}
-          autoComplete="off"
-        />
-      </>
-    );
-  },
-);
+const SearchInput = React.forwardRef<
+  HTMLInputElement,
+  {
+    handleInputChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+    inputValue: string;
+    handleKeyPress: (_e: React.KeyboardEvent) => void;
+    onFocus: () => void;
+  }
+>(({ handleInputChange, inputValue, handleKeyPress, onFocus }, ref) => {
+  return (
+    <>
+      <label className="visually-hidden" htmlFor="search">
+        Search by username or UUID
+      </label>
+      <motion.input
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeInOut" }}
+        type="text"
+        id="search"
+        placeholder="search by username or UUID"
+        className="searchbar"
+        name="search"
+        onChange={handleInputChange}
+        value={inputValue}
+        onKeyDown={handleKeyPress}
+        onFocus={onFocus}
+        ref={ref}
+        autoComplete="off"
+      />
+    </>
+  );
+});
 
 SearchInput.displayName = "SearchInput";
 

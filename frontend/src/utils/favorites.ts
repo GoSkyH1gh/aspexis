@@ -33,7 +33,7 @@ function addFavorite(newFavorite: Favorite) {
 function deleteFavorite(uuid: string) {
   const favorites = getFavorites();
   const favoriteIndexToDelete = favorites.findIndex(
-    (favorite) => favorite.uuid === uuid
+    (favorite) => favorite.uuid === uuid,
   );
   if (favoriteIndexToDelete > -1) {
     favorites.splice(favoriteIndexToDelete, 1);
@@ -44,10 +44,10 @@ function deleteFavorite(uuid: string) {
 function checkFavorite(uuid: string) {
   const favorites = getFavorites();
   const favoriteIndex = favorites.findIndex(
-    (favorite) => favorite.uuid === uuid
+    (favorite) => favorite.uuid === uuid,
   );
   if (favoriteIndex > -1) {
-    return true
+    return true;
   }
   return false;
 }

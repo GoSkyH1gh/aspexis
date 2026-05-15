@@ -12,7 +12,13 @@ import { useToast } from "../../components/ToastProvider";
 
 const ROWS_PER_PAGE = 6;
 
-function HoverableAbilityNode({ node, row }: { node: AbilityTreeNode; row: number }) {
+function HoverableAbilityNode({
+  node,
+  row,
+}: {
+  node: AbilityTreeNode;
+  row: number;
+}) {
   const [isHovered, setIsHovered] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
   const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);

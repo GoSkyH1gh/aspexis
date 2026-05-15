@@ -46,39 +46,42 @@ function MojangDataDisplay({
             {mojangResponse.username}
           </h2>
 
-            <DesktopTooltip delayDuration={50} content={
+          <DesktopTooltip
+            delayDuration={50}
+            content={
               !isFavorite
                 ? `Add ${mojangResponse.username} to Favorites`
                 : `Remove ${mojangResponse.username} from Favorites`
-            }>
-              <motion.button
-                className="icon-button flex"
-                whileHover={{ scale: 1 }}
-                whileTap={{ scale: 0.8 }}
-                aria-label={
-                  !isFavorite
-                    ? `Add ${mojangResponse.username} to Favorites`
-                    : `Remove ${mojangResponse.username} from Favorites`
+            }
+          >
+            <motion.button
+              className="icon-button flex"
+              whileHover={{ scale: 1 }}
+              whileTap={{ scale: 0.8 }}
+              aria-label={
+                !isFavorite
+                  ? `Add ${mojangResponse.username} to Favorites`
+                  : `Remove ${mojangResponse.username} from Favorites`
+              }
+              onClick={() => {
+                if (isFavorite) {
+                  deleteFavorite(mojangResponse.uuid);
+                  setIsFavorite(false);
+                } else {
+                  const now = new Date();
+                  addFavorite({
+                    username: mojangResponse.username,
+                    uuid: mojangResponse.uuid,
+                    addedOn: now.toISOString(),
+                  });
+                  setIsFavorite(true);
                 }
-                onClick={() => {
-                  if (isFavorite) {
-                    deleteFavorite(mojangResponse.uuid);
-                    setIsFavorite(false);
-                  } else {
-                    const now = new Date();
-                    addFavorite({
-                      username: mojangResponse.username,
-                      uuid: mojangResponse.uuid,
-                      addedOn: now.toISOString(),
-                    });
-                    setIsFavorite(true);
-                  }
-                }}
-              >
-                {isFavorite && <MdFavorite />}
-                {!isFavorite && <MdFavoriteBorder />}
-              </motion.button>
-            </DesktopTooltip>
+              }}
+            >
+              {isFavorite && <MdFavorite />}
+              {!isFavorite && <MdFavoriteBorder />}
+            </motion.button>
+          </DesktopTooltip>
         </div>
         <div className="text-icon uuid-container text-icon">
           <p className="uuid">uuid: {mojangResponse.uuid}</p>

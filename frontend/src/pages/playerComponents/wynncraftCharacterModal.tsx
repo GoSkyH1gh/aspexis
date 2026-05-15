@@ -520,7 +520,11 @@ export default function WynncraftCharacterModal({
               <CharacterHeader character={character} />
               <div className="wynn-header-close">
                 {!restrictions.character_build_access && (
-                  <WynncraftAbilityTree character={character} uuid={uuid} playerName={playerName} />
+                  <WynncraftAbilityTree
+                    character={character}
+                    uuid={uuid}
+                    playerName={playerName}
+                  />
                 )}
                 <Dialog.Close asChild>
                   <button className="wynn-dialog-close">
@@ -575,7 +579,11 @@ export default function WynncraftCharacterModal({
             <CharacterHeader character={character} />
             <div className="wynn-header-close">
               {!restrictions.character_build_access && (
-                <WynncraftAbilityTree character={character} uuid={uuid} playerName={playerName} />
+                <WynncraftAbilityTree
+                  character={character}
+                  uuid={uuid}
+                  playerName={playerName}
+                />
               )}
               <Dialog.Close asChild>
                 <button className="wynn-dialog-close">

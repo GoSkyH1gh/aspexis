@@ -5,11 +5,11 @@ import updateLocale from "dayjs/plugin/updateLocale";
 dayjs.extend(relativeTime);
 dayjs.extend(updateLocale);
 
-dayjs.updateLocale('en', {
+dayjs.updateLocale("en", {
   relativeTime: {
     future: "in %s",
     past: "%s ago",
-    s: 'a few seconds',
+    s: "a few seconds",
     m: "1 minute",
     mm: "%d minutes",
     h: "1 hour",
@@ -19,10 +19,9 @@ dayjs.updateLocale('en', {
     M: "1 month",
     MM: "%d months",
     y: "1 year",
-    yy: "%d years"
-  }
+    yy: "%d years",
+  },
 });
-
 
 function formatISOTimestamp(timestamp: string | null | undefined) {
   // Convert string to Date object

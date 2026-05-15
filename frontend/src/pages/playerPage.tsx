@@ -30,9 +30,7 @@ export function PlayerPage() {
   const { addToHistory } = useSearchHistory();
 
   // Prefetch heavy components in the background after page loads
-  usePrefetch([
-    () => import("./playerComponents/distributionChart"),
-  ]);
+  usePrefetch([() => import("./playerComponents/distributionChart")]);
 
   const mojangQuery = useQuery({
     queryKey: ["mojang", username],

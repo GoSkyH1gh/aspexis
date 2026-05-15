@@ -23,7 +23,8 @@ function WynncraftCharacters({
   restrictions: PlayerRestrictions;
   wynncraftMaxContent: MaxContent | null | undefined;
 }) {
-  const removedStats = characterList.length > 0 ? characterList[0].removed_stats : [];
+  const removedStats =
+    characterList.length > 0 ? characterList[0].removed_stats : [];
 
   const getTotalProfessionLevel = (professions: ProfessionInfo | null) => {
     if (professions === null) {

@@ -21,7 +21,8 @@ function HorizontalInfoCard({
   return (
     <div
       className={`horizontal-info-card-item ${fullWidth ? "horizontal-info-card-full-width" : ""}`}
-    ><div className="horizontal-info-card-content">
+    >
+      <div className="horizontal-info-card-content">
         {imageSrc && (
           <img
             src={imageSrc}
@@ -33,18 +34,16 @@ function HorizontalInfoCard({
         <span className="horizontal-info-card-number">{value}</span>
         <span className="horizontal-info-card-label">{label}</span>
       </div>
-      {progress !== undefined && <Progress.Root
-        className="CardProgressRoot"
-        max={100}
-        value={progress}
-      >
-        <Progress.Indicator
-          className="CardProgressIndicator"
-          style={{
-            transform: `translateX(-${100 - (progress / 100) * 100}%)`,
-          }}
-        />
-      </Progress.Root>}
+      {progress !== undefined && (
+        <Progress.Root className="CardProgressRoot" max={100} value={progress}>
+          <Progress.Indicator
+            className="CardProgressIndicator"
+            style={{
+              transform: `translateX(-${100 - (progress / 100) * 100}%)`,
+            }}
+          />
+        </Progress.Root>
+      )}
     </div>
   );
 }

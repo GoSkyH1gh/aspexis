@@ -14,14 +14,20 @@ import {
 } from "../../client";
 import DistributionChartWrapper from "./distributionChartWrapper";
 import { Icon } from "@iconify/react";
-import { useQuery, UseInfiniteQueryResult, InfiniteData } from "@tanstack/react-query";
+import {
+  useQuery,
+  UseInfiniteQueryResult,
+  InfiniteData,
+} from "@tanstack/react-query";
 import { fetchMetric } from "../../utils/queries";
 import { Link } from "react-router-dom";
 import CopyToastWrapper from "./copyToastWrapper";
 
 type HypixelDataProps = {
   hypixelData: HypixelFullData;
-  hypixelGuildQuery: UseInfiniteQueryResult<InfiniteData<HypixelGuildMemberFull[]>>;
+  hypixelGuildQuery: UseInfiniteQueryResult<
+    InfiniteData<HypixelGuildMemberFull[]>
+  >;
 };
 
 const socialsIcons = {
@@ -57,12 +63,16 @@ function HypixelTabbedData({
           return (
             <CopyToastWrapper key={social_name}>
               {(handleCopy) => (
-                <DesktopTooltip delayDuration={50} content={
-                  <div className="discord-tooltip">
-                    Discord - {social_value}{<br />}
-                    <span>(click to copy)</span>
-                  </div>
-                }>
+                <DesktopTooltip
+                  delayDuration={50}
+                  content={
+                    <div className="discord-tooltip">
+                      Discord - {social_value}
+                      {<br />}
+                      <span>(click to copy)</span>
+                    </div>
+                  }
+                >
                   <button
                     className="social-button"
                     onClick={() => handleCopy(social_value)}
@@ -75,14 +85,17 @@ function HypixelTabbedData({
           );
         }
         return (
-          <DesktopTooltip delayDuration={50} content={toProperCase(social_name.replace("_", " "))}>
+          <DesktopTooltip
+            delayDuration={50}
+            content={toProperCase(social_name.replace("_", " "))}
+          >
             <a
               className="social-button"
               target="_blank"
               rel="noopener noreferrer"
               href={
                 social_value.startsWith("http://") ||
-                  social_value.startsWith("https://")
+                social_value.startsWith("https://")
                   ? social_value
                   : `https://${social_value}`
                 // if link starts with www. instead of https:// it doesnt work properly
@@ -267,35 +280,35 @@ function HypixelBedwarsPopup({ bedwarsData }: { bedwarsData: BedwarsProfile }) {
                   <td className="bedwars-stat-value">
                     {formatValue(
                       bedwarsData.overall_stats[
-                      stat as keyof typeof bedwarsData.overall_stats
+                        stat as keyof typeof bedwarsData.overall_stats
                       ],
                     )}
                   </td>
                   <td className="bedwars-stat-value">
                     {formatValue(
                       bedwarsData.solo_stats[
-                      stat as keyof typeof bedwarsData.overall_stats
+                        stat as keyof typeof bedwarsData.overall_stats
                       ],
                     )}
                   </td>
                   <td className="bedwars-stat-value">
                     {formatValue(
                       bedwarsData.duo_stats[
-                      stat as keyof typeof bedwarsData.overall_stats
+                        stat as keyof typeof bedwarsData.overall_stats
                       ],
                     )}
                   </td>
                   <td className="bedwars-stat-value">
                     {formatValue(
                       bedwarsData.trio_stats[
-                      stat as keyof typeof bedwarsData.overall_stats
+                        stat as keyof typeof bedwarsData.overall_stats
                       ],
                     )}
                   </td>
                   <td className="bedwars-stat-value">
                     {formatValue(
                       bedwarsData.quad_stats[
-                      stat as keyof typeof bedwarsData.overall_stats
+                        stat as keyof typeof bedwarsData.overall_stats
                       ],
                     )}
                   </td>
@@ -337,7 +350,10 @@ function HypixelGuild({ hypixelData, hypixelGuildQuery }: HypixelDataProps) {
     if (displayMode === "card") {
       return (
         <li key={`${member.uuid}:card`}>
-          <Link to={`/player/${member.uuid}`} className="guild-list-item-container">
+          <Link
+            to={`/player/${member.uuid}`}
+            className="guild-list-item-container"
+          >
             <motion.div
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
@@ -376,7 +392,10 @@ function HypixelGuild({ hypixelData, hypixelGuildQuery }: HypixelDataProps) {
     if (displayMode === "list") {
       return (
         <li key={`${member.uuid}:list`}>
-          <Link to={`/player/${member.uuid}`} className="guild-list-item-container">
+          <Link
+            to={`/player/${member.uuid}`}
+            className="guild-list-item-container"
+          >
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

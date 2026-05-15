@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\"",
+    "preview": "vite preview",
+    "prepare": "cd .. && husky"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.16",
@@ -23,6 +26,12 @@
     "recharts": "^3.1.2",
     "workbox-window": "^7.4.0"
   },
+  "lint-staged": {
+    "src/**/*.{ts,tsx,css}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
+  },
   "devDependencies": {
     "@eslint/js": "^9.29.0",
     "@hey-api/openapi-ts": "0.83.1",
@@ -37,6 +46,9 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.2.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.4",
+    "prettier": "^3.8.3",
     "rollup-plugin-visualizer": "^7.0.1",
     "typescript": "^6.0.3",
     "vite": "^7.0.0",

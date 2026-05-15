@@ -120,7 +120,10 @@ function TrackPlayer({
     <div className="player-tracker">
       <div className="track-header">
         <h2 className="compact-paragraph">Tracking {mojangData.username}</h2>
-        <DesktopTooltip delayDuration={100} content={<>Stop Tracking {mojangData.username}</>}>
+        <DesktopTooltip
+          delayDuration={100}
+          content={<>Stop Tracking {mojangData.username}</>}
+        >
           <button
             onClick={() => setTrackStatus("search")}
             className="track-stop-button"
@@ -139,7 +142,10 @@ function TrackPlayer({
       <div className="track-history-header">
         <h3>History</h3>
         <div className="select-container">
-          <DesktopTooltip delayDuration={100} content="View history as a Timeline">
+          <DesktopTooltip
+            delayDuration={100}
+            content="View history as a Timeline"
+          >
             <button
               className="select-button-left select-button"
               onClick={() => setHistoryMode("timeline")}
