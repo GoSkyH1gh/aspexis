@@ -75,11 +75,14 @@ const formatISOToDistance = (isoDate: string | null | undefined) => {
   }
 };
 
-const formatSinceLastUpdate = (date: Date) => {
+const formatSinceLastUpdate = (date: Date, _tick: number) => {
   if (!date) {
     return "unknown";
   }
-  // formatDistanceToNowStrict gives "X minutes ago", dayjs "fromNow()" does the same
+  const seconds = dayjs().diff(date, "second");
+  if (seconds < 60) {
+    return `updated ${seconds} second${seconds !== 1 ? "s" : ""} ago`;
+  }
   return "updated " + dayjs(date).fromNow();
 };
 

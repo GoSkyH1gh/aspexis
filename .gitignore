@@ -5,3 +5,6 @@ backend/cache.db
 backend/wynn_cache.db
 backend/cache.db-shm
 backend/cache.db-wal
+frontend/tsconfig.tsbuildinfo
+frontend/dist/
+frontend/node_modules/

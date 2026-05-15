@@ -33,7 +33,7 @@ function TrackPlayer({
   const [status, setStatus] = useState<"error" | null | SSEData>(null);
   const baseUrl = import.meta.env.VITE_API_URL;
   const [lastUpdate, setLastUpdate] = useState(new Date());
-  const [_tick, setTick] = useState(0);
+  const [tick, setTick] = useState(0);
   const [historyMode, setHistoryMode] = useState<"log" | "timeline">(
     "timeline",
   );
@@ -130,7 +130,7 @@ function TrackPlayer({
         </DesktopTooltip>
       </div>
       <p className="compact-paragraph track-subheader">
-        {formatSinceLastUpdate(lastUpdate)}
+        {formatSinceLastUpdate(lastUpdate, tick)}
       </p>
       <div className="tracker-live-data">
         <h3>{onlineText}</h3>
