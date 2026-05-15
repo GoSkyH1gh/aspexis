@@ -5,14 +5,6 @@ import { Icon } from "@iconify/react";
 import { Popover } from "radix-ui";
 import { useSearchHistory } from "../../hooks/useSearchHistory";
 
-type SearchbarProps = {
-  handleInputChange: (input: any) => void;
-  inputValue: string;
-  handleKeyPress: (keyPress: any) => void;
-  onFocus: () => void;
-  setIsOpen: (isOpen: boolean) => void;
-};
-
 // Forward ref to allow Popover.Anchor to work
 const SearchInput = React.forwardRef<HTMLInputElement, any>(
   ({ handleInputChange, inputValue, handleKeyPress, onFocus }, ref) => {
@@ -71,7 +63,7 @@ type SearchRowProps = {
 };
 
 function SearchRow({ disabled, urlToNavigate }: SearchRowProps) {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const [inputValue, setInputValue] = useState("");
   const { history, removeFromHistory } = useSearchHistory();
   const [open, setOpen] = useState(false);

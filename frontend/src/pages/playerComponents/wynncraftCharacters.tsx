@@ -27,7 +27,7 @@ function WynncraftCharacters({
     return <p>This player has no characters.</p>;
   }
 
-  let removedStats = characterList[0].removed_stats;
+  const removedStats = characterList[0].removed_stats;
 
   const getTotalProfessionLevel = (professions: ProfessionInfo | null) => {
     if (professions === null) {

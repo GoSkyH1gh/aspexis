@@ -140,7 +140,7 @@ function WynncraftTabbedData({
     wynnGuildElements = <></>;
   }
 
-  let disabledStats = [];
+  const disabledStats = [];
   if (wynncraftData.restrictions.main_access) {
     disabledStats.push("Main Access");
   }

@@ -1,6 +1,5 @@
 import React, { Component, ReactNode, ErrorInfo } from "react";
 import { Link } from "react-router-dom";
-import { FaExclamationTriangle } from "react-icons/fa";
 
 interface Props {
   children?: ReactNode;

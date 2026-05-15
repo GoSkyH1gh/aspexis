@@ -76,7 +76,7 @@ function CharacterGamemodes({
   character: WynncraftCharacterInfo;
 }) {
   const gamemodes = character.gamemodes;
-  let sortedGamemodes: string[] = [];
+  const sortedGamemodes: string[] = [];
   gamemodeSortOrder.forEach(
     (gamemode) =>
       gamemodes.includes(gamemode) && sortedGamemodes.push(gamemode),

@@ -58,7 +58,7 @@ function TrackPlayer({
       });
       setStatus(data);
     });
-    eventSource.addEventListener("error", (event) => {
+    eventSource.addEventListener("error", () => {
       setStatus("error");
     });
     return () => {

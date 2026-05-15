@@ -11,7 +11,6 @@ import {
   HypixelFullData,
   HypixelGuildMemberFull,
   BedwarsProfile,
-  HypixelSocials,
 } from "../../client";
 import DistributionChartWrapper from "./distributionChartWrapper";
 import { Icon } from "@iconify/react";
